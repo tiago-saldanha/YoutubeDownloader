@@ -81,7 +81,7 @@ YoutubeDownload.Web
 - UI/UX improvements
 - Improved error handling and logging
 
---
+---
 
 ### ⚠️ Notes
 
@@ -100,6 +100,6 @@ See the [LICENSE](License.txt) file for more details.
 
 --- 
 
-### 👨‍💻 Desenvolvido por [Tiago Ávila Saldanha](https://github.com/tiago-saldanha) (YoutubeDownload)
+### 👨‍💻 Develop by [Tiago Ávila Saldanha](https://github.com/tiago-saldanha)
 
 ---
