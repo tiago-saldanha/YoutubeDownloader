@@ -8,7 +8,8 @@
         public double Size { get; set; }
         public bool IsAudioOnly { get; set; }
         public string AudioCodec { get; set; }
-        public string Url { get; set; }
+        public string VideoId { get; set; }
+        public string Title { get; set; }
 
         public string DisplaySize =>
             Size > 1240
