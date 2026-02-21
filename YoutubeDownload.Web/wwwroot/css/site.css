@@ -20,3 +20,19 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+body {
+    background-color: #f8f9fa;
+}
+
+.card {
+    border-radius: 12px;
+}
+
+.btn-primary {
+    border-radius: 8px;
+}
+
+.table td, .table th {
+    vertical-align: middle;
+}
