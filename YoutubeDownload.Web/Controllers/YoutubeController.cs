@@ -42,7 +42,8 @@ namespace YoutubeDownload.Web.Controllers
             }
             catch (Exception ex)
             {
-                model.Message = $"Erro: {ex.InnerException?.Message ?? ex.Message}";
+                TempData["Alert.Type"] = "danger";
+                TempData["Alert.Message"] = ex.InnerException?.Message ?? ex.Message;
             }
 
             return View(model);
@@ -68,7 +69,8 @@ namespace YoutubeDownload.Web.Controllers
             }
             catch (Exception ex)
             {
-                TempData["Message"] = ex.Message;
+                TempData["Alert.Type"] = "danger";
+                TempData["Alert.Message"] = ex.InnerException?.Message ?? ex.Message;
                 return RedirectToAction(nameof(Index));
             }
         }

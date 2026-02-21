@@ -6,6 +6,7 @@ using YoutubeDownload.Application.Commands;
 using YoutubeDownload.Application.ViewModel;
 using Microsoft.Extensions.Logging;
 using YoutubeDownload.Application.Exceptions;
+using YoutubeDownload.Infrastructure.Interfaces;
 
 namespace YoutubeDownload.Application.Services
 {
@@ -13,11 +14,13 @@ namespace YoutubeDownload.Application.Services
     {
         private readonly YoutubeClient _client;
         private readonly string OutputDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "downloads");
+        private readonly IFfmpegService _ffmpegService;
         private readonly ILogger<YoutubeService> _logger;
 
-        public YoutubeService(YoutubeClient client, ILogger<YoutubeService> logger)
+        public YoutubeService(YoutubeClient client, IFfmpegService ffmpegService, ILogger<YoutubeService> logger)
         {
             _client = client;
+            _ffmpegService = ffmpegService;
             _logger = logger;
             CreateOutputDirectory();
         }
@@ -66,7 +69,7 @@ namespace YoutubeDownload.Application.Services
         }
 
         public async Task ConverterAsync(string filePath)
-            => await Task.Run(() => FfmpegService.ConvertToMp3(filePath));
+            => await Task.Run(() => _ffmpegService.ConvertToMp3(filePath));
 
         private async Task<DownloadStreamViewModel> DownloadVideoAsync(StreamManifest manifest, DownloadCommand command)
         {
@@ -90,7 +93,7 @@ namespace YoutubeDownload.Application.Services
 
             var streams = new IStreamInfo[] { audioStream, videoStream };
 
-            await _client.Videos.DownloadAsync(streams, new ConversionRequestBuilder(filePath).SetFFmpegPath(FfmpegService.Path).Build());
+            await _client.Videos.DownloadAsync(streams, new ConversionRequestBuilder(filePath).SetFFmpegPath(_ffmpegService.Path).Build());
 
             _logger.LogInformation("Video download completed successfully. File saved at {FilePath}.", filePath);
 

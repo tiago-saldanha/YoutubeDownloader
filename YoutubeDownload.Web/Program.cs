@@ -3,7 +3,8 @@ using YoutubeDownload.Web.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
-builder.Services.ProvideServices();
+builder.Services.ConfigureServices();
+builder.AddInfraStructure();
 
 var app = builder.Build();
 
