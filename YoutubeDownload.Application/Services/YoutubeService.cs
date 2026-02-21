@@ -49,71 +49,73 @@ namespace YoutubeDownload.Application.Services
         {
             try
             {
-                _logger.LogInformation(
-                    "Starting video download [{Title}] (ID: {VideoId}).",
-                    command.Title,
-                    command.VideoId);
+                _logger.LogInformation("Starting video download [{Title}] (ID: {VideoId}).", command.Title, command.VideoId);
 
-                var manifest = await _client.Videos.Streams
-                    .GetManifestAsync(command.VideoId);
+                var manifest = await _client.Videos.Streams.GetManifestAsync(command.VideoId);
 
-                var filePath =  command.IsAudioOnly
-                    ? await DownloadAudio(manifest, command, command.Title)
-                    : await DownloadVideo(manifest, command, command.Title);
-
-                return DownloadStreamViewModel.Create(filePath);
+                var filePath = command.IsAudioOnly
+                    ? await DownloadAudio(manifest, command)
+                    : await DownloadVideo(manifest, command);
+                
+                var result = DownloadStreamViewModel.Create(filePath);
+                
+                RemoveExistingFile(filePath);
+                
+                return result;
             }
             catch (Exception ex)
             {
-                _logger.LogError(
-                    ex,
-                    "Error while downloading video [{Title}] (ID: {VideoId}).",
-                    command.Title,
-                    command.VideoId);
+                _logger.LogError(ex, "Error while downloading video [{Title}] (ID: {VideoId}).", command.Title, command.VideoId);
 
-                throw new VideoDownloadException(
-                    command.VideoId,
-                    command.Title,
-                    ex);
+                throw new VideoDownloadException(command.VideoId, command.Title, ex);
             }
         }
 
         public async Task ConverterAsync(string filePath) => await Task.Run(() => FfmpegService.ConvertToMp3(filePath));
 
-        private IVideoStreamInfo DownloadVideoStream(StreamManifest manifest, Func<VideoOnlyStreamInfo, bool> predicate) 
+        private IVideoStreamInfo DownloadVideoStream(StreamManifest manifest, Func<VideoOnlyStreamInfo, bool> predicate)
             => manifest.GetVideoOnlyStreams().Where(predicate).OrderByDescending(s => s.Size).First();
 
-        private IStreamInfo DownloadAudioStream(StreamManifest manifest, Func<AudioOnlyStreamInfo, bool> predicate) 
+        private IStreamInfo DownloadAudioStream(StreamManifest manifest, Func<AudioOnlyStreamInfo, bool> predicate)
             => manifest.GetAudioOnlyStreams().Where(predicate).OrderByDescending(s => s.Size).First() ?? GetBestAudioStreamInfo(manifest);
 
         private IStreamInfo GetBestAudioStreamInfo(StreamManifest manifest) => manifest.GetAudioStreams().GetWithHighestBitrate();
 
-        private async Task<string> DownloadVideo(StreamManifest manifest, DownloadCommand command, string title)
+        private async Task<string> DownloadVideo(StreamManifest manifest, DownloadCommand command)
         {
+            _logger.LogInformation("Selecting audio stream for video '{Title}'.", command.Title);
+
             var audioStream = DownloadAudioStream(manifest, s => s.Container.Name == command.ContainerName);
-            _logger.LogInformation($"Download do Stream de Audio realizado com sucesso [{audioStream.Container.Name}].");
 
-            var file = Path.Combine(OutputDirectory, $"{title}.{audioStream.Container.Name}");
+            _logger.LogInformation("Audio stream selected. Container: {Container}.", audioStream.Container.Name);
+
+            _logger.LogInformation("Selecting video stream. Resolution: {Resolution}, Container: {Container}.", command.Resolution, command.ContainerName);
+
             var videoStream = DownloadVideoStream(manifest, s => s.Container.ToString() == command.ContainerName && s.VideoQuality.Label.Contains(command.Resolution));
-            _logger.LogInformation($"Download do Stream de Video realizado com sucesso [{videoStream.Container.Name}].");
 
-            var streams = new IStreamInfo[2] { audioStream, videoStream };
-            _logger.LogInformation($"Iniciando Download do Video [{command.Title}].");
+            _logger.LogInformation("Video stream selected. Container: {Container}, Quality: {Quality}.", videoStream.Container.Name, videoStream.VideoQuality.Label);
 
-            if (File.Exists(file)) File.Delete(file);
+            var file = CreateFilePath(audioStream.Container.Name);
+
+            _logger.LogInformation("Preparing download for video '{Title}'. Output file: {FilePath}.", command.Title, file);
+
+            RemoveExistingFile(file);
+
+            var streams = new IStreamInfo[] { audioStream, videoStream };
 
             await _client.Videos.DownloadAsync(streams, new ConversionRequestBuilder(file).SetFFmpegPath(FfmpegService.Path).Build());
-            _logger.LogInformation($"Download do Video realizado com sucesso [{file}].");
+
+            _logger.LogInformation("Video download completed successfully. File saved at {FilePath}.", file);
 
             return file;
         }
 
-        private async Task<string> DownloadAudio(StreamManifest manifest, DownloadCommand command, string title)
+        private async Task<string> DownloadAudio(StreamManifest manifest, DownloadCommand command)
         {
             var audioStream = DownloadAudioStream(manifest, s => s.AudioCodec == command.AudioCodec && s.Container.Name == command.ContainerName);
             _logger.LogInformation($"Download do Stream de Audio realizado com sucesso [{audioStream.Container.Name}].");
 
-            var file = Path.Combine(OutputDirectory, $"{title}.{audioStream.Container.Name}");
+            var file = CreateFilePath(audioStream.Container.Name);
             await _client.Videos.Streams.DownloadAsync(audioStream, file);
 
             _logger.LogInformation($"Download do Audio realizado com sucesso [{file}].");
@@ -122,7 +124,23 @@ namespace YoutubeDownload.Application.Services
 
         private void CreateOutputDirectory()
         {
-            if (!Directory.Exists(OutputDirectory)) Directory.CreateDirectory(OutputDirectory);
+            if (!Directory.Exists(OutputDirectory))
+            {
+                Directory.CreateDirectory(OutputDirectory);
+                _logger.LogInformation("Output directory created at {OutputDirectory}.", OutputDirectory);
+            }
+        }
+
+        private string CreateFilePath(string containerName)
+            => Path.Combine(OutputDirectory, $"{Guid.NewGuid()}.{containerName}");
+
+        private void RemoveExistingFile(string filePath)
+        {
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+                _logger.LogInformation("File removed after download. FilePath: {FilePath}.", filePath);
+            }
         }
     }
 }
