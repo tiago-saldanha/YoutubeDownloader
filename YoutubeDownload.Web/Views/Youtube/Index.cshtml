@@ -2,151 +2,159 @@
 
 <div class="container mt-5">
 
-	<div class="text-center mb-4">
-		<h1 class="fw-bold">YouTube Downloader</h1>
-		<p class="text-muted">Download video and audio streams in your preferred format</p>
-	</div>
+    <!-- Cabeçalho -->
+    <div class="text-center mb-4">
+        <h1 class="fw-bold">YouTube Downloader</h1>
+        <p class="text-muted">Download video and audio streams in your preferred format</p>
+    </div>
 
-	<div class="card shadow-sm p-4 mb-5">
-		<form method="post" asp-action="Index" id="youtube-form">
-			<div class="input-group input-group-lg">
-				<input type="text"
-					   name="url"
-					   class="form-control"
-					   placeholder="Paste YouTube URL here..."
-					   required />
+    <!-- Formulário de busca -->
+    <div class="card shadow-sm p-4 mb-5">
+        <form method="post" asp-action="Index" id="youtube-form">
+            <div class="input-group input-group-lg">
+                <input type="text"
+                       name="url"
+                       class="form-control"
+                       placeholder="Paste YouTube URL here..."
+                       required />
 
-				<button class="btn btn-primary px-4" type="submit">
-					🔍 Search
-				</button>
+                <button class="btn btn-primary px-4" type="submit">
+                    🔍 Search
+                </button>
 
-				<a asp-action="Index"
-				   asp-controller="Youtube"
-				   class="btn btn-outline-secondary px-4">
-					♻ Reset
-				</a>
-			</div>
-		</form>
-	</div>
+                <a asp-action="Index"
+                   asp-controller="Youtube"
+                   class="btn btn-outline-secondary px-4">
+                    ♻ Reset
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Spinner de busca -->
+    <div id="loadingSearch" class="text-center mt-3" style="display:none;">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p>Searching streams...</p>
+    </div>
+
+    <!-- Mensagens -->
+    @if (!string.IsNullOrEmpty(Model.Message))
+    {
+        <p><em>@Model.Message</em></p>
+    }
+
+    @if (TempData["Alert.Message"] != null)
+    {
+        <div class="alert alert-@TempData["Alert.Type"] alert-dismissible fade show">
+            @TempData["Alert.Message"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Streams disponíveis -->
+    @if (Model.Streams.Any())
+    {
+        <div class="card shadow-sm p-4 mb-5" id="streamsCard">
+
+            <h3 class="mb-4">🎬 Download de Vídeo</h3>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Formato</th>
+                            <th>Video Codec</th>
+                            <th>Resolução</th>
+                            <th>Tamanho</th>
+                            <th class="text-end"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var stream in Model.Streams.Where(s => !s.IsAudioOnly))
+                        {
+                            <tr>
+                                <td><span class="badge bg-secondary">@stream.ContainerName</span></td>
+                                <td>@stream.VideoCodec</td>
+                                <td>@stream.Resolution</td>
+                                <td>@stream.DisplaySize</td>
+                                <td class="text-end">
+                                    <form asp-action="Download" method="post" class="d-inline download-form">
+                                        <input type="hidden" asp-for="@stream.VideoId" name="VideoId" />
+                                        <input type="hidden" asp-for="@stream.Title" name="Title" />
+                                        <input type="hidden" asp-for="@stream.ContainerName" name="ContainerName" />
+                                        <input type="hidden" asp-for="@stream.VideoCodec" name="VideoCodec" />
+                                        <input type="hidden" asp-for="@stream.Resolution" name="Resolution" />
+                                        <input type="hidden" asp-for="@stream.Size" name="Size" />
+                                        <input type="hidden" asp-for="@stream.IsAudioOnly" name="IsAudioOnly" />
+                                        <input type="hidden" asp-for="@stream.AudioCodec" name="AudioCodec" />
+
+                                        <button class="btn btn-outline-warning btn-sm">⬇ Baixar</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <hr class="my-4" />
+
+            <h3 class="mb-4">🎵 Download de Áudio</h3>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Formato</th>
+                            <th>Audio Codec</th>
+                            <th>Tamanho</th>
+                            <th class="text-end"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var stream in Model.Streams.Where(s => s.IsAudioOnly))
+                        {
+                            <tr>
+                                <td><span class="badge bg-dark">@stream.ContainerName</span></td>
+                                <td>@stream.AudioCodec</td>
+                                <td>@stream.DisplaySize</td>
+                                <td class="text-end">
+                                    <form asp-action="Download" method="post" class="d-inline download-form">
+                                        <input type="hidden" asp-for="@stream.VideoId" name="VideoId" />
+                                        <input type="hidden" asp-for="@stream.Title" name="Title" />
+                                        <input type="hidden" asp-for="@stream.ContainerName" name="ContainerName" />
+                                        <input type="hidden" asp-for="@stream.VideoCodec" name="VideoCodec" />
+                                        <input type="hidden" asp-for="@stream.Resolution" name="Resolution" />
+                                        <input type="hidden" asp-for="@stream.Size" name="Size" />
+                                        <input type="hidden" asp-for="@stream.IsAudioOnly" name="IsAudioOnly" />
+                                        <input type="hidden" asp-for="@stream.AudioCodec" name="AudioCodec" />
+
+                                        <button class="btn btn-outline-success btn-sm">⬇ Baixar</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    }
+
 </div>
 
-<div id="loadingSearch" class="text-center mt-3" style="display:none;">
-	<div class="spinner-border text-primary" role="status">
-		<span class="visually-hidden">Loading...</span>
-	</div>
-	<p>Searching streams...</p>
+<!-- Overlay global de download -->
+<div id="overlay" style="
+    display:none;
+    position:fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background: rgba(0,0,0,0.4);
+    z-index:9999;
+    text-align:center;
+    padding-top:20%;
+    color:white;
+">
+    <div class="spinner-border text-light" role="status"></div>
+    <p>Processando download...</p>
 </div>
-
-@if (!string.IsNullOrEmpty(Model.Message))
-{
-	<p><em>@Model.Message</em></p>
-}
-
-@if (TempData["Alert.Message"] != null)
-{
-	<div class="alert alert-@TempData["Alert.Type"] alert-dismissible fade show">
-		@TempData["Alert.Message"]
-		<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-	</div>
-}
-
-@if (Model.Streams.Any())
-{
-	<div class="card shadow-sm p-4 mb-5">
-
-		<h3 class="mb-4">🎬 Download de Vídeo</h3>
-
-		<div class="table-responsive">
-			<table class="table table-hover align-middle">
-				<thead class="table-light">
-					<tr>
-						<th>Formato</th>
-						<th>Video Codec</th>
-						<th>Resolução</th>
-						<th>Tamanho</th>
-						<th class="text-end"></th>
-					</tr>
-				</thead>
-				<tbody>
-					@foreach (var stream in Model.Streams.Where(s => !s.IsAudioOnly))
-					{
-						<tr>
-							<td>
-								<span class="badge bg-secondary">
-									@stream.ContainerName
-								</span>
-							</td>
-							<td>@stream.VideoCodec</td>
-							<td>@stream.Resolution</td>
-							<td>@stream.DisplaySize</td>
-							<td class="text-end">
-								<form asp-action="Download" method="post" class="d-inline">
-									<input type="hidden" asp-for="@stream.VideoId" name="VideoId" />
-									<input type="hidden" asp-for="@stream.Title" name="Title" />
-									<input type="hidden" asp-for="@stream.ContainerName" name="ContainerName" />
-									<input type="hidden" asp-for="@stream.VideoCodec" name="VideoCodec" />
-									<input type="hidden" asp-for="@stream.Resolution" name="Resolution" />
-									<input type="hidden" asp-for="@stream.Size" name="Size" />
-									<input type="hidden" asp-for="@stream.IsAudioOnly" name="IsAudioOnly" />
-									<input type="hidden" asp-for="@stream.AudioCodec" name="AudioCodec" />
-
-									<button class="btn btn-outline-warning btn-sm">
-										⬇ Baixar
-									</button>
-								</form>
-							</td>
-						</tr>
-					}
-				</tbody>
-			</table>
-		</div>
-
-		<hr class="my-4" />
-
-		<h3 class="mb-4">🎵 Download de Áudio</h3>
-
-		<div class="table-responsive">
-			<table class="table table-hover align-middle">
-				<thead class="table-light">
-					<tr>
-						<th>Formato</th>
-						<th>Audio Codec</th>
-						<th>Tamanho</th>
-						<th class="text-end"></th>
-					</tr>
-				</thead>
-				<tbody>
-					@foreach (var stream in Model.Streams.Where(s => s.IsAudioOnly))
-					{
-						<tr>
-							<td>
-								<span class="badge bg-dark">
-									@stream.ContainerName
-								</span>
-							</td>
-							<td>@stream.AudioCodec</td>
-							<td>@stream.DisplaySize</td>
-							<td class="text-end">
-								<form asp-action="Download" method="post" class="d-inline">
-									<input type="hidden" asp-for="@stream.VideoId" name="VideoId" />
-									<input type="hidden" asp-for="@stream.Title" name="Title" />
-									<input type="hidden" asp-for="@stream.ContainerName" name="ContainerName" />
-									<input type="hidden" asp-for="@stream.VideoCodec" name="VideoCodec" />
-									<input type="hidden" asp-for="@stream.Resolution" name="Resolution" />
-									<input type="hidden" asp-for="@stream.Size" name="Size" />
-									<input type="hidden" asp-for="@stream.IsAudioOnly" name="IsAudioOnly" />
-									<input type="hidden" asp-for="@stream.AudioCodec" name="AudioCodec" />
-
-									<button class="btn btn-outline-success btn-sm">
-										⬇ Baixar
-									</button>
-								</form>
-							</td>
-						</tr>
-					}
-				</tbody>
-			</table>
-		</div>
-
-	</div>
-}
