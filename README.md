@@ -1,101 +1,105 @@
+## 📺 YoutubeDownload - ASP.NET Core MVC
 
-# 📺 YTDownload - Projeto ASP.NET Core
+Web application built with ASP.NET Core MVC (.NET 8) for viewing and downloading YouTube video and audio streams using the [YoutubeExplode](https://github.com/Tyrrrz/YoutubeExplode) e o [FFmpeg](https://ffmpeg.org/).
 
-Projeto para download de vídeos e áudios do YouTube utilizando a biblioteca [YoutubeExplode](https://github.com/Tyrrrz/YoutubeExplode) e o [ffmpeg](https://www.ffmpeg.org).
+The project currently provides a simple web interface where users can:
+
+- Enter a YouTube video URL
+- List available video and audio streams
+- Download the selected format
+
+> ⚠️ At the moment, the project is focused only on the Web (MVC) application.
+> API support, Docker, and desktop applications may be added in future versions.
+---
+
+### 🧱 Technologies Used
+
+- .NET 8
+- ASP.NET Core MVC
+- Razor Views
+- YoutubeExplode
+- FFmpeg
 
 ---
 
-## ✅ Requisitos
+### ✅ Requirements
+
+Before running the project, make sure you have installed:
 
 - [.NET SDK 8.0](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
-- Docker (opcional)
+- FFmpeg installed on your machine and available in your system `PATH`
 
----
-
-## 🚀 Opções de Execução
-
-### 1. Aplicação ASP.NET Core Web
-
-#### 🔧 Build e Execução
-
-No diretório raiz do projeto, execute:
+To verify that FFmpeg is correctly installed:
 
 ```bash
-dotnet build && dotnet run
+ffmpeg -version
 ```
 
 ---
 
-### 2. Aplicação Windows Forms
+### 🚀 Running the Application
 
-Também é possível executar como uma aplicação desktop:
+From the project root directory, run:
 
-- Abra a solução no Visual Studio
-- Rode o projeto `WindowsApp`
-- Execute o `Program.cs` para iniciar a interface gráfica
+`dotnet build`
+`dotnet run`
 
----
+After starting the application, open your browser and navigate to:
 
-### 3. Aplicação Blazor WebAssembly
+https://localhost:5001
 
-O YTDownload pode rodar como uma aplicação Blazor WebAssembly:
+or
 
-- Configure o projeto `YTDownload.Front` no ambiente WebAssembly no `Startup.cs`
-- Siga as mesmas instruções de execução da aplicação ASP.NET Core
+http://localhost:5000
 
----
-
-## 🐳 Execução com Docker
-
-### 🔨 Build da imagem com `docker compose`
-
-No diretório raiz, execute:
-
-```bash
-docker compose build
-docker compose up -d
-```
+(The port may vary depending on your local configuration.)
 
 ---
 
-### 🌐 Build manual da imagem com Docker
+### 📂 Project Structure
 
-```bash
-docker build -f "YTDownload.Front\Dockerfile" -t ytdownload:dev .
-```
-
----
-
-### ▶️ Executar com `docker run`
-
-```bash
-docker run -dp 8080:80 \
-  -e "ASPNETCORE_ENVIRONMENT=Development" \
-  -e "ASPNETCORE_URLS=http://+:80" \
-  --name ytdownload
-  ytdownload:dev
-```
+YoutubeDownload.Web
+ ├── Controllers
+ ├── Models
+ ├── Views
+ ├── Services
+ └── wwwroot
+ 
+- Responsibility Separation
+- Controllers → Handle HTTP requests
+- Models → ViewModels used by the UI
+- Views → Razor-based UI layer
+- Services → Integration with YoutubeExplode and FFmpeg
 
 ---
 
-## 📘 Documentação via Swagger
+### 🔮 Future Improvements
 
-- Acesse: [http://localhost:8080/swagger/index.html](http://localhost:8080/swagger/index.html)
+- Separate REST API
+- Clean Architecture (Domain / Application / Infrastructure layers)
+- Download history tracking
+- UI/UX improvements
+- Improved error handling and logging
 
-Caso a variável de ambiente `ASPNETCORE_ENVIRONMENT` esteja definida como `Development`, a interface [Swagger UI](https://swagger.io/tools/swagger-ui/) estará habilitada para facilitar a exploração da API.
+--
 
-Para ambientes de produção, defina `ASPNETCORE_ENVIRONMENT=Production` para desativar o Swagger.
+### ⚠️ Notes
+
+YouTube may block requests depending on IP address or internal platform changes.
+If you encounter a 403 Forbidden error, check:
+Your YoutubeExplode version
+Network configuration
+Possible IP restrictions
 
 ---
 
-## 📄 Licença
+### 📄 License
 
-Este projeto está licenciado sob a Licença **LGPL**. Consulte o arquivo [LICENSE](License.txt) para mais detalhes.
+This project is licensed under the LGPL License **LGPL**.
+See the [LICENSE](License.txt) file for more details.
 
----
+--- 
 
-## 👨‍💻 Desenvolvido por
-
-Tiago (YTDownload)
+### 👨‍💻 Desenvolvido por [Tiago Ávila Saldanha](https://github.com/tiago-saldanha) (YoutubeDownload)
 
 ---
