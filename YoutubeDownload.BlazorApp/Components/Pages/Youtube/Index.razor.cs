@@ -8,9 +8,13 @@ namespace YoutubeDownload.BlazorApp.Components.Pages.Youtube
     public partial class Index
     {
         private string Url { get; set; }
+        
         private List<StreamViewModel> Streams = new();
+        
         private bool Loading { get; set; } = true;
+        
         private string Message { get; set; } = string.Empty;
+        
         [Inject] IJSRuntime JSRuntime { get; set; }
 
         private async Task GetManifestInfo()

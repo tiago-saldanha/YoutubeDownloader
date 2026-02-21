@@ -14,8 +14,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YoutubeDownload.BlazorApp",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YoutubeDownload.CrossCutting", "YoutubeDownload.CrossCutting\YoutubeDownload.CrossCutting.csproj", "{48E80454-C03E-7C4B-2700-2A434B3BC15D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YoutubeDownload.App", "YoutubeDownload.WindowsApp\YoutubeDownload.App.csproj", "{21AAE4B5-C132-14B8-6E7E-DD8150E4EE40}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,10 +32,6 @@ Global
 		{48E80454-C03E-7C4B-2700-2A434B3BC15D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{48E80454-C03E-7C4B-2700-2A434B3BC15D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{48E80454-C03E-7C4B-2700-2A434B3BC15D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{21AAE4B5-C132-14B8-6E7E-DD8150E4EE40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{21AAE4B5-C132-14B8-6E7E-DD8150E4EE40}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{21AAE4B5-C132-14B8-6E7E-DD8150E4EE40}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{21AAE4B5-C132-14B8-6E7E-DD8150E4EE40}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

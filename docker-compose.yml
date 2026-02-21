@@ -1,6 +1,0 @@
-services:
-  ytdownload:
-    image: ${DOCKER_REGISTRY-}ytdownload
-    build:
-      context: .
-      dockerfile: YTDownload/Dockerfile
