@@ -16,9 +16,15 @@
                        placeholder="Paste YouTube URL here..."
                        required />
 
-                <button class="btn btn-primary px-4">
-                    Get Streams
+                <button class="btn btn-primary px-4" type="submit">
+                    🔍 Search
                 </button>
+
+                <a asp-action="Index"
+                   asp-controller="Youtube"
+                   class="btn btn-outline-secondary px-4">
+                    ♻ Reset
+                </a>
             </div>
         </form>
     </div>
