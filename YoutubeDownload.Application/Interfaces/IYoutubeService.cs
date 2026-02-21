@@ -6,7 +6,7 @@ namespace YoutubeDownload.Application.Interfaces
     public interface IYoutubeService
     {
         Task<StreamManifestViewModel> DownloadManifestAsync(string url);
-        Task<string> DownloadAsync(DownloadCommand command);
+        Task<DownloadStreamViewModel> DownloadAsync(DownloadCommand command);
         Task ConverterAsync(string file);
     }
 }

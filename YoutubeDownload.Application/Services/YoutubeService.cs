@@ -5,6 +5,7 @@ using YoutubeDownload.Application.Interfaces;
 using YoutubeDownload.Application.Commands;
 using YoutubeDownload.Application.ViewModel;
 using Microsoft.Extensions.Logging;
+using YoutubeDownload.Application.Exceptions;
 
 namespace YoutubeDownload.Application.Services
 {
@@ -25,37 +26,55 @@ namespace YoutubeDownload.Application.Services
         {
             try
             {
-                _logger.LogInformation($"Iniciando o Download do manifesto do vídeo [{url}].");
-                var video = await _client.Videos.GetAsync(url);
+                _logger.LogInformation("Starting manifest download for video [{Url}].", url);
 
+                var video = await _client.Videos.GetAsync(url);
                 var manifest = await _client.Videos.Streams.GetManifestAsync(video.Id);
+
                 var result = StreamManifestViewModel.Create(manifest, video);
 
-                _logger.LogInformation($"Download dos Streams realizados com sucesso [{url}]");
+                _logger.LogInformation("Manifest successfully downloaded for video [{Url}].", url);
+
                 return result;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Erro ao tentar baixar o manifesto do video [{url}].");
-                throw;
+                _logger.LogError(ex, "Error while downloading manifest for video [{Url}].", url);
+
+                throw new VideoManifestDownloadException(url, ex);
             }
         }
 
-        public async Task<string> DownloadAsync(DownloadCommand command)
+        public async Task<DownloadStreamViewModel> DownloadAsync(DownloadCommand command)
         {
             try
             {
-                //var video = await _client.Videos.GetAsync(command.Url);
-                var title = command.Title;
-                _logger.LogInformation($"Iniciando o Download do vídeo [{title}].");
+                _logger.LogInformation(
+                    "Starting video download [{Title}] (ID: {VideoId}).",
+                    command.Title,
+                    command.VideoId);
 
-                var manifest = await _client.Videos.Streams.GetManifestAsync(command.VideoId);
-                return command.IsAudioOnly ? await DownloadAudio(manifest, command, title) : await DownloadVideo(manifest, command, title);
+                var manifest = await _client.Videos.Streams
+                    .GetManifestAsync(command.VideoId);
+
+                var filePath =  command.IsAudioOnly
+                    ? await DownloadAudio(manifest, command, command.Title)
+                    : await DownloadVideo(manifest, command, command.Title);
+
+                return DownloadStreamViewModel.Create(filePath);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Erro ao tentar baixar o video [{command.Title}].");
-                return ex.ToString();
+                _logger.LogError(
+                    ex,
+                    "Error while downloading video [{Title}] (ID: {VideoId}).",
+                    command.Title,
+                    command.VideoId);
+
+                throw new VideoDownloadException(
+                    command.VideoId,
+                    command.Title,
+                    ex);
             }
         }
 

@@ -29,20 +29,9 @@ namespace YoutubeDownload.Web.Controllers
             {
                 var manifest = await service.DownloadManifestAsync(model.Url);
 
-                if (manifest.Streams.Any())
+                if (manifest.Streams.Count > 0)
                 {
-                    model.Streams = manifest.Streams
-                        .Select(s => new StreamViewModel
-                        {
-                            ContainerName = s.ContainerName,
-                            VideoCodec = s.VideoCodec,
-                            Resolution = s.Resolution,
-                            Size = s.Size,
-                            IsAudioOnly = s.IsAudioOnly,
-                            AudioCodec = s.AudioCodec,
-                            VideoId = manifest.VideoId,
-                            Title = manifest.Title,
-                        }).ToList();
+                    model.Streams = manifest.Streams.Select(s => StreamViewModel.Create(s, manifest)).ToList();
 
                     model.Loading = false;
                     model.Message = "";
@@ -63,28 +52,26 @@ namespace YoutubeDownload.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Download(StreamViewModel stream)
         {
-            var command = new DownloadCommand(
-                stream.VideoId,
-                stream.Title,
-                stream.ContainerName,
-                stream.VideoCodec,
-                stream.Resolution,
-                stream.AudioCodec,
-                stream.IsAudioOnly
-            );
-
-            var filePath = await service.DownloadAsync(command);
-
-            if (!System.IO.File.Exists(filePath))
+            try
             {
-                TempData["Message"] = "Erro ao baixar o arquivo.";
+                var command = new DownloadCommand(
+                    stream.VideoId,
+                    stream.Title,
+                    stream.ContainerName,
+                    stream.VideoCodec,
+                    stream.Resolution,
+                    stream.AudioCodec,
+                    stream.IsAudioOnly
+                );
+
+                var downloadStream = await service.DownloadAsync(command);
+                return File(downloadStream.FileBytes, downloadStream.ContentType, downloadStream.FileName);
+            }
+            catch (Exception ex)
+            {
+                TempData["Message"] = ex.Message;
                 return RedirectToAction(nameof(Index));
             }
-
-            var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
-            var fileName = Path.GetFileName(filePath);
-
-            return File(fileBytes, "application/octet-stream", fileName);
         }
     }
 }
