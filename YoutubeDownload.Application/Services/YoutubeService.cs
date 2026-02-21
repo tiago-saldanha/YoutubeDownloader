@@ -1,7 +1,6 @@
 ﻿using YoutubeExplode;
 using YoutubeExplode.Converter;
 using YoutubeExplode.Videos.Streams;
-using YoutubeDownload.Application.Extensions;
 using YoutubeDownload.Application.Interfaces;
 using YoutubeDownload.Application.Commands;
 using YoutubeDownload.Application.ViewModel;
@@ -22,7 +21,7 @@ namespace YoutubeDownload.Application.Services
             CreateOutputDirectory();
         }
 
-        public async Task<IEnumerable<StreamManifestViewModel>> DownloadManifestAsync(string url)
+        public async Task<StreamManifestViewModel> DownloadManifestAsync(string url)
         {
             try
             {
@@ -30,10 +29,10 @@ namespace YoutubeDownload.Application.Services
                 var video = await _client.Videos.GetAsync(url);
 
                 var manifest = await _client.Videos.Streams.GetManifestAsync(video.Id);
-                var streams = manifest.Streams.Select(stream => StreamManifestViewModel.Create(stream, url)).ToList();
+                var result = StreamManifestViewModel.Create(manifest, video);
 
                 _logger.LogInformation($"Download dos Streams realizados com sucesso [{url}]");
-                return streams;
+                return result;
             }
             catch (Exception ex)
             {
@@ -46,16 +45,16 @@ namespace YoutubeDownload.Application.Services
         {
             try
             {
-                var video = await _client.Videos.GetAsync(command.Url);
-                var title = video.Title.FormaterName();
+                //var video = await _client.Videos.GetAsync(command.Url);
+                var title = command.Title;
                 _logger.LogInformation($"Iniciando o Download do vídeo [{title}].");
 
-                var manifest = await _client.Videos.Streams.GetManifestAsync(video.Id);
+                var manifest = await _client.Videos.Streams.GetManifestAsync(command.VideoId);
                 return command.IsAudioOnly ? await DownloadAudio(manifest, command, title) : await DownloadVideo(manifest, command, title);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Erro ao tentar baixar o video [{command.Url}].");
+                _logger.LogError(ex, $"Erro ao tentar baixar o video [{command.Title}].");
                 return ex.ToString();
             }
         }
@@ -80,7 +79,7 @@ namespace YoutubeDownload.Application.Services
             _logger.LogInformation($"Download do Stream de Video realizado com sucesso [{videoStream.Container.Name}].");
 
             var streams = new IStreamInfo[2] { audioStream, videoStream };
-            _logger.LogInformation($"Iniciando Download do Video [{command.Url}].");
+            _logger.LogInformation($"Iniciando Download do Video [{command.Title}].");
 
             if (File.Exists(file)) File.Delete(file);
 

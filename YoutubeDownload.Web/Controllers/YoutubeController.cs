@@ -27,11 +27,11 @@ namespace YoutubeDownload.Web.Controllers
 
             try
             {
-                var streams = await service.DownloadManifestAsync(model.Url);
+                var manifest = await service.DownloadManifestAsync(model.Url);
 
-                if (streams.Any())
+                if (manifest.Streams.Any())
                 {
-                    model.Streams = streams
+                    model.Streams = manifest.Streams
                         .Select(s => new StreamViewModel
                         {
                             ContainerName = s.ContainerName,
@@ -40,7 +40,8 @@ namespace YoutubeDownload.Web.Controllers
                             Size = s.Size,
                             IsAudioOnly = s.IsAudioOnly,
                             AudioCodec = s.AudioCodec,
-                            Url = s.Url
+                            VideoId = manifest.VideoId,
+                            Title = manifest.Title,
                         }).ToList();
 
                     model.Loading = false;
@@ -63,7 +64,8 @@ namespace YoutubeDownload.Web.Controllers
         public async Task<IActionResult> Download(StreamViewModel stream)
         {
             var command = new DownloadCommand(
-                stream.Url,
+                stream.VideoId,
+                stream.Title,
                 stream.ContainerName,
                 stream.VideoCodec,
                 stream.Resolution,

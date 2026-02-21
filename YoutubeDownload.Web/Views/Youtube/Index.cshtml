@@ -41,13 +41,14 @@
                     <td>@stream.DisplaySize</td>
                     <td>
                         <form asp-action="Download" method="post">
+                            <input type="hidden" asp-for="@stream.VideoId" name="VideoId" />
+                            <input type="hidden" asp-for="@stream.Title" name="Title" />
                             <input type="hidden" asp-for="@stream.ContainerName" name="ContainerName" />
                             <input type="hidden" asp-for="@stream.VideoCodec" name="VideoCodec" />
                             <input type="hidden" asp-for="@stream.Resolution" name="Resolution" />
                             <input type="hidden" asp-for="@stream.Size" name="Size" />
                             <input type="hidden" asp-for="@stream.IsAudioOnly" name="IsAudioOnly" />
                             <input type="hidden" asp-for="@stream.AudioCodec" name="AudioCodec" />
-                            <input type="hidden" asp-for="@stream.Url" name="Url" />
 
                             <button class="btn btn-outline-warning">
                                 Baixar
