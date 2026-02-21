@@ -4,25 +4,21 @@
     {
         public byte[] FileBytes { get; init; }
         public string FileName { get; init; }
-        public bool Success { get; init; }
         public string ContentType { get; } = "application/octet-stream";
 
-        public DownloadStreamViewModel(byte[] bytes, string fileName, bool success)
+        public DownloadStreamViewModel(byte[] bytes, string fileName)
         {
             FileBytes = bytes;
             FileName = fileName;
-            Success = success;
         }
 
-        public static DownloadStreamViewModel Create(string filePath)
+        public static DownloadStreamViewModel Create(string filePath, string fileName)
         {
             if (!File.Exists(filePath)) throw new FileNotFoundException();
             
-            var fileName = Path.GetFileName(filePath);
             var bytes = File.ReadAllBytes(filePath);
-            var success = bytes.Length > 0;
 
-            return new DownloadStreamViewModel(bytes, fileName, success);
+            return new DownloadStreamViewModel(bytes, fileName);
         }
     }
 }

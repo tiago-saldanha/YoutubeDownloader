@@ -63,8 +63,8 @@ namespace YoutubeDownload.Web.Controllers
                     stream.IsAudioOnly
                 );
 
-                var downloadStream = await service.DownloadAsync(command);
-                return File(downloadStream.FileBytes, downloadStream.ContentType, downloadStream.FileName);
+                var download = await service.DownloadAsync(command);
+                return File(download.FileBytes, download.ContentType, download.FileName);
             }
             catch (Exception ex)
             {
