@@ -4,6 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>1e5de769-bd02-46ef-b429-3d548fcd1a56</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\YoutubeDownload.Application\YoutubeDownload.Application.csproj" />
+    <ProjectReference Include="..\YoutubeDownload.Infrastructure\YoutubeDownload.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
