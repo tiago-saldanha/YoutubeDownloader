@@ -2,13 +2,13 @@
 
 <div class="container mt-5">
 
-    <!-- Cabeçalho -->
+    <!-- Header -->
     <div class="text-center mb-4">
         <h1 class="fw-bold">YouTube Downloader</h1>
         <p class="text-muted">Download video and audio streams in your preferred format</p>
     </div>
 
-    <!-- Formulário de busca -->
+    <!-- Search form -->
     <div class="card shadow-sm p-4 mb-5">
         <form method="post" asp-action="Index" id="youtube-form">
             <div class="input-group input-group-lg">
@@ -31,7 +31,7 @@
         </form>
     </div>
 
-    <!-- Spinner de busca -->
+    <!-- Search Spinner -->
     <div id="loadingSearch" class="text-center mt-3" style="display:none;">
         <div class="spinner-border text-primary" role="status">
             <span class="visually-hidden">Loading...</span>
@@ -39,7 +39,7 @@
         <p>Searching streams...</p>
     </div>
 
-    <!-- Mensagens -->
+    <!-- Messages -->
     @if (!string.IsNullOrEmpty(Model.Message))
     {
         <p><em>@Model.Message</em></p>
@@ -53,7 +53,7 @@
         </div>
     }
 
-    <!-- Streams disponíveis -->
+    <!-- Available streams -->
     @if (Model.Streams.Any())
     {
         <div class="card shadow-sm p-4 mb-5" id="streamsCard">
@@ -63,10 +63,10 @@
                 <table class="table table-hover align-middle">
                     <thead class="table-light">
                         <tr>
-                            <th>Formato</th>
+                            <th>Format</th>
                             <th>Video Codec</th>
-                            <th>Resolução</th>
-                            <th>Tamanho</th>
+                            <th>Resolution</th>
+                            <th>Size</th>
                             <th class="text-end"></th>
                         </tr>
                     </thead>
@@ -89,7 +89,11 @@
                                         <input type="hidden" asp-for="@stream.IsAudioOnly" name="IsAudioOnly" />
                                         <input type="hidden" asp-for="@stream.AudioCodec" name="AudioCodec" />
 
-                                        <button class="btn btn-outline-warning btn-sm">⬇ Baixar</button>
+                                        <button class="btn btn-outline-warning btn-sm rounded-circle d-flex align-items-center justify-content-center"
+                                                style="width: 40px; height: 40px;"
+                                                title="Download">
+                                            <i class="bi bi-download"></i>
+                                        </button>
                                     </form>
                                 </td>
                             </tr>
@@ -105,9 +109,9 @@
                 <table class="table table-hover align-middle">
                     <thead class="table-light">
                         <tr>
-                            <th>Formato</th>
+                            <th>Format</th>
                             <th>Audio Codec</th>
-                            <th>Tamanho</th>
+                            <th>Size</th>
                             <th class="text-end"></th>
                         </tr>
                     </thead>
@@ -129,7 +133,11 @@
                                         <input type="hidden" asp-for="@stream.IsAudioOnly" name="IsAudioOnly" />
                                         <input type="hidden" asp-for="@stream.AudioCodec" name="AudioCodec" />
 
-                                        <button class="btn btn-outline-success btn-sm">⬇ Baixar</button>
+                                        <button class="btn btn-outline-warning btn-sm rounded-circle d-flex align-items-center justify-content-center"
+                                                style="width: 40px; height: 40px;"
+                                                title="Download">
+                                            <i class="bi bi-download"></i>
+                                        </button>
                                     </form>
                                 </td>
                             </tr>
@@ -143,7 +151,7 @@
 
 </div>
 
-<!-- Overlay global de download -->
+<!-- Global Overlay -->
 <div id="overlay" style="
     display:none;
     position:fixed;
@@ -156,5 +164,5 @@
     color:white;
 ">
     <div class="spinner-border text-light" role="status"></div>
-    <p>Processando download...</p>
+    <p>Processing download...</p>
 </div>
