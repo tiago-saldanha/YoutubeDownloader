@@ -22,7 +22,7 @@ namespace YoutubeDownload.Application.Services
             CreateOutputDirectory();
         }
 
-        public async Task<IEnumerable<StreamManifestViewModel>> DownloadManifest(string url)
+        public async Task<IEnumerable<StreamManifestViewModel>> DownloadManifestAsync(string url)
         {
             try
             {
@@ -42,7 +42,7 @@ namespace YoutubeDownload.Application.Services
             }
         }
 
-        public async Task<string> Download(DownloadCommand command)
+        public async Task<string> DownloadAsync(DownloadCommand command)
         {
             try
             {
@@ -60,7 +60,7 @@ namespace YoutubeDownload.Application.Services
             }
         }
 
-        public async Task Converter(string filePath) => await Task.Run(() => FfmpegService.ConvertToMp3(filePath));
+        public async Task ConverterAsync(string filePath) => await Task.Run(() => FfmpegService.ConvertToMp3(filePath));
 
         private IVideoStreamInfo DownloadVideoStream(StreamManifest manifest, Func<VideoOnlyStreamInfo, bool> predicate) 
             => manifest.GetVideoOnlyStreams().Where(predicate).OrderByDescending(s => s.Size).First();

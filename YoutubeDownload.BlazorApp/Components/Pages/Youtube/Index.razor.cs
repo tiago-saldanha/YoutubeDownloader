@@ -30,7 +30,7 @@ namespace YoutubeDownload.BlazorApp.Components.Pages.Youtube
 
             try
             {
-                var streams = await _service.DownloadManifest(Url);
+                var streams = await _service.DownloadManifestAsync(Url);
                 if (streams.Any())
                 {
                     Streams.Clear();
@@ -53,7 +53,7 @@ namespace YoutubeDownload.BlazorApp.Components.Pages.Youtube
             Message = "Baixando...";
             Loading = true;
             var command = new DownloadCommand(stream.Url, stream.ContainerName, stream.VideoCodec, stream.Resolution, stream.AudioCodec, stream.IsAudioOnly);
-            var file = await _service.Download(command);
+            var file = await _service.DownloadAsync(command);
 
             if (!File.Exists(file))
             {

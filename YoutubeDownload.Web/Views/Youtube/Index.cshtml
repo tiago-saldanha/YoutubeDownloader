@@ -1,0 +1,61 @@
+﻿@model YoutubePageViewModel
+
+<h3>Youtube Downloader</h3>
+
+<form asp-action="Index" method="post">
+    <input asp-for="Url" class="form-control"
+           placeholder="Informe aqui a url do vídeo..." />
+
+    <button type="submit" class="btn btn-outline-primary mt-2">
+        Obter Informações
+    </button>
+</form>
+
+@if (!string.IsNullOrEmpty(Model.Message))
+{
+    <p><em>@Model.Message</em></p>
+}
+
+@if (Model.Streams.Any())
+{
+    <hr />
+    <h3>Download de Vídeo</h3>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Formato</th>
+                <th>Video Codec</th>
+                <th>Resolução</th>
+                <th>Tamanho</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var stream in Model.Streams.Where(s => !s.IsAudioOnly))
+            {
+                <tr>
+                    <td>@stream.ContainerName</td>
+                    <td>@stream.VideoCodec</td>
+                    <td>@stream.Resolution</td>
+                    <td>@stream.DisplaySize</td>
+                    <td>
+                        <form asp-action="Download" method="post">
+                            <input type="hidden" asp-for="@stream.ContainerName" name="ContainerName" />
+                            <input type="hidden" asp-for="@stream.VideoCodec" name="VideoCodec" />
+                            <input type="hidden" asp-for="@stream.Resolution" name="Resolution" />
+                            <input type="hidden" asp-for="@stream.Size" name="Size" />
+                            <input type="hidden" asp-for="@stream.IsAudioOnly" name="IsAudioOnly" />
+                            <input type="hidden" asp-for="@stream.AudioCodec" name="AudioCodec" />
+                            <input type="hidden" asp-for="@stream.Url" name="Url" />
+
+                            <button class="btn btn-outline-warning">
+                                Baixar
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
