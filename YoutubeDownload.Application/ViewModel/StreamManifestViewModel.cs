@@ -16,7 +16,12 @@ namespace YoutubeDownload.Application.ViewModel
         {
             VideoId = video.Id;
             Title = video.Title.FormaterName();
-            Streams = manifest.Streams.Select(StreamInfoViewModel.Create).ToList();
+            Streams = manifest.Streams
+                .OrderByDescending(x => x.Size)
+                .OrderByDescending(x => x.Container.Name)
+                .OrderByDescending(x => x is IVideoStreamInfo stream ? stream.VideoCodec : x.Container.Name)
+                .Select(StreamInfoViewModel.Create)
+                .ToList();
         }
     }
 }

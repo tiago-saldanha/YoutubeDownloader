@@ -58,7 +58,7 @@
     {
         <div class="card shadow-sm p-4 mb-5" id="streamsCard">
 
-            <h3 class="mb-4">🎬 Download de Vídeo</h3>
+            <h3 class="mb-4">🎬 Video Download</h3>
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
                     <thead class="table-light">
@@ -74,8 +74,27 @@
                         @foreach (var stream in Model.Streams.Where(s => !s.IsAudioOnly))
                         {
                             <tr>
-                                <td><span class="badge bg-secondary">@stream.ContainerName</span></td>
-                                <td>@stream.VideoCodec</td>
+                                <td><span class="badge bg-dark">@stream.ContainerName</span></td>
+                                <td>
+                                    @if (stream.VideoCodec.StartsWith("vp"))
+                                    {
+                                        <span class="badge bg-primary">
+                                            <i class="bi bi-camera-video-fill"></i> @stream.VideoCodec
+                                        </span>
+                                    }
+                                    else if (stream.VideoCodec.StartsWith("avc"))
+                                    {
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-film"></i> @stream.VideoCodec
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-info text-dark">
+                                            <i class="bi bi-music-note"></i> @stream.VideoCodec
+                                        </span>
+                                    }
+                                </td>
                                 <td>@stream.Resolution</td>
                                 <td>@stream.DisplaySize</td>
                                 <td class="text-end">
@@ -92,7 +111,7 @@
                                         <button class="btn btn-outline-warning btn-sm rounded-circle d-flex align-items-center justify-content-center"
                                                 style="width: 40px; height: 40px;"
                                                 title="Download">
-                                            <i class="bi bi-download"></i>
+                                            <i class="bi bi-cloud-arrow-down"></i>
                                         </button>
                                     </form>
                                 </td>
@@ -104,7 +123,7 @@
 
             <hr class="my-4" />
 
-            <h3 class="mb-4">🎵 Download de Áudio</h3>
+            <h3 class="mb-4">🎵 Audio Download</h3>
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
                     <thead class="table-light">
@@ -120,7 +139,24 @@
                         {
                             <tr>
                                 <td><span class="badge bg-dark">@stream.ContainerName</span></td>
-                                <td>@stream.AudioCodec</td>
+                                <td>
+                                    @if (stream.AudioCodec.Contains("mp4a"))
+                                    {
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="bi bi-music-note-beamed"></i> @stream.AudioCodec
+                                        </span>
+                                    }
+                                    else if (stream.AudioCodec.Contains("opus"))
+                                    {
+                                        <span class="badge bg-info text-dark">
+                                            <i class="bi bi-music-note"></i> @stream.AudioCodec
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">@stream.AudioCodec</span>
+                                    }
+                                </td>
                                 <td>@stream.DisplaySize</td>
                                 <td class="text-end">
                                     <form asp-action="Download" method="post" class="d-inline download-form">
@@ -136,7 +172,7 @@
                                         <button class="btn btn-outline-warning btn-sm rounded-circle d-flex align-items-center justify-content-center"
                                                 style="width: 40px; height: 40px;"
                                                 title="Download">
-                                            <i class="bi bi-download"></i>
+                                            <i class="bi bi-cloud-arrow-down"></i>
                                         </button>
                                     </form>
                                 </td>
