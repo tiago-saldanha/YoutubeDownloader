@@ -5,7 +5,7 @@ using YoutubeDownload.Web.Models;
 
 namespace YoutubeDownload.Web.Controllers
 {
-    public class YoutubeController(IYoutubeService service) : Controller
+    public class YoutubeController(IYoutubeAppService service) : Controller
     {
         [HttpGet]
         public ActionResult Index()

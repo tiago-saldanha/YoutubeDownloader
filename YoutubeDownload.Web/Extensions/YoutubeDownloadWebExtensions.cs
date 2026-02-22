@@ -15,6 +15,7 @@ namespace YoutubeDownload.Web.Extensions
         private static IServiceCollection ConfigureYoutubeClient(this IServiceCollection services)
         {
             services.AddSingleton<YoutubeClient>();
+            services.AddScoped<IYoutubeAppService, YoutubeAppService>();
             services.AddScoped<IYoutubeService, YoutubeService>();
             services.AddSingleton<IFfmpegService, FfmpegService>();
             return services;
