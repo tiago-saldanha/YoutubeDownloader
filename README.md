@@ -56,23 +56,6 @@ http://localhost:5000
 
 ---
 
-### 📂 Project Structure
-
-YoutubeDownload.Web
- ├── Controllers
- ├── Models
- ├── Views
- ├── Services
- └── wwwroot
- 
-- Responsibility Separation
-- Controllers → Handle HTTP requests
-- Models → ViewModels used by the UI
-- Views → Razor-based UI layer
-- Services → Integration with YoutubeExplode and FFmpeg
-
----
-
 ### 🔮 Future Improvements
 
 - Separate REST API
