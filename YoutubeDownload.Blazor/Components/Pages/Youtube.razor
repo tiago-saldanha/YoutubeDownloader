@@ -1,34 +1,165 @@
 ﻿@page "/youtube"
+
 @rendermode InteractiveServer
-@inject IYoutubeAppService service
+@inject IYoutubeAppService Service
+@inject DownloadApiClient DownloadClient
+@inject NavigationManager Navigation
 
 <PageTitle>Youtube Download</PageTitle>
 
 <div class="text-center mb-4">
-	<h1 class="fw-bold">YouTube Downloader</h1>
-	<p class="text-muted">Download video and audio streams in your preferred format</p>
+    <h1 class="fw-bold">YouTube Download</h1>
+    <p class="text-muted">Download video and audio streams in your preferred format</p>
 </div>
 
 <div class="card shadow-sm p-4 mb-5">
-	<input type="text"
-		   name="url"
-		   class="form-control"
-		   placeholder="Paste YouTube URL here..."
-		   @bind="url"
-		   required />
 
-	<button class="btn btn-primary px-4" type="button" @onclick="DownloadAsync">
-		🔍 Search
-	</button>
+    <!-- SEARCH -->
+    <div class="input-group input-group-lg mb-4">
+        <input class="form-control"
+               placeholder="Paste YouTube URL here..."
+               @bind="ViewModel.Url" />
+
+        <button class="btn btn-primary" @onclick="Search">
+            🔍 Search
+        </button>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(ViewModel.Title))
+    {
+        <p class="fw-semibold">Título: @ViewModel.Title</p>
+    }
+
+    <!-- VIDEO STREAMS -->
+    @if (ViewModel.Streams.Any(s => !s.IsAudioOnly))
+    {
+        <h4 class="mt-4 mb-3">🎬 Video Download</h4>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Format</th>
+                        <th>Video Codec</th>
+                        <th>Resolution</th>
+                        <th>Size</th>
+                        <th class="text-end"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var stream in ViewModel.Streams.Where(s => !s.IsAudioOnly))
+                    {
+                        <tr>
+                            <td>
+                                <span class="badge bg-dark">
+                                    @stream.ContainerName
+                                </span>
+                            </td>
+
+                            <td>
+                                @if (stream.VideoCodec.StartsWith("vp"))
+                                {
+                                    <span class="badge bg-primary">
+                                        <i class="bi bi-camera-video-fill"></i>
+                                        @stream.VideoCodec
+                                    </span>
+                                }
+                                else if (stream.VideoCodec.StartsWith("avc"))
+                                {
+                                    <span class="badge bg-success">
+                                        <i class="bi bi-film"></i>
+                                        @stream.VideoCodec
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-info text-dark">
+                                        @stream.VideoCodec
+                                    </span>
+                                }
+                            </td>
+
+                            <td>@stream.Resolution</td>
+                            <td>@stream.DisplaySize</td>
+
+                            <td class="text-end">
+                                <button class="btn btn-outline-warning btn-sm rounded-circle"
+                                        style="width:40px;height:40px"
+                                        title="Download"
+                                        @onclick="() => Download(stream)">
+                                    <i class="bi bi-cloud-arrow-down"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    <!-- AUDIO STREAMS -->
+    @if (ViewModel.Streams.Any(s => s.IsAudioOnly))
+    {
+        <h4 class="mt-5 mb-3">🎵 Audio Download</h4>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Format</th>
+                        <th>Audio Codec</th>
+                        <th>Size</th>
+                        <th class="text-end"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var stream in ViewModel.Streams.Where(s => s.IsAudioOnly))
+                    {
+                        <tr>
+                            <td>
+                                <span class="badge bg-dark">
+                                    @stream.ContainerName
+                                </span>
+                            </td>
+
+                            <td>
+                                @if (stream.AudioCodec.Contains("mp4a"))
+                                {
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="bi bi-music-note-beamed"></i>
+                                        @stream.AudioCodec
+                                    </span>
+                                }
+                                else if (stream.AudioCodec.Contains("opus"))
+                                {
+                                    <span class="badge bg-info text-dark">
+                                        <i class="bi bi-music-note"></i>
+                                        @stream.AudioCodec
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">
+                                        @stream.AudioCodec
+                                    </span>
+                                }
+                            </td>
+
+                            <td>@stream.DisplaySize</td>
+
+                            <td class="text-end">
+                                <button class="btn btn-outline-warning btn-sm rounded-circle"
+                                        style="width:40px;height:40px"
+                                        title="Download"
+                                        @onclick="() => Download(stream)">
+                                    <i class="bi bi-cloud-arrow-down"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
 </div>
-
-<p>Valor digitado: @url</p>
-
-@code {
-	private string url = "";
-
-	private async Task DownloadAsync()
-	{
-		var manifest = await service.DownloadManifestAsync(url);
-	}
-}
