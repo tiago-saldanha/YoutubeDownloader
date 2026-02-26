@@ -1,0 +1,34 @@
+﻿@page "/youtube"
+@rendermode InteractiveServer
+@inject IYoutubeAppService service
+
+<PageTitle>Youtube Download</PageTitle>
+
+<div class="text-center mb-4">
+	<h1 class="fw-bold">YouTube Downloader</h1>
+	<p class="text-muted">Download video and audio streams in your preferred format</p>
+</div>
+
+<div class="card shadow-sm p-4 mb-5">
+	<input type="text"
+		   name="url"
+		   class="form-control"
+		   placeholder="Paste YouTube URL here..."
+		   @bind="url"
+		   required />
+
+	<button class="btn btn-primary px-4" type="button" @onclick="DownloadAsync">
+		🔍 Search
+	</button>
+</div>
+
+<p>Valor digitado: @url</p>
+
+@code {
+	private string url = "";
+
+	private async Task DownloadAsync()
+	{
+		var manifest = await service.DownloadManifestAsync(url);
+	}
+}
