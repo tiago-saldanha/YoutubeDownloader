@@ -15,8 +15,8 @@
 <div class="card shadow-sm p-4 mb-5">
 
     <!-- SEARCH -->
-    <div class="input-group input-group-lg mb-4">
-        <input class="form-control"
+    <div class="input-group input-group">
+        <input class="form-control" name="url"
                placeholder="Paste YouTube URL here..."
                @bind="ViewModel.Url" />
 
@@ -27,7 +27,7 @@
 
     @if (!string.IsNullOrWhiteSpace(ViewModel.Title))
     {
-        <p class="fw-semibold">Título: @ViewModel.Title</p>
+        <p class="text-muted">Título: @ViewModel.Title</p>
     }
 
     <!-- VIDEO STREAMS -->
