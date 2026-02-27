@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YoutubeDownload.Web", "Yout
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YoutubeDownload.Infrastructure", "YoutubeDownload.Infrastructure\YoutubeDownload.Infrastructure.csproj", "{E9911C8C-710E-407A-B6BA-A0FE677FBF4F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YoutubeDownload.Blazor", "YoutubeDownload.Blazor\YoutubeDownload.Blazor.csproj", "{070D9011-6F13-4B67-B61F-34CF8F577615}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,10 @@ Global
 		{E9911C8C-710E-407A-B6BA-A0FE677FBF4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E9911C8C-710E-407A-B6BA-A0FE677FBF4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E9911C8C-710E-407A-B6BA-A0FE677FBF4F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{070D9011-6F13-4B67-B61F-34CF8F577615}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{070D9011-6F13-4B67-B61F-34CF8F577615}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{070D9011-6F13-4B67-B61F-34CF8F577615}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{070D9011-6F13-4B67-B61F-34CF8F577615}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
