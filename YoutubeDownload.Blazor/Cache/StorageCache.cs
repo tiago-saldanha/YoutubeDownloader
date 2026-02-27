@@ -1,9 +1,10 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using YoutubeDownload.Application.Commands;
+using YoutubeDownload.Blazor.Interfaces;
 
 namespace YoutubeDownload.Blazor.Cache
 {
-    public class DownloadRequestCache(IMemoryCache cache)
+    public class StorageCache(IMemoryCache cache) : IStorageCache
     {
         public string Store(DownloadCommand command)
         {

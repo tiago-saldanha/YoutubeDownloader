@@ -8,20 +8,22 @@ namespace YoutubeDownload.Blazor.Models
         public string Title { get; set; } = "";
         public string Message { get; set; } = "";
         public bool IsLoading { get; set; }
-
-        public List<StreamViewModel> Streams { get; private set; } = [];
+        public List<StreamViewModel> VideoStreams { get; private set; } = [];
+        public List<StreamViewModel> AudioStreams { get; private set; } = [];
 
         public async Task SearchAsync(IYoutubeAppService service)
         {
             IsLoading = true;
             Message = "";
-            Streams.Clear();
 
             var manifest = await service.DownloadManifestAsync(Url);
 
             if (manifest.Streams.Count != 0)
             {
-                Streams = [.. manifest.Streams.Select(s => StreamViewModel.Create(s, manifest))];
+                var streams = manifest.Streams.Select(s => StreamViewModel.Create(s, manifest));
+
+                VideoStreams = [.. streams.Where(s => !s.IsAudioOnly)];
+                AudioStreams = [.. streams.Where(s => s.IsAudioOnly)];
 
                 Title = manifest.Title;
                 Url = "";

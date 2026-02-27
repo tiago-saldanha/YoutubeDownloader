@@ -1,13 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using YoutubeDownload.Application.Commands;
 using YoutubeDownload.Application.Interfaces;
-using YoutubeDownload.Blazor.Cache;
+using YoutubeDownload.Blazor.Interfaces;
 
 namespace YoutubeDownload.Blazor.Controllers
 {
     [ApiController]
     [Route("api/download")]
-    public class DownloadController(IYoutubeAppService service, DownloadRequestCache cache) : ControllerBase
+    public class DownloadController(IYoutubeAppService service, IStorageCache cache) : ControllerBase
     {
         [HttpPost("prepare")]
         public IActionResult Prepare([FromBody] DownloadCommand command)
