@@ -2,6 +2,7 @@
 using YoutubeDownload.Domain.Commands;
 using YoutubeDownload.Domain.Interfaces;
 using YoutubeDownload.Domain.ViewModel;
+using YoutubeDownload.Infrastructure.Helpers;
 using YoutubeDownload.Infrastructure.Interfaces;
 using YoutubeExplode.Videos.Streams;
 
@@ -10,8 +11,6 @@ namespace YoutubeDownload.Infrastructure.Services
     public class YoutubeService(IYoutubeDownloadClient client, ILogger<YoutubeService> logger)
         : IYoutubeService
     {
-        private string OutputDirectory => GetOutputDirectory();
-
         public async Task<StreamManifestViewModel> DownloadManifestAsync(string url)
         {
             var video = await client.GetVideoAsync(url);
@@ -31,17 +30,14 @@ namespace YoutubeDownload.Infrastructure.Services
         private async Task<DownloadStreamViewModel> DownloadVideoStreamAsync(StreamManifest manifest, DownloadCommand command)
         {
             var audioStream = GetAudioStream(manifest, s => s.Container.Name == command.ContainerName, command.Title);
-            var videoStream = GetVideoStream(manifest, s => s.Container.ToString() == command.ContainerName && s.VideoQuality.Label.Contains(command.Resolution), command);
+            var videoStream = GetVideoStream(manifest, command);
 
-            var filePath = CreateFilePath(audioStream.Container.Name);
-            RemoveExistingFile(filePath);
+            var filePath = FileSystemManager.CreateFile(audioStream.Container.Name);
             
             await client.DownloadVideoAsync(audioStream, videoStream, filePath);
-
-            var fileName = $"{command.Title}.{audioStream.Container.Name}";
-            var download = DownloadStreamViewModel.Create(filePath, fileName);
-
-            RemoveExistingFile(filePath);
+            var download = DownloadStreamViewModel.Create(filePath, command.Title, audioStream.Container.Name);
+            
+            FileSystemManager.RemoveFile(filePath);
 
             return download;
         }
@@ -49,24 +45,22 @@ namespace YoutubeDownload.Infrastructure.Services
         private async Task<DownloadStreamViewModel> DownloadAudioStreamAsync(StreamManifest manifest, DownloadCommand command)
         {
             var audioStream = GetAudioStream(manifest, s => s.AudioCodec == command.AudioCodec && s.Container.Name == command.ContainerName, command.Title);
-            var filePath = CreateFilePath(audioStream.Container.Name);
+            var filePath = FileSystemManager.CreateFile(audioStream.Container.Name);
             
             await client.DownloaAudioAsync(audioStream, filePath);
+            var download = DownloadStreamViewModel.Create(filePath, command.Title, audioStream.Container.Name);
             
-            var fileName = $"{command.Title}.{audioStream.Container.Name}";
-            var download = DownloadStreamViewModel.Create(filePath, fileName);
-            
-            RemoveExistingFile(filePath);
+            FileSystemManager.RemoveFile(filePath);
             
             return download;
         }
 
-        private VideoOnlyStreamInfo GetVideoStream(StreamManifest manifest, Func<VideoOnlyStreamInfo, bool> predicate, DownloadCommand command)
+        private VideoOnlyStreamInfo GetVideoStream(StreamManifest manifest, DownloadCommand command)
         {
             logger.LogInformation("Selecting video stream. Resolution: {Resolution}, Container: {Container}.", command.Resolution, command.ContainerName);
             var videoStream = manifest
                 .GetVideoOnlyStreams()
-                .Where(predicate)
+                .Where(s => s.Container.ToString() == command.ContainerName && s.VideoQuality.Label.Contains(command.Resolution))
                 .OrderByDescending(s => s.Size)
                 .First();
 
@@ -90,28 +84,5 @@ namespace YoutubeDownload.Infrastructure.Services
 
         private static IStreamInfo GetBestAudioStreamInfo(StreamManifest manifest)
             => manifest.GetAudioOnlyStreams().GetWithHighestBitrate();
-
-        private string CreateFilePath(string containerName)
-            => Path.Combine(OutputDirectory, $"{Guid.NewGuid()}.{containerName}");
-
-        private void RemoveExistingFile(string filePath)
-        {
-            if (File.Exists(filePath))
-            {
-                File.Delete(filePath);
-                logger.LogInformation("File removed after download. FilePath: {FilePath}.", filePath);
-            }
-        }
-
-        private string GetOutputDirectory()
-        {
-            var outputDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "downloads");
-            if (!Directory.Exists(outputDirectory))
-            {
-                Directory.CreateDirectory(outputDirectory);
-                logger.LogInformation("Output directory created at {OutputDirectory}.", outputDirectory);
-            }
-            return outputDirectory;
-        }
     }
 }
