@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
-using YoutubeDownload.Application.Commands;
+using YoutubeDownload.Domain.Commands;
 using YoutubeDownload.Blazor.Interfaces;
 
 namespace YoutubeDownload.Blazor.Cache

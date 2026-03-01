@@ -7,6 +7,7 @@ using YoutubeDownload.Infrastructure.Services;
 using YoutubeDownload.Blazor.Cache;
 using YoutubeDownload.Blazor.Http;
 using YoutubeDownload.Blazor.Interfaces;
+using YoutubeDownload.Domain.Interfaces;
 
 namespace YoutubeDownload.Blazor.Extensions
 {
