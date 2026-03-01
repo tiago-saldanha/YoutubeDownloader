@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\YoutubeDownload.Application\YoutubeDownload.Application.csproj" />
+    <ProjectReference Include="..\YoutubeDownload.Core\YoutubeDownload.Core.csproj" />
     <ProjectReference Include="..\YoutubeDownload.Infrastructure\YoutubeDownload.Infrastructure.csproj" />
   </ItemGroup>
 
