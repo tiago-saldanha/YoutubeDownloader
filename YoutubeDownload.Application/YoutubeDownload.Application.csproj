@@ -7,124 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="lib\model\other_models\nflxtrain_norm_type_none.json" />
-    <None Remove="lib\model\other_models\nflx_v1.json" />
-    <None Remove="lib\model\other_models\vmaf_v0.6.0.json" />
-    <None Remove="lib\model\other_models\vmaf_v0.6.1mfz.json" />
-    <None Remove="lib\model\vmaf_4k_rb_v0.6.2\vmaf_4k_rb_v0.6.2.json" />
-    <None Remove="lib\model\vmaf_4k_v0.6.1.json" />
-    <None Remove="lib\model\vmaf_b_v0.6.3.json" />
-    <None Remove="lib\model\vmaf_float_4k_v0.6.1.json" />
-    <None Remove="lib\model\vmaf_float_b_v0.6.3.json" />
-    <None Remove="lib\model\vmaf_float_b_v0.6.3\vmaf_float_b_v0.6.3.json" />
-    <None Remove="lib\model\vmaf_float_v0.6.1.json" />
-    <None Remove="lib\model\vmaf_float_v0.6.1neg.json" />
-    <None Remove="lib\model\vmaf_rb_v0.6.2\vmaf_rb_v0.6.2.json" />
-    <None Remove="lib\model\vmaf_rb_v0.6.3\vmaf_rb_v0.6.3.json" />
-    <None Remove="lib\model\vmaf_v0.6.1.json" />
-    <None Remove="lib\model\vmaf_v0.6.1neg.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="lib\model\other_models\nflxtrain_norm_type_none.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="lib\model\other_models\nflx_v1.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="lib\model\other_models\vmaf_v0.6.0.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="lib\model\other_models\vmaf_v0.6.1mfz.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="lib\model\vmaf_4k_rb_v0.6.2\vmaf_4k_rb_v0.6.2.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="lib\model\vmaf_4k_v0.6.1.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="lib\model\vmaf_b_v0.6.3.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="lib\model\vmaf_float_4k_v0.6.1.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="lib\model\vmaf_float_b_v0.6.3.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="lib\model\vmaf_float_b_v0.6.3\vmaf_float_b_v0.6.3.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="lib\model\vmaf_float_v0.6.1.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="lib\model\vmaf_float_v0.6.1neg.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="lib\model\vmaf_rb_v0.6.2\vmaf_rb_v0.6.2.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="lib\model\vmaf_rb_v0.6.3\vmaf_rb_v0.6.3.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="lib\model\vmaf_v0.6.1.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="lib\model\vmaf_v0.6.1neg.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.1" />
     <PackageReference Include="YoutubeExplode" Version="6.5.7" />
     <PackageReference Include="YoutubeExplode.Converter" Version="6.5.7" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\YoutubeDownload.Domain\YoutubeDownload.Domain.csproj" />
     <ProjectReference Include="..\YoutubeDownload.Infrastructure\YoutubeDownload.Infrastructure.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="lib\ffmpeg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="lib\ffmpeg.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>

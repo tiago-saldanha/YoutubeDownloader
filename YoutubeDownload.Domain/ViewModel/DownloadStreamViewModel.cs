@@ -1,6 +1,6 @@
-﻿namespace YoutubeDownload.Application.ViewModel
+﻿namespace YoutubeDownload.Domain.ViewModel
 {
-    public record struct DownloadStreamViewModel
+    public readonly record struct DownloadStreamViewModel
     {
         public byte[] FileBytes { get; init; }
         public string FileName { get; init; }

@@ -1,6 +1,6 @@
 ﻿using YoutubeExplode.Videos.Streams;
 
-namespace YoutubeDownload.Application.ViewModel
+namespace YoutubeDownload.Domain.ViewModel
 {
     public record struct StreamInfoViewModel
     {

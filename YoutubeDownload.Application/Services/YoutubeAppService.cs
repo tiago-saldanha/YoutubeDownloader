@@ -1,14 +1,14 @@
 ﻿using YoutubeExplode;
 using YoutubeDownload.Application.Interfaces;
-using YoutubeDownload.Application.Commands;
-using YoutubeDownload.Application.ViewModel;
+using YoutubeDownload.Domain.Commands;
+using YoutubeDownload.Domain.ViewModel;
 using Microsoft.Extensions.Logging;
 using YoutubeDownload.Application.Exceptions;
-using YoutubeDownload.Infrastructure.Interfaces;
+using YoutubeDownload.Domain.Interfaces;
 
 namespace YoutubeDownload.Application.Services
 {
-    public class YoutubeAppService(YoutubeClient client, IYoutubeService youtubeService, IFfmpegService ffmpegService, ILogger<YoutubeAppService> logger) 
+    public class YoutubeAppService(YoutubeClient client, IYoutubeService youtubeService, ILogger<YoutubeAppService> logger) 
         : IYoutubeAppService
     {
         public async Task<StreamManifestViewModel> DownloadManifestAsync(string url)

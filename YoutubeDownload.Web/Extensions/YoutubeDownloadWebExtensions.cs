@@ -4,6 +4,7 @@ using YoutubeDownload.Application.Services;
 using YoutubeDownload.Infrastructure.Configuration;
 using YoutubeDownload.Infrastructure.Interfaces;
 using YoutubeDownload.Infrastructure.Services;
+using YoutubeDownload.Domain.Interfaces;
 
 namespace YoutubeDownload.Web.Extensions
 {

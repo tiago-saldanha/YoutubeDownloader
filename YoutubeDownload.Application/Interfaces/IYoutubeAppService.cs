@@ -1,5 +1,5 @@
-﻿using YoutubeDownload.Application.Commands;
-using YoutubeDownload.Application.ViewModel;
+﻿using YoutubeDownload.Domain.Commands;
+using YoutubeDownload.Domain.ViewModel;
 
 namespace YoutubeDownload.Application.Interfaces
 {

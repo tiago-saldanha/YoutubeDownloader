@@ -16,7 +16,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YoutubeDownload.Infrastruct
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YoutubeDownload.Blazor", "YoutubeDownload.Blazor\YoutubeDownload.Blazor.csproj", "{070D9011-6F13-4B67-B61F-34CF8F577615}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YoutubeDownload.Domain", "YoutubeDownload.Domain\YoutubeDownload.Domain.csproj", "{E826D821-862A-48D1-803F-5596972D0475}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -40,15 +40,13 @@ Global
 		{070D9011-6F13-4B67-B61F-34CF8F577615}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{070D9011-6F13-4B67-B61F-34CF8F577615}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{070D9011-6F13-4B67-B61F-34CF8F577615}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E826D821-862A-48D1-803F-5596972D0475}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E826D821-862A-48D1-803F-5596972D0475}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E826D821-862A-48D1-803F-5596972D0475}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E826D821-862A-48D1-803F-5596972D0475}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{0C2D9E8D-24BB-B74C-B49E-DB7C8C34174B} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
-		{1E56699F-B6AB-47F0-8BA1-DD0E446FC36D} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
-		{E9911C8C-710E-407A-B6BA-A0FE677FBF4F} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
-		{070D9011-6F13-4B67-B61F-34CF8F577615} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F671C038-0DB8-4E97-B89F-B3F0C09DCCDD}

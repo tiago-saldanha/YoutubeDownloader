@@ -18,7 +18,7 @@ namespace YoutubeDownload.Blazor.Models
 
             var manifest = await service.DownloadManifestAsync(Url);
 
-            if (manifest.Streams.Count != 0)
+            if (manifest.Streams.Any())
             {
                 var streams = manifest.Streams.Select(s => StreamViewModel.Create(s, manifest));
 

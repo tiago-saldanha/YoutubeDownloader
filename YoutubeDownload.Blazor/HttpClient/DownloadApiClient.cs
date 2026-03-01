@@ -1,4 +1,4 @@
-﻿using YoutubeDownload.Application.Commands;
+﻿using YoutubeDownload.Domain.Commands;
 
 namespace YoutubeDownload.Blazor.Http
 {

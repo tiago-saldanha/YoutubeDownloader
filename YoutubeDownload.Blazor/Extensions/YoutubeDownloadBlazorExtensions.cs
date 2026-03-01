@@ -6,7 +6,7 @@ using YoutubeDownload.Infrastructure.Interfaces;
 using YoutubeDownload.Infrastructure.Services;
 using YoutubeDownload.Blazor.Cache;
 using YoutubeDownload.Blazor.Http;
-using YoutubeDownload.Blazor.Interfaces;
+using YoutubeDownload.Domain.Interfaces;
 
 namespace YoutubeDownload.Blazor.Extensions
 {
@@ -32,13 +32,14 @@ namespace YoutubeDownload.Blazor.Extensions
         public static WebApplicationBuilder ConfigureCache(this WebApplicationBuilder builder)
         {
             builder.Services.AddMemoryCache();
-            builder.Services.AddScoped<IStorageCache, StorageCache>();
+            builder.Services.AddScoped<IStorageCacheService, StorageCacheService>();
             return builder;
         }
 
         public static WebApplicationBuilder ConfigureApplication(this WebApplicationBuilder builder)
         {
             builder.Services.AddSingleton<YoutubeClient>();
+            builder.Services.AddScoped<IYoutubeDownloadClient, YoutubeDownloadClient>();
             builder.Services.AddScoped<IYoutubeAppService, YoutubeAppService>();
             builder.Services.AddScoped<IYoutubeService, YoutubeService>();
             builder.Services.AddSingleton<IFfmpegService, FfmpegService>();

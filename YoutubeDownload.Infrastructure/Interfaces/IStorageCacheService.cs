@@ -1,8 +1,8 @@
-﻿using YoutubeDownload.Application.Commands;
+﻿using YoutubeDownload.Domain.Commands;
 
-namespace YoutubeDownload.Blazor.Interfaces
+namespace YoutubeDownload.Infrastructure.Interfaces
 {
-    public interface IStorageCache
+    public interface IStorageCacheService
     {
         string Store(DownloadCommand command);
         DownloadCommand? Get(string id);
