@@ -6,7 +6,7 @@ using YoutubeDownload.Infrastructure.Helpers;
 using YoutubeDownload.Infrastructure.Interfaces;
 using YoutubeExplode.Videos.Streams;
 
-namespace YoutubeDownload.Infrastructure.Services
+namespace YoutubeDownload.Infrastructure.Services.Youtube
 {
     public class YoutubeService(IYoutubeDownloadClient client, ILogger<YoutubeService> logger)
         : IYoutubeService

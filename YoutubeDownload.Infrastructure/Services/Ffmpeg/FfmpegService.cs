@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 using YoutubeDownload.Infrastructure.Configuration;
 using YoutubeDownload.Infrastructure.Interfaces;
 
-namespace YoutubeDownload.Infrastructure.Services
+namespace YoutubeDownload.Infrastructure.Services.Ffmpeg
 {
     public class FfmpegService : IFfmpegService
     {

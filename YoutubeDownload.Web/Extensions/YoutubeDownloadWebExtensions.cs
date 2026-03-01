@@ -3,8 +3,9 @@ using YoutubeDownload.Application.Interfaces;
 using YoutubeDownload.Application.Services;
 using YoutubeDownload.Infrastructure.Configuration;
 using YoutubeDownload.Infrastructure.Interfaces;
-using YoutubeDownload.Infrastructure.Services;
 using YoutubeDownload.Domain.Interfaces;
+using YoutubeDownload.Infrastructure.Services.Ffmpeg;
+using YoutubeDownload.Infrastructure.Services.Youtube;
 
 namespace YoutubeDownload.Web.Extensions
 {

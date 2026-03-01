@@ -5,7 +5,7 @@ using YoutubeExplode.Converter;
 using YoutubeExplode.Videos;
 using YoutubeExplode.Videos.Streams;
 
-namespace YoutubeDownload.Infrastructure.Services
+namespace YoutubeDownload.Infrastructure.Services.Youtube
 {
     public class YoutubeDownloadClient(YoutubeClient client, IFfmpegService ffmpegService, ILogger<YoutubeDownloadClient> logger) : IYoutubeDownloadClient
     {
