@@ -1,7 +1,6 @@
 ## 📺 YoutubeDownload — Blazor Application (.NET 8)
 
-**YoutubeDownload** is a .NET application built with **Blazor (.NET 8)** for viewing and downloading YouTube video and audio streams using  
-[YoutubeExplode](https://github.com/Tyrrrz/YoutubeExplode) and [FFmpeg](https://ffmpeg.org/).
+**YoutubeDownload** is a .NET application built with **Blazor (.NET 8)** for viewing and downloading YouTube video and audio streams using [YoutubeExplode](https://github.com/Tyrrrz/YoutubeExplode) and [FFmpeg](https://ffmpeg.org/).
 
 The project currently runs as a **Blazor-based application**, providing a modern, component-based UI and serving as the foundation for future **desktop integration using .NET MAUI (Blazor Hybrid)**.
 
