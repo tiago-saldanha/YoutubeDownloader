@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace YoutubeDownload.Application.Extensions
+namespace YoutubeDownload.Domain.Extensions
 {
     public static class StringExtensions
     {
