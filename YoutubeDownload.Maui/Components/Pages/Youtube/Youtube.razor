@@ -1,0 +1,69 @@
+﻿@page "/youtube"
+
+@inject IYoutubeAppService Service
+@inject NavigationManager Navigation
+
+@using YoutubeDownload.Core.Interfaces
+@using YoutubeDownload.Domain.Commands
+@using YoutubeDownload.Maui.Components.Pages.Youtube.Audio
+@using YoutubeDownload.Maui.Components.Pages.Youtube.Video
+@using YoutubeDownload.Maui.Models
+
+<PageTitle>Youtube Download</PageTitle>
+
+<div class="text-center mb-4">
+    <h1 class="fw-bold">YouTube Download</h1>
+    <p class="text-muted">Download video and audio streams in your preferred format</p>
+</div>
+
+<div class="card shadow-sm p-4 mb-5">
+
+    <div class="input-group input-group">
+        <input class="form-control" name="url"
+        placeholder="Paste YouTube URL here..."
+        @bind="ViewModel.Url" />
+
+        <button class="btn btn-primary" @onclick="Search">
+            🔍 Search
+        </button>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(ViewModel.Title))
+    {
+        <p class="text-muted">Título: @ViewModel.Title</p>
+    }
+
+    <YoutubeVideoStreams streams="@ViewModel.VideoStreams" OnClickCallback="(stream) => DownloadAsync(stream)" />
+    <YoutubeAudioStreams streams="@ViewModel.AudioStreams" OnClickCallback="(stream) => DownloadAsync(stream)" />
+</div>
+
+@code {
+
+    [Parameter]
+    public EventCallback<StreamViewModel> OnClickCallback { get; set; }
+
+    private YoutubePageViewModel ViewModel = new();
+
+    private async Task Search()
+    {
+        await ViewModel.SearchAsync(Service);
+    }
+
+    private Task DownloadAsync(StreamViewModel stream)
+    {
+        var command = new DownloadCommand(
+            stream.VideoId,
+            stream.Title,
+            stream.ContainerName,
+            stream.VideoCodec,
+            stream.Resolution,
+            stream.AudioCodec,
+            stream.IsAudioOnly
+        );
+
+        // var id = await DownloadClient.PrepareAsync(command);
+
+        // Navigation.NavigateTo($"/api/download/{id}", true);
+        return Task.CompletedTask;
+    }
+}

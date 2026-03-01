@@ -1,6 +1,6 @@
 ﻿using YoutubeExplode;
-using YoutubeDownload.Application.Interfaces;
-using YoutubeDownload.Application.Services;
+using YoutubeDownload.Core.Interfaces;
+using YoutubeDownload.Core.Services;
 using YoutubeDownload.Infrastructure.Configuration;
 using YoutubeDownload.Domain.Interfaces;
 using YoutubeDownload.Infrastructure.Services.Ffmpeg;

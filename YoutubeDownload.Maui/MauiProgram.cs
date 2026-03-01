@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using YoutubeDownload.Maui.Extensions;
 
 namespace YoutubeDownload.Maui
 {
@@ -15,9 +16,12 @@ namespace YoutubeDownload.Maui
                 });
 
             builder.Services.AddMauiBlazorWebView();
-
+            builder
+                .ConfigureCache()
+                .ConfigureApplication()
+                .ConfigureInfraStructure();
 #if DEBUG
-    		builder.Services.AddBlazorWebViewDeveloperTools();
+            builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
 #endif
 

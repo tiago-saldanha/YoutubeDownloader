@@ -1,7 +1,7 @@
 ﻿using YoutubeDownload.Domain.Commands;
 using YoutubeDownload.Domain.ViewModel;
 
-namespace YoutubeDownload.Application.Interfaces
+namespace YoutubeDownload.Core.Interfaces
 {
     public interface IYoutubeAppService
     {

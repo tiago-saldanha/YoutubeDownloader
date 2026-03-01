@@ -1,11 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
-using YoutubeDownload.Application.Exceptions;
-using YoutubeDownload.Application.Interfaces;
+using YoutubeDownload.Core.Exceptions;
+using YoutubeDownload.Core.Interfaces;
 using YoutubeDownload.Domain.Commands;
 using YoutubeDownload.Domain.Interfaces;
 using YoutubeDownload.Domain.ViewModel;
 
-namespace YoutubeDownload.Application.Services
+namespace YoutubeDownload.Core.Services
 {
     public class YoutubeAppService(IYoutubeService youtubeService, ILogger<YoutubeAppService> logger) 
         : IYoutubeAppService

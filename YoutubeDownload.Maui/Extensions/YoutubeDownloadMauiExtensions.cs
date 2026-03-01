@@ -2,7 +2,6 @@
 using YoutubeDownload.Core.Interfaces;
 using YoutubeDownload.Core.Services;
 using YoutubeDownload.Infrastructure.Configuration;
-using YoutubeDownload.Blazor.Http;
 using YoutubeDownload.Domain.Interfaces;
 using YoutubeDownload.Infrastructure.Services.Cache;
 using YoutubeDownload.Infrastructure.Services.Ffmpeg;
@@ -10,36 +9,22 @@ using YoutubeDownload.Infrastructure.Services.Youtube;
 using YoutubeDownload.Infrastructure.Interfaces.Cache;
 using YoutubeDownload.Infrastructure.Interfaces.Ffpmeg;
 using YoutubeDownload.Infrastructure.Interfaces.Youtube;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Configuration;
 
-namespace YoutubeDownload.Blazor.Extensions
+namespace YoutubeDownload.Maui.Extensions
 {
-    public static class YoutubeDownloadBlazorExtensions
+    public static class YoutubeDownloadMauiExtensions
     {
-        public static WebApplicationBuilder ConfigureHttpClient(this WebApplicationBuilder builder)
-        {
-            builder.Services.AddHttpClient<DownloadApiClient>(options =>
-            {
-                options.BaseAddress = new Uri(
-                    builder.Configuration["App:BaseUrl"]!
-                );
-            });
-            return builder;
-        }
-
-        public static WebApplicationBuilder ConfigureWeb(this WebApplicationBuilder builder)
-        {
-            builder.Services.AddControllers();
-            return builder;
-        }
-
-        public static WebApplicationBuilder ConfigureCache(this WebApplicationBuilder builder)
+        public static MauiAppBuilder ConfigureCache(this MauiAppBuilder builder)
         {
             builder.Services.AddMemoryCache();
             builder.Services.AddScoped<IStorageCacheService, StorageCacheService>();
             return builder;
         }
 
-        public static WebApplicationBuilder ConfigureApplication(this WebApplicationBuilder builder)
+        public static MauiAppBuilder ConfigureApplication(this MauiAppBuilder builder)
         {
             builder.Services.AddSingleton<YoutubeClient>();
             builder.Services.AddScoped<IYoutubeDownloadClient, YoutubeDownloadClient>();
@@ -49,10 +34,18 @@ namespace YoutubeDownload.Blazor.Extensions
             return builder;
         }
 
-        public static WebApplicationBuilder ConfigureInfraStructure(this WebApplicationBuilder builder)
+        public static MauiAppBuilder ConfigureInfraStructure(this MauiAppBuilder builder)
         {
-            builder.Services.Configure<FfmpegOptions>(builder.Configuration.GetSection("Ffmpeg"));
+            using var stream = FileSystem.OpenAppPackageFileAsync("appsettings.json").Result;
+
+            builder.Configuration.AddJsonStream(stream);
+
+            builder.Services.Configure<FfmpegOptions>(options =>
+            {
+                options.Path = builder.Configuration["Ffmpeg:Path"];
+            });
+
             return builder;
-        }
+        }   
     }
 }

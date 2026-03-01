@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using YoutubeDownload.Domain.Commands;
-using YoutubeDownload.Application.Interfaces;
+using YoutubeDownload.Core.Interfaces;
 using YoutubeDownload.Web.Models;
 
 namespace YoutubeDownload.Web.Controllers
