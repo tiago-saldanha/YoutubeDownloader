@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
-using YoutubeDownload.Application.Commands;
-using YoutubeDownload.Application.Interfaces;
-using YoutubeDownload.Application.ViewModel;
+using YoutubeDownload.Domain.Commands;
+using YoutubeDownload.Domain.Interfaces;
+using YoutubeDownload.Domain.ViewModel;
 using YoutubeDownload.Infrastructure.Interfaces;
 using YoutubeExplode;
 using YoutubeExplode.Converter;

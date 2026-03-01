@@ -1,4 +1,4 @@
-﻿using YoutubeDownload.Application.ViewModel;
+﻿using YoutubeDownload.Domain.ViewModel;
 
 namespace YoutubeDownload.Web.Models
 {

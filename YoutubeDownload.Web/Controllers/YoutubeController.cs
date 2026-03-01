@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using YoutubeDownload.Application.Commands;
+using YoutubeDownload.Domain.Commands;
 using YoutubeDownload.Application.Interfaces;
 using YoutubeDownload.Web.Models;
 
@@ -28,7 +28,7 @@ namespace YoutubeDownload.Web.Controllers
             {
                 var manifest = await service.DownloadManifestAsync(model.Url);
 
-                if (manifest.Streams.Count > 0)
+                if (manifest.Streams.Any())
                 {
                     model.Streams = manifest.Streams.Select(s => StreamViewModel.Create(s, manifest)).ToList();
 
