@@ -1,6 +1,6 @@
 ﻿using YoutubeDownload.Domain.Commands;
 
-namespace YoutubeDownload.Infrastructure.Interfaces
+namespace YoutubeDownload.Infrastructure.Interfaces.Cache
 {
     public interface IStorageCacheService
     {

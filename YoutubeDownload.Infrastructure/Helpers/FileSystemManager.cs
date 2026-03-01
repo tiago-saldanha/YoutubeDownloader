@@ -2,7 +2,7 @@
 {
     public class FileSystemManager
     {
-        private static readonly string OutputDirectory = GetOutputDirectory();
+        private static readonly string OutputDirectory = CreateOutputDirectory();
 
         public static string CreateFile(string extension)
         {
@@ -19,7 +19,7 @@
             }
         }
 
-        private static string GetOutputDirectory()
+        private static string CreateOutputDirectory()
         {
             var outputDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "downloads");
             if (!Directory.Exists(outputDirectory))

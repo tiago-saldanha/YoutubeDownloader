@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using Microsoft.Extensions.Options;
 using YoutubeDownload.Infrastructure.Configuration;
-using YoutubeDownload.Infrastructure.Interfaces;
+using YoutubeDownload.Infrastructure.Interfaces.Ffpmeg;
 
 namespace YoutubeDownload.Infrastructure.Services.Ffmpeg
 {

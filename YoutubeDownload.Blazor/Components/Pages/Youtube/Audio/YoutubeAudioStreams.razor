@@ -17,7 +17,7 @@
             <tbody>
                 @foreach (var stream in streams)
                 {
-                    <YoutubeAudioStreamItem stream="stream" OnClickCallback="() => TriggerEvent(stream)" />
+                    <YoutubeAudioStreamItem stream="stream" OnClickCallback="() => DownloadAsync(stream)" />
                 }
             </tbody>
         </table>
@@ -31,7 +31,7 @@
     [Parameter]
     public EventCallback<StreamViewModel> OnClickCallback { get; set; }
 
-    private async Task TriggerEvent(StreamViewModel stream)
+    private async Task DownloadAsync(StreamViewModel stream)
     {
         await OnClickCallback.InvokeAsync(stream);
     }

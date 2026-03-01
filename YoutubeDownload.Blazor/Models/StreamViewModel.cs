@@ -2,19 +2,17 @@
 
 namespace YoutubeDownload.Blazor.Models
 {
-    public class StreamViewModel
+    public readonly record struct StreamViewModel
     {
-        public string ContainerName { get; set; }
-        public string VideoCodec { get; set; }
-        public string Resolution { get; set; }
-        public double Size { get; set; }
-        public bool IsAudioOnly { get; set; }
-        public string AudioCodec { get; set; }
-        public string VideoId { get; set; }
-        public string Title { get; set; }
+        public string ContainerName { get; init; }
+        public string VideoCodec { get; init; }
+        public string Resolution { get; init; }
+        public double Size { get; init; }
+        public bool IsAudioOnly { get; init; }
+        public string AudioCodec { get; init; }
+        public string VideoId { get; init; }
+        public string Title { get; init; }
         public string DisplaySize => Size > 1240 ? $"{Size / 1024:0.##} GB" : $"{Size:0.##} MB";
-
-        public StreamViewModel() { }
 
         private StreamViewModel(
             string containerName, 
@@ -36,7 +34,7 @@ namespace YoutubeDownload.Blazor.Models
             Title = title;
         }
 
-        public static StreamViewModel Create(StreamInfoViewModel info, StreamManifestViewModel manifest)
-            => new(info.ContainerName, info.VideoCodec, info.Resolution, info.Size, info.IsAudioOnly, info.AudioCodec, manifest.VideoId, manifest.Title);
+        public static StreamViewModel Create(StreamInfoViewModel info, string videoId, string title)
+            => new(info.ContainerName, info.VideoCodec, info.Resolution, info.Size, info.IsAudioOnly, info.AudioCodec, videoId, title);
     }
 }

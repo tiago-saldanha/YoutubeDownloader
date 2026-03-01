@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using YoutubeDownload.Domain.Commands;
-using YoutubeDownload.Infrastructure.Interfaces;
+using YoutubeDownload.Infrastructure.Interfaces.Cache;
 
 namespace YoutubeDownload.Infrastructure.Services.Cache
 {

@@ -1,4 +1,4 @@
-﻿namespace YoutubeDownload.Infrastructure.Interfaces
+﻿namespace YoutubeDownload.Infrastructure.Interfaces.Ffpmeg
 {
     public interface IFfmpegService
     {

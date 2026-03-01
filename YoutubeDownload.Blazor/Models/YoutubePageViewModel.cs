@@ -1,8 +1,9 @@
 ﻿using YoutubeDownload.Application.Interfaces;
+using YoutubeDownload.Domain.Commands;
 
 namespace YoutubeDownload.Blazor.Models
 {
-    public class YoutubePageViewModel
+    public record YoutubePageViewModel
     {
         public string Url { get; set; } = "";
         public string Title { get; set; } = "";
@@ -16,11 +17,12 @@ namespace YoutubeDownload.Blazor.Models
             IsLoading = true;
             Message = "";
 
-            var manifest = await service.DownloadManifestAsync(Url);
+            var command = new DownloadManifestCommand(Url);
+            var manifest = await service.DownloadManifestAsync(command);
 
             if (manifest.Streams.Any())
             {
-                var streams = manifest.Streams.Select(s => StreamViewModel.Create(s, manifest));
+                var streams = manifest.Streams.Select(s => StreamViewModel.Create(s, manifest.VideoId, manifest.Title));
 
                 VideoStreams = [.. streams.Where(s => !s.IsAudioOnly)];
                 AudioStreams = [.. streams.Where(s => s.IsAudioOnly)];

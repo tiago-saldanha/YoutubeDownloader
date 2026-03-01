@@ -5,12 +5,12 @@ namespace YoutubeDownload.Domain.ViewModel
 {
     public record struct StreamManifestViewModel
     {
-        public string VideoId { get; private set; }
-        public string Title { get; set; }
+        public string VideoId { get; init; }
+        public string Title { get; init; }
         public IEnumerable<StreamInfoViewModel> Streams { get; private set; } = [];
-
+        
         public static StreamManifestViewModel Create(StreamManifest manifest, Video video) => new(manifest, video);
-
+        
         private StreamManifestViewModel(StreamManifest manifest, Video video)
         {
             VideoId = video.Id;

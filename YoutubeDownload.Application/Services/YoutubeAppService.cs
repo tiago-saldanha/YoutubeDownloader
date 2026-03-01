@@ -10,21 +10,20 @@ namespace YoutubeDownload.Application.Services
     public class YoutubeAppService(IYoutubeService youtubeService, ILogger<YoutubeAppService> logger) 
         : IYoutubeAppService
     {
-        public async Task<StreamManifestViewModel> DownloadManifestAsync(string url)
+        public async Task<StreamManifestViewModel> DownloadManifestAsync(DownloadManifestCommand command)
         {
             try
             {
-                var manifest = await youtubeService.DownloadManifestAsync(url);
-                return manifest;
+                return await youtubeService.DownloadManifestAsync(command);
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error while downloading manifest for video [{Url}].", url);
-                throw new VideoManifestDownloadException(url, ex);
+                logger.LogError(ex, "Error while downloading manifest for video [{Url}].", command.Url);
+                throw new DownloadManifestAppException(command.Url, ex);
             }
         }
 
-        public async Task<DownloadStreamViewModel> DownloadAsync(DownloadCommand command)
+        public async Task<DownloadStreamViewModel> DownloadStreamAsync(DownloadCommand command)
         {
             try
             {
@@ -34,8 +33,7 @@ namespace YoutubeDownload.Application.Services
             catch (Exception ex)
             {
                 logger.LogError(ex, "Error while downloading video [{Title}] (ID: {VideoId}).", command.Title, command.VideoId);
-
-                throw new VideoDownloadException(command.VideoId, command.Title, ex);
+                throw new DownloadStreamAppException(command.VideoId, command.Title, ex);
             }
         }
     }

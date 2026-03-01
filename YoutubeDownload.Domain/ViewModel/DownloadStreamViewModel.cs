@@ -16,7 +16,10 @@ namespace YoutubeDownload.Domain.ViewModel
 
         public static DownloadStreamViewModel Create(string filePath, string title, string extension)
         {
-            if (!File.Exists(filePath)) throw new FileNotFoundException();
+            ArgumentNullException.ThrowIfNullOrWhiteSpace(filePath, nameof(filePath));
+
+            if (!File.Exists(filePath)) 
+                throw new FileNotFoundException();
             
             var bytes = File.ReadAllBytes(filePath);
             return new DownloadStreamViewModel(bytes, $"{title.FormaterName()}.{extension}");

@@ -26,7 +26,8 @@ namespace YoutubeDownload.Web.Controllers
 
             try
             {
-                var manifest = await service.DownloadManifestAsync(model.Url);
+                var command = new DownloadManifestCommand(model.Url);
+                var manifest = await service.DownloadManifestAsync(command);
 
                 if (manifest.Streams.Any())
                 {
@@ -50,22 +51,22 @@ namespace YoutubeDownload.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Download(StreamViewModel stream)
+        public async Task<IActionResult> Download(StreamViewModel model)
         {
             try
             {
                 var command = new DownloadCommand(
-                    stream.VideoId,
-                    stream.Title,
-                    stream.ContainerName,
-                    stream.VideoCodec,
-                    stream.Resolution,
-                    stream.AudioCodec,
-                    stream.IsAudioOnly
+                    model.VideoId,
+                    model.Title,
+                    model.ContainerName,
+                    model.VideoCodec,
+                    model.Resolution,
+                    model.AudioCodec,
+                    model.IsAudioOnly
                 );
 
-                var download = await service.DownloadAsync(command);
-                return File(download.FileBytes, download.ContentType, download.FileName);
+                var stream = await service.DownloadStreamAsync(command);
+                return File(stream.FileBytes, stream.ContentType, stream.FileName);
             }
             catch (Exception ex)
             {

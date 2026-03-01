@@ -2,10 +2,11 @@
 using YoutubeDownload.Application.Interfaces;
 using YoutubeDownload.Application.Services;
 using YoutubeDownload.Infrastructure.Configuration;
-using YoutubeDownload.Infrastructure.Interfaces;
 using YoutubeDownload.Domain.Interfaces;
 using YoutubeDownload.Infrastructure.Services.Ffmpeg;
 using YoutubeDownload.Infrastructure.Services.Youtube;
+using YoutubeDownload.Infrastructure.Interfaces.Ffpmeg;
+using YoutubeDownload.Infrastructure.Interfaces.Youtube;
 
 namespace YoutubeDownload.Web.Extensions
 {

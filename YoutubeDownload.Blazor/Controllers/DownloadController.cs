@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using YoutubeDownload.Domain.Commands;
 using YoutubeDownload.Application.Interfaces;
-using YoutubeDownload.Infrastructure.Interfaces;
+using YoutubeDownload.Infrastructure.Interfaces.Cache;
 
 namespace YoutubeDownload.Blazor.Controllers
 {
@@ -23,9 +23,9 @@ namespace YoutubeDownload.Blazor.Controllers
 
             if (output is DownloadCommand command)
             {
-                var download = await service.DownloadAsync(command);
+                var stream = await service.DownloadStreamAsync(command);
                 cache.Remove(id);
-                return File(download.FileBytes, download.ContentType, download.FileName);
+                return File(stream.FileBytes, stream.ContentType, stream.FileName);
             }
 
             return NotFound();

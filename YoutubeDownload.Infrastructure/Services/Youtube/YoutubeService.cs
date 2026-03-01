@@ -3,7 +3,7 @@ using YoutubeDownload.Domain.Commands;
 using YoutubeDownload.Domain.Interfaces;
 using YoutubeDownload.Domain.ViewModel;
 using YoutubeDownload.Infrastructure.Helpers;
-using YoutubeDownload.Infrastructure.Interfaces;
+using YoutubeDownload.Infrastructure.Interfaces.Youtube;
 using YoutubeExplode.Videos.Streams;
 
 namespace YoutubeDownload.Infrastructure.Services.Youtube
@@ -11,9 +11,9 @@ namespace YoutubeDownload.Infrastructure.Services.Youtube
     public class YoutubeService(IYoutubeDownloadClient client, ILogger<YoutubeService> logger)
         : IYoutubeService
     {
-        public async Task<StreamManifestViewModel> DownloadManifestAsync(string url)
+        public async Task<StreamManifestViewModel> DownloadManifestAsync(DownloadManifestCommand command)
         {
-            var video = await client.GetVideoAsync(url);
+            var video = await client.GetVideoAsync(command.Url);
             var manifest = await client.GetManifestAsync(video.Id);
             return StreamManifestViewModel.Create(manifest, video);
         }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
-using YoutubeDownload.Infrastructure.Interfaces;
+using YoutubeDownload.Infrastructure.Interfaces.Ffpmeg;
+using YoutubeDownload.Infrastructure.Interfaces.Youtube;
 using YoutubeExplode;
 using YoutubeExplode.Converter;
 using YoutubeExplode.Videos;

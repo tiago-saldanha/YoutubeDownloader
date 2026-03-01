@@ -1,16 +1,16 @@
 ﻿namespace YoutubeDownload.Application.Exceptions
 {
-    public sealed class VideoManifestDownloadException : Exception
+    public sealed class DownloadManifestAppException : Exception
     {
         public string Url { get; }
 
-        public VideoManifestDownloadException(string url)
+        public DownloadManifestAppException(string url)
             : base($"Error downloading video manifest from URL: {url}")
         {
             Url = url;
         }
 
-        public VideoManifestDownloadException(string url, Exception innerException)
+        public DownloadManifestAppException(string url, Exception innerException)
             : base($"Error downloading video manifest from URL: {url}", innerException)
         {
             Url = url;

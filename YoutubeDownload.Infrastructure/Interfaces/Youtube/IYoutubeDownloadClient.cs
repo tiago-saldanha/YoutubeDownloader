@@ -1,7 +1,7 @@
 ﻿using YoutubeExplode.Videos;
 using YoutubeExplode.Videos.Streams;
 
-namespace YoutubeDownload.Infrastructure.Interfaces
+namespace YoutubeDownload.Infrastructure.Interfaces.Youtube
 {
     public interface IYoutubeDownloadClient
     {
