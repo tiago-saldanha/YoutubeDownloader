@@ -9,7 +9,7 @@ using YoutubeExplode.Videos.Streams;
 
 namespace YoutubeDownload.Application.Services
 {
-    public class YoutubeService(YoutubeClient client, IYoutubeDownloadClient youtubeClient, IFfmpegService ffmpegService, ILogger<YoutubeService> logger) 
+    public class YoutubeService(IYoutubeDownloadClient youtubeClient, IFfmpegService ffmpegService, ILogger<YoutubeService> logger) 
         : IYoutubeService
     {
         private string OutputDirectory => GetOutputDirectory();
@@ -42,7 +42,7 @@ namespace YoutubeDownload.Application.Services
 
             var streams = new IStreamInfo[] { audioStream, videoStream };
 
-            await client.Videos.DownloadAsync(streams, new ConversionRequestBuilder(filePath).SetFFmpegPath(ffmpegService.Path).Build());
+            await youtubeClient.DownloadVideoAsync(audioStream, videoStream, filePath);
 
             logger.LogInformation("Video download completed successfully. File saved at {FilePath}.", filePath);
 
