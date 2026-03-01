@@ -5,21 +5,30 @@ using YoutubeDownload.Domain.ViewModel;
 using YoutubeDownload.Infrastructure.Interfaces;
 using YoutubeExplode.Videos.Streams;
 
-namespace YoutubeDownload.Application.Services
+namespace YoutubeDownload.Infrastructure.Services
 {
-    public class YoutubeService(IYoutubeDownloadClient youtubeClient, ILogger<YoutubeService> logger)
+    public class YoutubeService(IYoutubeDownloadClient client, ILogger<YoutubeService> logger)
         : IYoutubeService
     {
         private string OutputDirectory => GetOutputDirectory();
 
         public async Task<StreamManifestViewModel> DownloadManifestAsync(string url)
         {
-            var video = await youtubeClient.GetVideoAsync(url);
-            var manifest = await youtubeClient.GetManifestAsync(video.Id);
+            var video = await client.GetVideoAsync(url);
+            var manifest = await client.GetManifestAsync(video.Id);
             return StreamManifestViewModel.Create(manifest, video);
         }
 
-        public async Task<DownloadStreamViewModel> DownloadVideoAsync(StreamManifest manifest, DownloadCommand command)
+        public async Task<DownloadStreamViewModel> DownloadStreamAsync(DownloadCommand command)
+        {
+            var manifest = await client.GetManifestAsync(command.VideoId);
+
+            return command.IsAudioOnly
+                   ? await DownloadAudioStreamAsync(manifest, command)
+                   : await DownloadVideoStreamAsync(manifest, command);
+        }
+
+        private async Task<DownloadStreamViewModel> DownloadVideoStreamAsync(StreamManifest manifest, DownloadCommand command)
         {
             var audioStream = GetAudioStream(manifest, s => s.Container.Name == command.ContainerName, command.Title);
             var videoStream = GetVideoStream(manifest, s => s.Container.ToString() == command.ContainerName && s.VideoQuality.Label.Contains(command.Resolution), command);
@@ -27,7 +36,7 @@ namespace YoutubeDownload.Application.Services
             var filePath = CreateFilePath(audioStream.Container.Name);
             RemoveExistingFile(filePath);
             
-            await youtubeClient.DownloadVideoAsync(audioStream, videoStream, filePath);
+            await client.DownloadVideoAsync(audioStream, videoStream, filePath);
 
             var fileName = $"{command.Title}.{audioStream.Container.Name}";
             var download = DownloadStreamViewModel.Create(filePath, fileName);
@@ -37,12 +46,12 @@ namespace YoutubeDownload.Application.Services
             return download;
         }
 
-        public async Task<DownloadStreamViewModel> DownloadAudioAsync(StreamManifest manifest, DownloadCommand command)
+        private async Task<DownloadStreamViewModel> DownloadAudioStreamAsync(StreamManifest manifest, DownloadCommand command)
         {
             var audioStream = GetAudioStream(manifest, s => s.AudioCodec == command.AudioCodec && s.Container.Name == command.ContainerName, command.Title);
             var filePath = CreateFilePath(audioStream.Container.Name);
             
-            await youtubeClient.DownloaAudioAsync(audioStream, filePath);
+            await client.DownloaAudioAsync(audioStream, filePath);
             
             var fileName = $"{command.Title}.{audioStream.Container.Name}";
             var download = DownloadStreamViewModel.Create(filePath, fileName);

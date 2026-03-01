@@ -2,7 +2,7 @@
 using YoutubeDownload.Domain.Commands;
 using YoutubeDownload.Infrastructure.Interfaces;
 
-namespace YoutubeDownload.Blazor.Cache
+namespace YoutubeDownload.Infrastructure.Services
 {
     public class StorageCacheService(IMemoryCache cache) : IStorageCacheService
     {
