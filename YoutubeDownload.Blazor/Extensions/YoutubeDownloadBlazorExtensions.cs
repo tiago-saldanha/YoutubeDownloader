@@ -39,6 +39,7 @@ namespace YoutubeDownload.Blazor.Extensions
         public static WebApplicationBuilder ConfigureApplication(this WebApplicationBuilder builder)
         {
             builder.Services.AddSingleton<YoutubeClient>();
+            builder.Services.AddScoped<IYoutubeDownloadClient, YoutubeDownloadClient>();
             builder.Services.AddScoped<IYoutubeAppService, YoutubeAppService>();
             builder.Services.AddScoped<IYoutubeService, YoutubeService>();
             builder.Services.AddSingleton<IFfmpegService, FfmpegService>();

@@ -9,19 +9,15 @@ using YoutubeExplode.Videos.Streams;
 
 namespace YoutubeDownload.Application.Services
 {
-    public class YoutubeService(YoutubeClient client, IFfmpegService ffmpegService, ILogger<YoutubeService> logger) 
+    public class YoutubeService(YoutubeClient client, IYoutubeDownloadClient youtubeClient, IFfmpegService ffmpegService, ILogger<YoutubeService> logger) 
         : IYoutubeService
     {
         private string OutputDirectory => GetOutputDirectory();
 
         public async Task<StreamManifestViewModel> DownloadManifestAsync(string url)
         {
-            logger.LogInformation("Starting manifest download for video [{Url}].", url);
-            var video = await client.Videos.GetAsync(url);
-            
-            var manifest = await client.Videos.Streams.GetManifestAsync(video.Id);
-            logger.LogInformation("Manifest successfully downloaded for video [{Url}].", url);
-            
+            var video = await youtubeClient.GetVideoAsync(url);
+            var manifest = await youtubeClient.GetManifestAsync(video.Id);
             return StreamManifestViewModel.Create(manifest, video);
         }
 
@@ -64,12 +60,11 @@ namespace YoutubeDownload.Application.Services
             logger.LogInformation("Audio stream selected. Container: {Container}.", audioStream.Container.Name);
 
             var filePath = CreateFilePath(audioStream.Container.Name);
-            await client.Videos.Streams.DownloadAsync(audioStream, filePath);
+            await youtubeClient.DownloaAudioAsync(audioStream, filePath);
 
             var fileName = $"{command.Title}.{audioStream.Container.Name}";
-
             logger.LogInformation("Audio download completed successfully. File saved at {FilePath}.", filePath);
-
+            
             var download = DownloadStreamViewModel.Create(filePath, fileName);
 
             RemoveExistingFile(filePath);
