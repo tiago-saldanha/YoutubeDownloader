@@ -9,6 +9,5 @@ namespace YoutubeDownload.Domain.Interfaces
         Task<StreamManifestViewModel> DownloadManifestAsync(string url);
         Task<DownloadStreamViewModel> DownloadVideoAsync(StreamManifest manifest, DownloadCommand command);
         Task<DownloadStreamViewModel> DownloadAudioAsync(StreamManifest manifest, DownloadCommand command);
-        Task ConverterAsync(string file);
     }
 }

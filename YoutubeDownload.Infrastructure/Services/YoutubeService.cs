@@ -3,13 +3,11 @@ using YoutubeDownload.Domain.Commands;
 using YoutubeDownload.Domain.Interfaces;
 using YoutubeDownload.Domain.ViewModel;
 using YoutubeDownload.Infrastructure.Interfaces;
-using YoutubeExplode;
-using YoutubeExplode.Converter;
 using YoutubeExplode.Videos.Streams;
 
 namespace YoutubeDownload.Application.Services
 {
-    public class YoutubeService(IYoutubeDownloadClient youtubeClient, IFfmpegService ffmpegService, ILogger<YoutubeService> logger) 
+    public class YoutubeService(IYoutubeDownloadClient youtubeClient, ILogger<YoutubeService> logger)
         : IYoutubeService
     {
         private string OutputDirectory => GetOutputDirectory();
@@ -23,28 +21,13 @@ namespace YoutubeDownload.Application.Services
 
         public async Task<DownloadStreamViewModel> DownloadVideoAsync(StreamManifest manifest, DownloadCommand command)
         {
-            logger.LogInformation("Selecting audio stream for video '{Title}'.", command.Title);
-
-            var audioStream = GetAudioStream(manifest, s => s.Container.Name == command.ContainerName);
-
-            logger.LogInformation("Audio stream selected. Container: {Container}.", audioStream.Container.Name);
-
-            logger.LogInformation("Selecting video stream. Resolution: {Resolution}, Container: {Container}.", command.Resolution, command.ContainerName);
-
-            var videoStream = GetVideoStream(manifest, s => s.Container.ToString() == command.ContainerName && s.VideoQuality.Label.Contains(command.Resolution));
-
-            logger.LogInformation("Video stream selected. Container: {Container}, Quality: {Quality}.", videoStream.Container.Name, videoStream.VideoQuality.Label);
+            var audioStream = GetAudioStream(manifest, s => s.Container.Name == command.ContainerName, command.Title);
+            var videoStream = GetVideoStream(manifest, s => s.Container.ToString() == command.ContainerName && s.VideoQuality.Label.Contains(command.Resolution), command);
 
             var filePath = CreateFilePath(audioStream.Container.Name);
             RemoveExistingFile(filePath);
-
-            logger.LogInformation("Preparing download for video '{Title}'. Output file: {FilePath}.", command.Title, filePath);
-
-            var streams = new IStreamInfo[] { audioStream, videoStream };
-
+            
             await youtubeClient.DownloadVideoAsync(audioStream, videoStream, filePath);
-
-            logger.LogInformation("Video download completed successfully. File saved at {FilePath}.", filePath);
 
             var fileName = $"{command.Title}.{audioStream.Container.Name}";
             var download = DownloadStreamViewModel.Create(filePath, fileName);
@@ -56,33 +39,48 @@ namespace YoutubeDownload.Application.Services
 
         public async Task<DownloadStreamViewModel> DownloadAudioAsync(StreamManifest manifest, DownloadCommand command)
         {
-            var audioStream = GetAudioStream(manifest, s => s.AudioCodec == command.AudioCodec && s.Container.Name == command.ContainerName);
-            logger.LogInformation("Audio stream selected. Container: {Container}.", audioStream.Container.Name);
-
+            var audioStream = GetAudioStream(manifest, s => s.AudioCodec == command.AudioCodec && s.Container.Name == command.ContainerName, command.Title);
             var filePath = CreateFilePath(audioStream.Container.Name);
-            await youtubeClient.DownloaAudioAsync(audioStream, filePath);
-
-            var fileName = $"{command.Title}.{audioStream.Container.Name}";
-            logger.LogInformation("Audio download completed successfully. File saved at {FilePath}.", filePath);
             
+            await youtubeClient.DownloaAudioAsync(audioStream, filePath);
+            
+            var fileName = $"{command.Title}.{audioStream.Container.Name}";
             var download = DownloadStreamViewModel.Create(filePath, fileName);
-
+            
             RemoveExistingFile(filePath);
-
+            
             return download;
         }
 
-        public async Task ConverterAsync(string filePath)
-            => await Task.Run(() => ffmpegService.ConvertToMp3(filePath));
+        private VideoOnlyStreamInfo GetVideoStream(StreamManifest manifest, Func<VideoOnlyStreamInfo, bool> predicate, DownloadCommand command)
+        {
+            logger.LogInformation("Selecting video stream. Resolution: {Resolution}, Container: {Container}.", command.Resolution, command.ContainerName);
+            var videoStream = manifest
+                .GetVideoOnlyStreams()
+                .Where(predicate)
+                .OrderByDescending(s => s.Size)
+                .First();
 
-        private IVideoStreamInfo GetVideoStream(StreamManifest manifest, Func<VideoOnlyStreamInfo, bool> predicate)
-            => manifest.GetVideoOnlyStreams().Where(predicate).OrderByDescending(s => s.Size).First();
+            logger.LogInformation("Video stream selected. Container: {Container}, Quality: {Quality}.", videoStream.Container.Name, videoStream.VideoQuality.Label);
+            return videoStream;
+        }
+            
+        private IStreamInfo GetAudioStream(StreamManifest manifest, Func<AudioOnlyStreamInfo, bool> predicate, string title)
+        {
+            logger.LogInformation("Selecting audio stream for video '{title}'.", title);
+            var audioStream = manifest
+                .GetAudioOnlyStreams()
+                .Where(predicate)
+                .OrderByDescending(s => s.Size)
+                .First() ??
+                    GetBestAudioStreamInfo(manifest);
 
-        private IStreamInfo GetAudioStream(StreamManifest manifest, Func<AudioOnlyStreamInfo, bool> predicate)
-            => manifest.GetAudioOnlyStreams().Where(predicate).OrderByDescending(s => s.Size).First() ?? GetBestAudioStreamInfo(manifest);
+            logger.LogInformation("Audio stream selected. Container: {Container}.", audioStream.Container.Name);
+            return audioStream;
+        }
 
-        private IStreamInfo GetBestAudioStreamInfo(StreamManifest manifest)
-            => manifest.GetAudioStreams().GetWithHighestBitrate();
+        private static IStreamInfo GetBestAudioStreamInfo(StreamManifest manifest)
+            => manifest.GetAudioOnlyStreams().GetWithHighestBitrate();
 
         private string CreateFilePath(string containerName)
             => Path.Combine(OutputDirectory, $"{Guid.NewGuid()}.{containerName}");
