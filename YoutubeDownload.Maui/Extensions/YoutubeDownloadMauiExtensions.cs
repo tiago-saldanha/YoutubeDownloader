@@ -9,9 +9,8 @@ using YoutubeDownload.Infrastructure.Services.Youtube;
 using YoutubeDownload.Infrastructure.Interfaces.Cache;
 using YoutubeDownload.Infrastructure.Interfaces.Ffpmeg;
 using YoutubeDownload.Infrastructure.Interfaces.Youtube;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Configuration;
+using YoutubeDownload.Maui.Services;
 
 namespace YoutubeDownload.Maui.Extensions
 {
@@ -31,6 +30,7 @@ namespace YoutubeDownload.Maui.Extensions
             builder.Services.AddScoped<IYoutubeAppService, YoutubeAppService>();
             builder.Services.AddScoped<IYoutubeService, YoutubeService>();
             builder.Services.AddSingleton<IFfmpegService, FfmpegService>();
+            builder.Services.AddSingleton<IFileSaveService, MauiFileSaveService>();
             return builder;
         }
 
