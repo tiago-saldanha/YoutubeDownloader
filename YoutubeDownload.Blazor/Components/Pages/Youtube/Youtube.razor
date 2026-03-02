@@ -3,6 +3,7 @@
 @inject IYoutubeAppService Service
 @inject DownloadApiClient DownloadClient
 @inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
 
 @using YoutubeDownload.Domain.Commands
 @using YoutubeDownload.Blazor.Components.Pages.Youtube.Audio
@@ -20,8 +21,8 @@
 
     <div class="input-group input-group">
         <input class="form-control" name="url"
-        placeholder="Paste YouTube URL here..."
-        @bind="ViewModel.Url" />
+               placeholder="Paste YouTube URL here..."
+               @bind="ViewModel.Url" />
 
         <button class="btn btn-primary" @onclick="Search">
             🔍 Search
@@ -42,14 +43,44 @@
     [Parameter]
     public EventCallback<StreamViewModel> OnClickCallback { get; set; }
 
+    public string Message { get; set; } = "";
+
+    public bool IsLoading { get; set; }
+
     private YoutubePageViewModel ViewModel = new();
 
     private async Task Search()
     {
+        await JSRuntime.InvokeVoidAsync("showLoading", "Searching...");
         await ViewModel.SearchAsync(Service);
+        await JSRuntime.InvokeVoidAsync("hideLoading");
     }
 
     private async Task DownloadAsync(StreamViewModel stream)
+    {
+        await JSRuntime.InvokeVoidAsync("showLoading", "Downloading...");
+
+        var command = new DownloadCommand(
+            stream.VideoId,
+            stream.Title,
+            stream.ContainerName,
+            stream.VideoCodec,
+            stream.Resolution,
+            stream.AudioCodec,
+            stream.IsAudioOnly
+        );
+
+        var download = await Service.DownloadStreamAsync(command);
+
+        await JSRuntime.InvokeVoidAsync("showLoading", "Downloading...");
+
+        await JSRuntime.InvokeVoidAsync("downloadFile", download.FileName, download.ContentType, download.FileBytes);
+
+        await JSRuntime.InvokeVoidAsync("hideLoading");
+    }
+
+    [Obsolete("Use DownloadAsync to download via javascript on browser")]
+    private async Task Download(StreamViewModel stream)
     {
         var command = new DownloadCommand(
             stream.VideoId,

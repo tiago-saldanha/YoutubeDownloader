@@ -7,16 +7,11 @@ namespace YoutubeDownload.Blazor.Models
     {
         public string Url { get; set; } = "";
         public string Title { get; set; } = "";
-        public string Message { get; set; } = "";
-        public bool IsLoading { get; set; }
         public List<StreamViewModel> VideoStreams { get; private set; } = [];
         public List<StreamViewModel> AudioStreams { get; private set; } = [];
 
         public async Task SearchAsync(IYoutubeAppService service)
         {
-            IsLoading = true;
-            Message = "";
-
             var command = new DownloadManifestCommand(Url);
             var manifest = await service.DownloadManifestAsync(command);
 
@@ -30,12 +25,6 @@ namespace YoutubeDownload.Blazor.Models
                 Title = manifest.Title;
                 Url = "";
             }
-            else
-            {
-                Message = "Nenhum stream encontrado";
-            }
-
-            IsLoading = false;
         }
     }
 }

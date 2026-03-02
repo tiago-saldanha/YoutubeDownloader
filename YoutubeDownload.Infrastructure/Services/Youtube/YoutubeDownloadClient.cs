@@ -25,7 +25,11 @@ namespace YoutubeDownload.Infrastructure.Services.Youtube
 
         public async Task DownloaAudioAsync(IStreamInfo streamInfo, string filePath, CancellationToken token = default)
         {
-            await client.Videos.Streams.DownloadAsync(streamInfo, filePath, null, token);
+            var progress = new Progress<double>(p =>
+            {
+                logger.LogInformation("Progress: {value}", p);
+            });
+            await client.Videos.Streams.DownloadAsync(streamInfo, filePath, progress, token);
             logger.LogInformation("Audio download completed successfully. File saved at {FilePath}.", filePath);
         }
 
