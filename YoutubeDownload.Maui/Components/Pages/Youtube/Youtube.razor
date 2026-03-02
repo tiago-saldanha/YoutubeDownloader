@@ -65,7 +65,5 @@
         var download = await Service.DownloadFileAsync(command);
 
         await FileService.SaveAsync(download.FilePath, download.FileName);
-
-        return;
     }
 }

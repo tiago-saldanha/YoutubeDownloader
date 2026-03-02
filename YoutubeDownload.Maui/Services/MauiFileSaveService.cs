@@ -1,4 +1,5 @@
-﻿using YoutubeDownload.Core.Interfaces;
+﻿using CommunityToolkit.Maui.Storage;
+using YoutubeDownload.Core.Interfaces;
 
 namespace YoutubeDownload.Maui.Services
 {
@@ -7,21 +8,23 @@ namespace YoutubeDownload.Maui.Services
         public async Task SaveAsync(string sourceFilePath, string suggestedFileName)
         {
             if (!File.Exists(sourceFilePath))
-                throw new FileNotFoundException("Source file not found.", sourceFilePath);
+                throw new FileNotFoundException(sourceFilePath);
 
-            var result = await FilePicker.Default.PickAsync(
-                new PickOptions
-                {
-                    PickerTitle = suggestedFileName,
-                });
+            using var source = File.OpenRead(sourceFilePath);
 
-            if (result is null)
-                return;
+            var downloads = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                "Downloads"
+            );
 
-            await using var source = File.OpenRead(sourceFilePath);
-            await using var destination = File.Create(result.FullPath);
+            var result = await FileSaver.SaveAsync(
+                downloads,
+                suggestedFileName,
+                source
+            );
 
-            await source.CopyToAsync(destination);
+            if (result.Exception != null)
+                throw result.Exception;
         }
     }
 }
