@@ -62,9 +62,9 @@
             stream.IsAudioOnly
         );
 
-        var download = await Service.DownloadStreamAsync(command);
+        var download = await Service.DownloadFileAsync(command);
 
-        await FileService.SaveAsync(download.FileName, download.FileName);
+        await FileService.SaveAsync(download.FilePath, download.FileName);
 
         return;
     }

@@ -27,6 +27,15 @@ namespace YoutubeDownload.Infrastructure.Services.Youtube
                    : await DownloadVideoStreamAsync(manifest, command);
         }
 
+        public async Task<DownloadFileViewModel> DownloadFileAsync(DownloadCommand command)
+        {
+            var manifest = await client.GetManifestAsync(command.VideoId);
+
+            return command.IsAudioOnly
+                   ? await DownloadAudioFileAsync(manifest, command)
+                   : await DownloadVideoFileAsync(manifest, command);
+        }
+
         private async Task<DownloadStreamViewModel> DownloadVideoStreamAsync(StreamManifest manifest, DownloadCommand command)
         {
             var audioStream = GetAudioStream(manifest, s => s.Container.Name == command.ContainerName, command.Title);
@@ -52,6 +61,30 @@ namespace YoutubeDownload.Infrastructure.Services.Youtube
             
             FileSystemManager.RemoveFile(filePath);
             
+            return download;
+        }
+
+        private async Task<DownloadFileViewModel> DownloadAudioFileAsync(StreamManifest manifest, DownloadCommand command)
+        {
+            var audioStream = GetAudioStream(manifest, s => s.AudioCodec == command.AudioCodec && s.Container.Name == command.ContainerName, command.Title);
+            var filePath = FileSystemManager.CreateFile(audioStream.Container.Name);
+
+            await client.DownloaAudioAsync(audioStream, filePath);
+            var download = DownloadFileViewModel.Create(filePath, command.Title, audioStream.Container.Name);
+
+            return download;
+        }
+
+        private async Task<DownloadFileViewModel> DownloadVideoFileAsync(StreamManifest manifest, DownloadCommand command)
+        {
+            var audioStream = GetAudioStream(manifest, s => s.Container.Name == command.ContainerName, command.Title);
+            var videoStream = GetVideoStream(manifest, command);
+
+            var filePath = FileSystemManager.CreateFile(audioStream.Container.Name);
+
+            await client.DownloadVideoAsync(audioStream, videoStream, filePath);
+            var download = DownloadFileViewModel.Create(filePath, command.Title, audioStream.Container.Name);
+
             return download;
         }
 

@@ -7,5 +7,6 @@ namespace YoutubeDownload.Core.Interfaces
     {
         Task<StreamManifestViewModel> DownloadManifestAsync(DownloadManifestCommand command);
         Task<DownloadStreamViewModel> DownloadStreamAsync(DownloadCommand command);
+        Task<DownloadFileViewModel> DownloadFileAsync(DownloadCommand command);
     }
 }
