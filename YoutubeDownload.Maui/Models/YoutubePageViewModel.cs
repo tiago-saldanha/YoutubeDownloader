@@ -1,7 +1,7 @@
 ﻿using YoutubeDownload.Core.Interfaces;
 using YoutubeDownload.Domain.Commands;
 
-namespace YoutubeDownload.Blazor.Models
+namespace YoutubeDownload.Maui.Models
 {
     public record YoutubePageViewModel
     {

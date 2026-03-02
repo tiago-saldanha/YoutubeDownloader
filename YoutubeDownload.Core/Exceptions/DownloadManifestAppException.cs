@@ -1,4 +1,4 @@
-﻿namespace YoutubeDownload.Application.Exceptions
+﻿namespace YoutubeDownload.Core.Exceptions
 {
     public sealed class DownloadManifestAppException : Exception
     {

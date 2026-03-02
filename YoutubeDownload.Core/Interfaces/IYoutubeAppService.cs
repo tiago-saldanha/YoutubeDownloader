@@ -1,11 +1,12 @@
 ﻿using YoutubeDownload.Domain.Commands;
 using YoutubeDownload.Domain.ViewModel;
 
-namespace YoutubeDownload.Application.Interfaces
+namespace YoutubeDownload.Core.Interfaces
 {
     public interface IYoutubeAppService
     {
         Task<StreamManifestViewModel> DownloadManifestAsync(DownloadManifestCommand command);
         Task<DownloadStreamViewModel> DownloadStreamAsync(DownloadCommand command);
+        Task<DownloadFileViewModel> DownloadFileAsync(DownloadCommand command);
     }
 }
