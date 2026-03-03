@@ -7,7 +7,7 @@ namespace YoutubeDownload.Infrastructure.Interfaces.Youtube
     {
         Task<Video> GetVideoAsync(string url, CancellationToken token = default);
         Task<StreamManifest> GetManifestAsync(string videoId, CancellationToken token = default);
-        Task DownloaAudioAsync(IStreamInfo streamInfo, string filePath, CancellationToken token = default);
-        Task DownloadVideoAsync(IStreamInfo audioStreamInfo, IStreamInfo videoStreamInfo, string filePath, CancellationToken token = default);
+        Task DownloaAudioAsync(IStreamInfo streamInfo, string filePath, IProgress<double> progress, CancellationToken token = default);
+        Task DownloadVideoAsync(IStreamInfo audioStreamInfo, IStreamInfo videoStreamInfo, string filePath, IProgress<double> progress, CancellationToken token = default);
     }
 }

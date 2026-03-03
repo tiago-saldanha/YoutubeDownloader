@@ -23,7 +23,7 @@ namespace YoutubeDownload.Blazor.Controllers
 
             if (output is DownloadCommand command)
             {
-                var stream = await service.DownloadStreamAsync(command);
+                var stream = await service.DownloadStreamAsync(command, null, new CancellationToken());
                 cache.Remove(id);
                 return File(stream.FileBytes, stream.ContentType, stream.FileName);
             }

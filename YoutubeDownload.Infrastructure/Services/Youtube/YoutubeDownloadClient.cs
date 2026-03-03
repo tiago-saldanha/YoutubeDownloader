@@ -23,22 +23,18 @@ namespace YoutubeDownload.Infrastructure.Services.Youtube
             return manifest;
         }
 
-        public async Task DownloaAudioAsync(IStreamInfo streamInfo, string filePath, CancellationToken token = default)
+        public async Task DownloaAudioAsync(IStreamInfo streamInfo, string filePath, IProgress<double> progress, CancellationToken token = default)
         {
-            var progress = new Progress<double>(p =>
-            {
-                logger.LogInformation("Progress: {value}", p);
-            });
             await client.Videos.Streams.DownloadAsync(streamInfo, filePath, progress, token);
             logger.LogInformation("Audio download completed successfully. File saved at {FilePath}.", filePath);
         }
 
-        public async Task DownloadVideoAsync(IStreamInfo audioStreamInfo, IStreamInfo videoStreamInfo, string filePath, CancellationToken token = default)
+        public async Task DownloadVideoAsync(IStreamInfo audioStreamInfo, IStreamInfo videoStreamInfo, string filePath, IProgress<double> progress, CancellationToken token = default)
         {
             logger.LogInformation("Preparing download for video '{Url}'. Output file: {FilePath}.", videoStreamInfo.Url, filePath);
             var streams = new IStreamInfo[] { audioStreamInfo, videoStreamInfo };
             var conversionRequest = new ConversionRequestBuilder(filePath).SetFFmpegPath(ffmpegService.Path).Build();
-            await client.Videos.DownloadAsync(streams, conversionRequest, null, token);
+            await client.Videos.DownloadAsync(streams, conversionRequest, progress, token);
             logger.LogInformation("Video download completed successfully. File saved at {FilePath}.", filePath);
         }
     }
