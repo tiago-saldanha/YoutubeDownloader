@@ -23,12 +23,12 @@ namespace YoutubeDownload.Core.Services
             }
         }
 
-        public async Task<DownloadStreamViewModel> DownloadStreamAsync(DownloadCommand command)
+        public async Task<DownloadStreamViewModel> DownloadStreamAsync(DownloadCommand command, IProgress<double> progress, CancellationToken token = default)
         {
             try
             {
                 logger.LogInformation("Starting video download [{Title}] (ID: {VideoId}).", command.Title, command.VideoId);
-                return await youtubeService.DownloadStreamAsync(command);
+                return await youtubeService.DownloadStreamAsync(command, progress, token);
             }
             catch (Exception ex)
             {
@@ -37,12 +37,12 @@ namespace YoutubeDownload.Core.Services
             }
         }
 
-        public async Task<DownloadFileViewModel> DownloadFileAsync(DownloadCommand command)
+        public async Task<DownloadFileViewModel> DownloadFileAsync(DownloadCommand command, IProgress<double> progress, CancellationToken token = default)
         {
             try
             {
                 logger.LogInformation("Starting video download [{Title}] (ID: {VideoId}).", command.Title, command.VideoId);
-                return await youtubeService.DownloadFileAsync(command);
+                return await youtubeService.DownloadFileAsync(command, progress, token);
             }
             catch (Exception ex)
             {
