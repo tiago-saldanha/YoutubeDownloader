@@ -1,11 +1,11 @@
-﻿using YoutubeDownload.Domain.Commands;
+﻿using YoutubeDownload.Domain.ViewModel;
 
 namespace YoutubeDownload.Infrastructure.Interfaces.Cache
 {
     public interface IStorageCacheService
     {
-        string Store(DownloadCommand command);
-        DownloadCommand? Get(string id);
+        void Store(DownloadFileViewModel download);
+        DownloadFileViewModel? Get(string id);
         void Remove(string id);
     }
 }

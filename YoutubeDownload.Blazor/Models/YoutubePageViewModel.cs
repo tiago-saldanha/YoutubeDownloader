@@ -26,5 +26,11 @@ namespace YoutubeDownload.Blazor.Models
                 Url = "";
             }
         }
+
+        public void ClearStreams()
+        {
+            VideoStreams.Clear();
+            AudioStreams.Clear();
+        }
     }
 }

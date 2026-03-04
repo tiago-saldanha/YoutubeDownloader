@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using YoutubeDownload.Domain.Commands;
-using YoutubeDownload.Core.Interfaces;
 using YoutubeDownload.Infrastructure.Interfaces.Cache;
+using YoutubeDownload.Domain.ViewModel;
 
 namespace YoutubeDownload.Blazor.Controllers
 {
@@ -9,23 +8,24 @@ namespace YoutubeDownload.Blazor.Controllers
     [Route("api/download")]
     public class DownloadController(IStorageCacheService cache) : ControllerBase
     {
-        [HttpPost("prepare")]
-        public IActionResult Prepare([FromBody] DownloadCommand command)
-        {
-            var id = cache.Store(command);
-            return Ok(id);
-        }
-
         [HttpGet("{id}")]
-        public async Task<IActionResult> Download([FromServices] IYoutubeAppService service, string id)
+        public IActionResult Download(string id)
         {
             var output = cache.Get(id);
 
-            if (output is DownloadCommand command)
+            if (output is DownloadFileViewModel command)
             {
-                var stream = await service.DownloadStreamAsync(command, null, new CancellationToken());
                 cache.Remove(id);
-                return File(stream.FileBytes, stream.ContentType, stream.FileName);
+                var stream = new FileStream(
+                    command.FilePath,
+                    FileMode.Open,
+                    FileAccess.Read,
+                    FileShare.Read);
+
+                return new FileStreamResult(stream, command.ContentType)
+                {
+                    FileDownloadName = command.FileName,
+                };
             }
 
             return NotFound();

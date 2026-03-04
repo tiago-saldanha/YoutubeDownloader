@@ -46,13 +46,14 @@
     public string Message { get; set; } = "";
 
     public bool IsLoading { get; set; }
-    
+
     private int _lastReportedPercent = -1;
 
     private YoutubePageViewModel ViewModel = new();
 
     private async Task Search()
     {
+        ViewModel.ClearStreams();
         await JSRuntime.InvokeVoidAsync("showLoading", "Searching...");
         await ViewModel.SearchAsync(Service);
         await JSRuntime.InvokeVoidAsync("hideLoading");
@@ -86,30 +87,11 @@
             }
         });
 
-        var download = await Service.DownloadStreamAsync(command, progress, new CancellationToken());
-
-        await JSRuntime.InvokeVoidAsync("showLoading", "Preparing Download...");
-
-        await JSRuntime.InvokeVoidAsync("downloadFile", download.FileName, download.ContentType, download.FileBytes);
+        var download = await Service.DownloadFileAsync(command, progress, new CancellationToken());
 
         await JSRuntime.InvokeVoidAsync("hideLoading");
-    }
 
-    [Obsolete("Use DownloadAsync to download via javascript on browser")]
-    private async Task Download(StreamViewModel stream)
-    {
-        var command = new DownloadCommand(
-            stream.VideoId,
-            stream.Title,
-            stream.ContainerName,
-            stream.VideoCodec,
-            stream.Resolution,
-            stream.AudioCodec,
-            stream.IsAudioOnly
-        );
+        Navigation.NavigateTo($"/api/download/{download.Id}", true);
 
-        var id = await DownloadClient.PrepareAsync(command);
-
-        Navigation.NavigateTo($"/api/download/{id}", true);
     }
 }

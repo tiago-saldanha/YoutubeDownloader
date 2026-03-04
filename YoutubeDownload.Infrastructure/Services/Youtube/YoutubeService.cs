@@ -3,12 +3,13 @@ using YoutubeDownload.Domain.Commands;
 using YoutubeDownload.Domain.Interfaces;
 using YoutubeDownload.Domain.ViewModel;
 using YoutubeDownload.Infrastructure.Helpers;
+using YoutubeDownload.Infrastructure.Interfaces.Cache;
 using YoutubeDownload.Infrastructure.Interfaces.Youtube;
 using YoutubeExplode.Videos.Streams;
 
 namespace YoutubeDownload.Infrastructure.Services.Youtube
 {
-    public class YoutubeService(IYoutubeDownloadClient client, ILogger<YoutubeService> logger)
+    public class YoutubeService(IYoutubeDownloadClient client, IStorageCacheService cache, ILogger<YoutubeService> logger)
         : IYoutubeService
     {
         public async Task<StreamManifestViewModel> DownloadManifestAsync(DownloadManifestCommand command)
@@ -20,7 +21,7 @@ namespace YoutubeDownload.Infrastructure.Services.Youtube
 
         public async Task<DownloadStreamViewModel> DownloadStreamAsync(DownloadCommand command, IProgress<double> progress, CancellationToken token = default)
         {
-            var manifest = await client.GetManifestAsync(command.VideoId);
+            var manifest = await client.GetManifestAsync(command.VideoId, token);
 
             return command.IsAudioOnly
                    ? await DownloadAudioStreamAsync(manifest, command, progress, token)
@@ -29,7 +30,7 @@ namespace YoutubeDownload.Infrastructure.Services.Youtube
 
         public async Task<DownloadFileViewModel> DownloadFileAsync(DownloadCommand command, IProgress<double> progress, CancellationToken token = default)
         {
-            var manifest = await client.GetManifestAsync(command.VideoId);
+            var manifest = await client.GetManifestAsync(command.VideoId, token);
 
             return command.IsAudioOnly
                    ? await DownloadAudioFileAsync(manifest, command, progress, token)
@@ -71,6 +72,7 @@ namespace YoutubeDownload.Infrastructure.Services.Youtube
 
             await client.DownloaAudioAsync(audioStream, filePath, progress, token);
             var download = DownloadFileViewModel.Create(filePath, command.Title, audioStream.Container.Name);
+            cache.Store(download);
 
             return download;
         }
@@ -84,6 +86,7 @@ namespace YoutubeDownload.Infrastructure.Services.Youtube
 
             await client.DownloadVideoAsync(audioStream, videoStream, filePath, progress, token);
             var download = DownloadFileViewModel.Create(filePath, command.Title, audioStream.Container.Name);
+            cache.Store(download);
 
             return download;
         }
