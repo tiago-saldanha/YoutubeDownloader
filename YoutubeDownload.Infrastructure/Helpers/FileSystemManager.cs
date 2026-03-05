@@ -2,7 +2,7 @@
 {
     public class FileSystemManager
     {
-        private static readonly string OutputDirectory = CreateOutputDirectory();
+        public static readonly string OutputDirectory = CreateOutputDirectory();
 
         public static string CreateFile(string extension)
         {

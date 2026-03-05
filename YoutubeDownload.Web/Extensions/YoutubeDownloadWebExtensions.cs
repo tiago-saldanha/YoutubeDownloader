@@ -7,6 +7,8 @@ using YoutubeDownload.Infrastructure.Services.Ffmpeg;
 using YoutubeDownload.Infrastructure.Services.Youtube;
 using YoutubeDownload.Infrastructure.Interfaces.Ffpmeg;
 using YoutubeDownload.Infrastructure.Interfaces.Youtube;
+using YoutubeDownload.Infrastructure.Interfaces.Cache;
+using YoutubeDownload.Infrastructure.Services.Cache;
 
 namespace YoutubeDownload.Web.Extensions
 {
@@ -27,6 +29,7 @@ namespace YoutubeDownload.Web.Extensions
 
         public static WebApplicationBuilder AddInfraStructure(this WebApplicationBuilder builder)
         {
+            builder.Services.AddSingleton<IStorageCacheService, StorageCacheService>();
             builder.Services.Configure<FfmpegOptions>(builder.Configuration.GetSection("Ffmpeg"));
             return builder;
         }
