@@ -1,15 +1,16 @@
-﻿using YoutubeExplode;
+﻿using YoutubeDownload.Blazor.Http;
 using YoutubeDownload.Core.Interfaces;
 using YoutubeDownload.Core.Services;
-using YoutubeDownload.Infrastructure.Configuration;
-using YoutubeDownload.Blazor.Http;
 using YoutubeDownload.Domain.Interfaces;
-using YoutubeDownload.Infrastructure.Services.Cache;
-using YoutubeDownload.Infrastructure.Services.Ffmpeg;
-using YoutubeDownload.Infrastructure.Services.Youtube;
+using YoutubeDownload.Infrastructure.Configuration;
 using YoutubeDownload.Infrastructure.Interfaces.Cache;
 using YoutubeDownload.Infrastructure.Interfaces.Ffpmeg;
 using YoutubeDownload.Infrastructure.Interfaces.Youtube;
+using YoutubeDownload.Infrastructure.Services;
+using YoutubeDownload.Infrastructure.Services.Cache;
+using YoutubeDownload.Infrastructure.Services.Ffmpeg;
+using YoutubeDownload.Infrastructure.Services.Youtube;
+using YoutubeExplode;
 
 namespace YoutubeDownload.Blazor.Extensions
 {
@@ -51,6 +52,7 @@ namespace YoutubeDownload.Blazor.Extensions
 
         public static WebApplicationBuilder ConfigureInfraStructure(this WebApplicationBuilder builder)
         {
+            builder.Services.AddHostedService<CleannerService>();
             builder.Services.Configure<FfmpegOptions>(builder.Configuration.GetSection("Ffmpeg"));
             return builder;
         }
