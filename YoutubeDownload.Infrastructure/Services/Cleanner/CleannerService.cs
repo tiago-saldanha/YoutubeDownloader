@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using YoutubeDownload.Infrastructure.Helpers;
 
-namespace YoutubeDownload.Infrastructure.Services
+namespace YoutubeDownload.Infrastructure.Services.Cleanner
 {
     public class CleannerService(ILogger<CleannerService> logger) : BackgroundService
     {
