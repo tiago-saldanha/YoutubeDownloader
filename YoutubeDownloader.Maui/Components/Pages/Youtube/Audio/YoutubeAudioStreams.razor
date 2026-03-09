@@ -1,0 +1,38 @@
+﻿@using YoutubeDownloader.Maui.Models
+
+@if (streams.Count > 0)
+{
+    <h4 class="mt-5 mb-3">🎵 Audio Download</h4>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Format</th>
+                    <th>Audio Codec</th>
+                    <th>Size</th>
+                    <th class="text-end"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var stream in streams)
+                {
+                    <YoutubeAudioStreamItem stream="stream" OnClickCallback="() => DownloadAsync(stream)" />
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public List<StreamViewModel> streams { get; set; } = [];
+
+    [Parameter]
+    public EventCallback<StreamViewModel> OnClickCallback { get; set; }
+
+    private async Task DownloadAsync(StreamViewModel stream)
+    {
+        await OnClickCallback.InvokeAsync(stream);
+    }
+}

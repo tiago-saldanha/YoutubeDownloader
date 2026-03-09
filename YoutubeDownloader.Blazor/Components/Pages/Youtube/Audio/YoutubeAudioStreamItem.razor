@@ -1,0 +1,56 @@
+﻿@using YoutubeDownloader.Blazor.Models
+
+<tr>
+	<td>
+		<span class="badge bg-dark">
+			@stream.ContainerName
+		</span>
+	</td>
+
+	<td>
+		@if (stream.AudioCodec.Contains("mp4a"))
+		{
+			<span class="badge bg-warning text-dark">
+				<i class="bi bi-music-note-beamed"></i>
+				@stream.AudioCodec
+			</span>
+		}
+		else if (stream.AudioCodec.Contains("opus"))
+		{
+			<span class="badge bg-info text-dark">
+				<i class="bi bi-music-note"></i>
+				@stream.AudioCodec
+			</span>
+		}
+		else
+		{
+			<span class="badge bg-secondary">
+				@stream.AudioCodec
+			</span>
+		}
+	</td>
+
+	<td>@stream.DisplaySize</td>
+
+	<td class="text-end">
+		<button class="btn btn-outline-warning btn-sm rounded-circle"
+				style="width:40px;height:40px"
+				title="Download"
+				@onclick="DownloadAsync">
+			<i class="bi bi-cloud-arrow-down"></i>
+		</button>
+	</td>
+</tr>
+
+@code {
+	[Parameter]
+	public StreamViewModel stream { get; set; }
+
+	[Parameter]
+	public EventCallback<StreamViewModel> OnClickCallback { get; set; }
+
+	private async Task DownloadAsync()
+	{
+		await OnClickCallback.InvokeAsync(stream);
+	}
+}
