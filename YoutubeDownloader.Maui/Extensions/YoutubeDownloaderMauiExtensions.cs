@@ -14,7 +14,7 @@ using YoutubeDownloader.Maui.Services;
 
 namespace YoutubeDownloader.Maui.Extensions
 {
-    public static class YoutubeDownloadMauiExtensions
+    public static class YoutubeDownloaderMauiExtensions
     {
         public static MauiAppBuilder ConfigureCache(this MauiAppBuilder builder)
         {
