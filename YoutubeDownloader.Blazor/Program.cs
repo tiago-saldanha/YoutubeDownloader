@@ -1,3 +1,4 @@
+using MudBlazor.Services;
 using YoutubeDownloader.Blazor.Components;
 using YoutubeDownloader.Blazor.Extensions;
 
@@ -12,6 +13,8 @@ builder
     .ConfigureCache()
     .ConfigureApplication()
     .ConfigureInfraStructure();
+
+builder.Services.AddMudServices();
 
 var app = builder.Build();
 

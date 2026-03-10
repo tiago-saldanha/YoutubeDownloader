@@ -1,5 +1,6 @@
 ﻿@page "/youtube"
 @rendermode InteractiveServer
+
 @inject IYoutubeAppService Service
 @inject DownloadApiClient DownloadClient
 @inject NavigationManager Navigation
@@ -12,31 +13,54 @@
 
 <PageTitle>Youtube Download</PageTitle>
 
-<div class="text-center mb-4">
-    <h1 class="fw-bold">YouTube Downloader</h1>
-    <p class="text-muted">Download video and audio streams in your preferred format</p>
-</div>
+<MudContainer MaxWidth="MaxWidth.Medium">
 
-<div class="card shadow-sm p-4 mb-5">
+    <MudStack AlignItems="AlignItems.Center" Class="mt-6">
+        <MudText Typo="Typo.h5" GutterBottom="true">
+            YouTube Downloader
+        </MudText>
 
-    <div class="input-group input-group">
-        <input class="form-control" name="url"
-               placeholder="Paste YouTube URL here..."
-               @bind="ViewModel.Url" />
+        <MudText Typo="Typo.subtitle1" Color="Color.Secondary">
+            Download video and audio streams in your preferred format
+        </MudText>
+    </MudStack>
 
-        <button class="btn btn-primary" @onclick="Search">
-            🔍 Search
-        </button>
-    </div>
+    <MudCard Elevation="3" Class="pa-4 mb-6">
 
-    @if (!string.IsNullOrWhiteSpace(ViewModel.Title))
-    {
-        <p class="text-muted">Título: @ViewModel.Title</p>
-    }
+        <MudStack Row="true" Spacing="2">
 
-    <YoutubeVideoStreams streams="@ViewModel.VideoStreams" OnClickCallback="(stream) => DownloadAsync(stream)" />
-    <YoutubeAudioStreams streams="@ViewModel.AudioStreams" OnClickCallback="(stream) => DownloadAsync(stream)" />
-</div>
+            <MudTextField T="string"
+                          Placeholder="Paste YouTube URL here..."
+                          @bind-Value="ViewModel.Url"
+                          FullWidth="true" />
+
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       OnClick="Search"
+                       StartIcon="@Icons.Material.Filled.Search">
+
+                Search
+
+            </MudButton>
+
+        </MudStack>
+
+        @if (!string.IsNullOrWhiteSpace(ViewModel.Title))
+        {
+            <MudText Typo="Typo.subtitle2" Color="Color.Secondary" Class="mt-3">
+                Title: @ViewModel.Title
+            </MudText>
+        }
+
+        <YoutubeVideoStreams streams="@ViewModel.VideoStreams"
+                             OnClickCallback="(stream) => DownloadAsync(stream)" />
+
+        <YoutubeAudioStreams streams="@ViewModel.AudioStreams"
+                             OnClickCallback="(stream) => DownloadAsync(stream)" />
+
+    </MudCard>
+
+</MudContainer>
 
 @code {
 

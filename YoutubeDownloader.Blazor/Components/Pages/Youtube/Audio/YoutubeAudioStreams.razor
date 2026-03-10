@@ -2,29 +2,56 @@
 
 @if (streams.Count > 0)
 {
-    <h4 class="mt-5 mb-3">🎵 Audio Download</h4>
+    <MudText Typo="Typo.h6" Class="mt-6 mb-2">
+        🎵 Audio Download
+    </MudText>
 
-    <div class="table-responsive">
-        <table class="table table-hover align-middle">
-            <thead class="table-light">
-                <tr>
-                    <th>Format</th>
-                    <th>Audio Codec</th>
-                    <th>Size</th>
-                    <th class="text-end"></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var stream in streams)
-                {
-                    <YoutubeAudioStreamItem stream="stream" OnClickCallback="() => DownloadAsync(stream)" />
-                }
-            </tbody>
-        </table>
-    </div>
+    <MudTable Items="streams"
+              Hover="true"
+              Dense="true"
+              Elevation="1">
+
+        <HeaderContent>
+            <MudTh>Format</MudTh>
+            <MudTh>Audio Codec</MudTh>
+            <MudTh>Size</MudTh>
+            <MudTh Align="Align.Right"></MudTh>
+        </HeaderContent>
+
+        <RowTemplate>
+
+            <MudTd>
+                <MudChip T="string" Color="Color.Dark"
+                         Variant="Variant.Filled"
+                         Size="Size.Small">
+                    @context.ContainerName
+                </MudChip>
+            </MudTd>
+
+            <MudTd>
+                @GetCodecChip(context.AudioCodec)
+            </MudTd>
+
+            <MudTd>
+                @context.DisplaySize
+            </MudTd>
+
+            <MudTd Align="Align.Right">
+
+                <MudIconButton Icon="@Icons.Material.Filled.CloudDownload"
+                               Color="Color.Warning"
+                               Variant="Variant.Outlined"
+                               OnClick="() => DownloadAsync(context)" />
+
+            </MudTd>
+
+        </RowTemplate>
+
+    </MudTable>
 }
 
 @code {
+
     [Parameter]
     public List<StreamViewModel> streams { get; set; } = [];
 
@@ -35,4 +62,31 @@
     {
         await OnClickCallback.InvokeAsync(stream);
     }
+
+    private RenderFragment GetCodecChip(string codec) => builder =>
+    {
+        Color color = Color.Secondary;
+        string icon = Icons.Material.Filled.MusicNote;
+
+        if (codec.Contains("mp4a"))
+        {
+            color = Color.Warning;
+            icon = Icons.Material.Filled.LibraryMusic;
+        }
+        else if (codec.Contains("opus"))
+        {
+            color = Color.Info;
+            icon = Icons.Material.Filled.GraphicEq;
+        }
+
+        builder.OpenComponent<MudChip<string>>(0);
+        builder.AddAttribute(1, "Color", color);
+        builder.AddAttribute(2, "StartIcon", icon);
+        builder.AddAttribute(3, "Size", Size.Small);
+        builder.AddAttribute(4, "ChildContent", (RenderFragment)((b) =>
+        {
+            b.AddContent(5, codec);
+        }));
+        builder.CloseComponent();
+    };
 }
