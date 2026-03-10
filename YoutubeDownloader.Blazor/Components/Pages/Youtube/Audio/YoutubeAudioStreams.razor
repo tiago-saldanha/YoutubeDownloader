@@ -3,17 +3,18 @@
 @if (streams.Count > 0)
 {
     <MudText Typo="Typo.h6" Class="mt-6 mb-2">
-        🎵 Audio Download
+        Audio Streams
     </MudText>
 
     <MudTable Items="streams"
               Hover="true"
               Dense="true"
-              Elevation="1">
+              Striped="true"
+              Elevation="0">
 
         <HeaderContent>
             <MudTh>Format</MudTh>
-            <MudTh>Audio Codec</MudTh>
+            <MudTh>Codec</MudTh>
             <MudTh>Size</MudTh>
             <MudTh Align="Align.Right"></MudTh>
         </HeaderContent>
@@ -21,8 +22,8 @@
         <RowTemplate>
 
             <MudTd>
-                <MudChip T="string" Color="Color.Dark"
-                         Variant="Variant.Filled"
+                <MudChip T="string"
+                         Variant="Variant.Outlined"
                          Size="Size.Small">
                     @context.ContainerName
                 </MudChip>
@@ -40,7 +41,7 @@
 
                 @if (DownloadingStreamId == context.Id)
                 {
-                    <MudStack Style="width:150px">
+                    <MudStack Style="width:140px">
 
                         <MudProgressLinear Value="@DownloadPercent"
                                            Color="Color.Primary"
@@ -54,9 +55,10 @@
                 }
                 else
                 {
-                    <MudIconButton Icon="@Icons.Material.Filled.CloudDownload"
-                                   Color="Color.Warning"
-                                   Variant="Variant.Outlined"
+                    <MudIconButton Icon="@Icons.Material.Filled.Download"
+                                   Color="Color.Primary"
+                                   Variant="Variant.Text"
+                                   Size="Size.Small"
                                    OnClick="() => DownloadAsync(context)" />
                 }
 
@@ -81,7 +83,6 @@
     [Parameter]
     public int DownloadPercent { get; set; }
 
-
     private async Task DownloadAsync(StreamViewModel stream)
     {
         await OnClickCallback.InvokeAsync(stream);
@@ -89,23 +90,9 @@
 
     private RenderFragment GetCodecChip(string codec) => builder =>
     {
-        Color color = Color.Secondary;
-        string icon = Icons.Material.Filled.MusicNote;
-
-        if (codec.Contains("mp4a"))
-        {
-            color = Color.Warning;
-            icon = Icons.Material.Filled.LibraryMusic;
-        }
-        else if (codec.Contains("opus"))
-        {
-            color = Color.Info;
-            icon = Icons.Material.Filled.GraphicEq;
-        }
-
         builder.OpenComponent<MudChip<string>>(0);
-        builder.AddAttribute(1, "Color", color);
-        builder.AddAttribute(2, "StartIcon", icon);
+        builder.AddAttribute(1, "Variant", Variant.Text);
+        builder.AddAttribute(2, "Color", Color.Primary);
         builder.AddAttribute(3, "Size", Size.Small);
         builder.AddAttribute(4, "ChildContent", (RenderFragment)((b) =>
         {
