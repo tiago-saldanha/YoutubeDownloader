@@ -44,11 +44,28 @@
 
             <MudTd Align="Align.Right">
 
-                <MudIconButton Icon="@Icons.Material.Filled.CloudDownload"
-                               Color="Color.Warning"
-                               Variant="Variant.Outlined"
-                               Size="Size.Medium"
-                               OnClick="() => DownloadAsync(context)" />
+                @if (DownloadingStreamId == context.Id)
+                {
+                    <MudStack Style="width:150px">
+
+                        <MudProgressLinear Value="@DownloadPercent"
+                                           Color="Color.Primary"
+                                           Rounded="true" />
+
+                        <MudText Typo="Typo.caption">
+                            @DownloadPercent%
+                        </MudText>
+
+                    </MudStack>
+                }
+                else
+                {
+                    <MudIconButton Icon="@Icons.Material.Filled.CloudDownload"
+                                   Color="Color.Warning"
+                                   Variant="Variant.Outlined"
+                                   Size="Size.Medium"
+                                   OnClick="() => DownloadAsync(context)" />
+                }
 
             </MudTd>
 
@@ -64,6 +81,12 @@
 
     [Parameter]
     public EventCallback<StreamViewModel> OnClickCallback { get; set; }
+
+    [Parameter]
+    public string? DownloadingStreamId { get; set; }
+
+    [Parameter]
+    public int DownloadPercent { get; set; }
 
     private async Task DownloadAsync(StreamViewModel stream)
     {

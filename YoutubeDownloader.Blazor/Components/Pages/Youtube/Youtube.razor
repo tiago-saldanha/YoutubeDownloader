@@ -4,7 +4,6 @@
 @inject IYoutubeAppService Service
 @inject DownloadApiClient DownloadClient
 @inject NavigationManager Navigation
-@inject IJSRuntime JSRuntime
 
 @using YoutubeDownloader.Domain.Commands
 @using YoutubeDownloader.Blazor.Components.Pages.Youtube.Audio
@@ -45,18 +44,38 @@
 
         </MudStack>
 
-        @if (!string.IsNullOrWhiteSpace(ViewModel.Title))
+        
+        @if (IsSearching)
         {
-            <MudText Typo="Typo.subtitle2" Color="Color.Secondary" Class="mt-3">
+            <MudStack Class="mb-2">
+
+                <MudText Typo="Typo.caption">
+                    @StatusMessage
+                </MudText>
+
+                <MudProgressLinear Value="@DownloadPercent"
+                                   Indeterminate="@IsSearching" />
+
+            </MudStack>
+        }
+        else if (!string.IsNullOrWhiteSpace(ViewModel.Title))
+        {
+            <MudText Typo="Typo.subtitle2"
+                     Color="Color.Secondary"
+                     Class="mt-3">
                 Title: @ViewModel.Title
             </MudText>
         }
 
         <YoutubeVideoStreams streams="@ViewModel.VideoStreams"
-                             OnClickCallback="(stream) => DownloadAsync(stream)" />
+                             DownloadingStreamId="@DownloadingStreamId"
+                             DownloadPercent="@DownloadPercent"
+                             OnClickCallback="DownloadAsync" />
 
         <YoutubeAudioStreams streams="@ViewModel.AudioStreams"
-                             OnClickCallback="(stream) => DownloadAsync(stream)" />
+                             DownloadingStreamId="@DownloadingStreamId"
+                             DownloadPercent="@DownloadPercent"
+                             OnClickCallback="DownloadAsync" />
 
     </MudCard>
 
@@ -67,10 +86,11 @@
     [Parameter]
     public EventCallback<StreamViewModel> OnClickCallback { get; set; }
 
-    public string Message { get; set; } = "";
-
-    public bool IsLoading { get; set; }
-
+    private bool IsSearching;
+    private bool IsDownloading;
+    private int DownloadPercent;
+    private string StatusMessage = "";
+    private string? DownloadingStreamId;
     private int _lastReportedPercent = -1;
 
     private YoutubePageViewModel ViewModel = new();
@@ -78,14 +98,23 @@
     private async Task Search()
     {
         ViewModel.ClearStreams();
-        await JSRuntime.InvokeVoidAsync("showLoading", "Searching...");
+
+        IsSearching = true;
+        StatusMessage = "Searching video...";
+
         await ViewModel.SearchAsync(Service);
-        await JSRuntime.InvokeVoidAsync("hideLoading");
+
+        IsSearching = false;
     }
 
     private async Task DownloadAsync(StreamViewModel stream)
     {
-        await JSRuntime.InvokeVoidAsync("showLoading", "Downloading...");
+        IsDownloading = true;
+        StatusMessage = "Starting download...";
+        DownloadPercent = 0;
+        DownloadingStreamId = stream.Id;
+
+        await InvokeAsync(StateHasChanged);
 
         var command = new DownloadCommand(
             stream.VideoId,
@@ -97,25 +126,29 @@
             stream.IsAudioOnly
         );
 
-        var progress = new Progress<double>(async p =>
+        var progress = new Progress<double>(p =>
         {
             var percent = (int)Math.Floor(p * 100);
 
-            if (percent % 1 == 0 && percent != _lastReportedPercent)
+            if (percent != _lastReportedPercent)
             {
                 _lastReportedPercent = percent;
 
-                await JSRuntime.InvokeVoidAsync(
-                    "showLoading",
-                    $"Downloading {percent.ToString("F2")}%");
+                DownloadPercent = percent;
+                StatusMessage = $"Downloading {stream.ContainerName} {percent}%";
+
+                InvokeAsync(StateHasChanged);
             }
         });
 
-        var download = await Service.DownloadFileAsync(command, progress, new CancellationToken());
+        var download = await Service.DownloadFileAsync(
+            command,
+            progress,
+            new CancellationToken());
 
-        await JSRuntime.InvokeVoidAsync("hideLoading");
+        IsDownloading = false;
+        DownloadingStreamId = null;
 
         Navigation.NavigateTo($"/api/download/{download.Id}", true);
-
     }
 }
