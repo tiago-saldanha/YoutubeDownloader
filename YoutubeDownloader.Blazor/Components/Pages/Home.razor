@@ -1,7 +1,161 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
+@rendermode InteractiveServer
 
-<h1>Hello, world!</h1>
+@inject IYoutubeAppService Service
+@inject DownloadApiClient DownloadClient
+@inject NavigationManager Navigation
 
-Welcome to your new app.
+@using YoutubeDownloader.Domain.Commands
+@using YoutubeDownloader.Blazor.Components.Pages.Youtube
+@using YoutubeDownloader.Blazor.Models
+
+<PageTitle>Youtube Download</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Medium">
+
+    <MudStack AlignItems="AlignItems.Center" Class="mt-6">
+        <MudText Typo="Typo.subtitle1">
+            Download video and audio streams in your preferred format
+        </MudText>
+    </MudStack>
+
+    <MudCard Elevation="3" Class="pa-4 mb-6">
+
+        <MudStack Row="true" Spacing="2">
+
+            <MudTextField T="string"
+                          Placeholder="Paste YouTube URL here..."
+                          @bind-Value="ViewModel.Url"
+                          FullWidth="true" />
+
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       OnClick="Search"
+                       StartIcon="@Icons.Material.Filled.Search">
+
+                Search
+
+            </MudButton>
+
+        </MudStack>
+
+        @if (!string.IsNullOrWhiteSpace(ViewModel.ThumbnailUrl))
+        {
+            <MudCard Class="mt-4">
+
+                <MudCardMedia Image="@ViewModel.ThumbnailUrl"
+                              Height="468" />
+
+                <MudCardContent>
+
+                    <MudText Typo="Typo.subtitle1" Class="mt-1">
+                        @ViewModel.Title
+                    </MudText>
+
+                </MudCardContent>
+
+            </MudCard>
+        }
+
+        @if (IsSearching)
+        {
+            <MudStack Class="mb-2">
+
+                <MudText Typo="Typo.caption">
+                    @StatusMessage
+                </MudText>
+
+                <MudProgressLinear Value="@DownloadPercent"
+                                   Indeterminate="@IsSearching" />
+
+            </MudStack>
+        }
+
+        <MudCard Class="mb-6" />
+
+        <YoutubeVideoStreams streams="@ViewModel.VideoStreams"
+                             DownloadingStreamId="@DownloadingStreamId"
+                             DownloadPercent="@DownloadPercent"
+                             OnClickCallback="DownloadAsync" />
+
+        <YoutubeAudioStreams streams="@ViewModel.AudioStreams"
+                             DownloadingStreamId="@DownloadingStreamId"
+                             DownloadPercent="@DownloadPercent"
+                             OnClickCallback="DownloadAsync" />
+
+    </MudCard>
+
+</MudContainer>
+
+@code {
+
+    [Parameter]
+    public EventCallback<StreamViewModel> OnClickCallback { get; set; }
+
+    private bool IsSearching;
+    private bool IsDownloading;
+    private int DownloadPercent;
+    private string StatusMessage = "";
+    private string? DownloadingStreamId;
+    private int _lastReportedPercent = -1;
+
+    private YoutubePageViewModel ViewModel = new();
+
+    private async Task Search()
+    {
+        ViewModel.ClearStreams();
+
+        IsSearching = true;
+        StatusMessage = "Searching video...";
+
+        await ViewModel.SearchAsync(Service);
+
+        IsSearching = false;
+    }
+
+    private async Task DownloadAsync(StreamViewModel stream)
+    {
+        IsDownloading = true;
+        StatusMessage = "Starting download...";
+        DownloadPercent = 0;
+        DownloadingStreamId = stream.Id;
+
+        await InvokeAsync(StateHasChanged);
+
+        var command = new DownloadCommand(
+            stream.VideoId,
+            stream.Title,
+            stream.ContainerName,
+            stream.VideoCodec,
+            stream.Resolution,
+            stream.AudioCodec,
+            stream.IsAudioOnly
+        );
+
+        var progress = new Progress<double>(p =>
+        {
+            var percent = (int)Math.Floor(p * 100);
+
+            if (percent != _lastReportedPercent)
+            {
+                _lastReportedPercent = percent;
+
+                DownloadPercent = percent;
+                StatusMessage = $"Downloading {stream.ContainerName} {percent}%";
+
+                InvokeAsync(StateHasChanged);
+            }
+        });
+
+        var download = await Service.DownloadFileAsync(
+            command,
+            progress,
+            new CancellationToken());
+
+        IsDownloading = false;
+        DownloadingStreamId = null;
+
+        Navigation.NavigateTo($"/api/download/{download.Id}", true);
+    }
+}

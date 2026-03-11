@@ -39,28 +39,32 @@
 
             <MudTd Align="Align.Right">
 
-                @if (DownloadingStreamId == context.Id)
-                {
-                    <MudStack Style="width:140px">
+                <MudStack Row="true" Justify="Justify.FlexEnd">
 
-                        <MudProgressLinear Value="@DownloadPercent"
-                                           Color="Color.Primary"
-                                           Rounded="true" />
+                    @if (DownloadingStreamId == context.Id)
+                    {
+                        <MudStack Style="width:140px">
 
-                        <MudText Typo="Typo.caption">
-                            @DownloadPercent%
-                        </MudText>
+                            <MudProgressLinear Value="@DownloadPercent"
+                                               Color="Color.Primary"
+                                               Rounded="true" />
 
-                    </MudStack>
-                }
-                else
-                {
-                    <MudIconButton Icon="@Icons.Material.Filled.Download"
-                                   Color="Color.Primary"
-                                   Variant="Variant.Text"
-                                   Size="Size.Small"
-                                   OnClick="() => DownloadAsync(context)" />
-                }
+                            <MudText Typo="Typo.caption" Align="Align.Right">
+                                @DownloadPercent%
+                            </MudText>
+
+                        </MudStack>
+                    }
+                    else
+                    {
+                        <MudIconButton Icon="@Icons.Material.Filled.Download"
+                                       Color="Color.Primary"
+                                       Variant="Variant.Text"
+                                       Size="Size.Small"
+                                       OnClick="() => DownloadAsync(context)" />
+                    }
+
+                </MudStack>
 
             </MudTd>
 
