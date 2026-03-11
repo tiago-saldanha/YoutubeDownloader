@@ -21,15 +21,6 @@ namespace YoutubeDownloader.Infrastructure.Services.Youtube
             return StreamManifestViewModel.Create(manifest, video, thumbnail);
         }
 
-        public async Task<DownloadStreamViewModel> DownloadStreamAsync(DownloadCommand command, IProgress<double> progress, CancellationToken token = default)
-        {
-            var manifest = await client.GetManifestAsync(command.VideoId, token);
-
-            return command.IsAudioOnly
-                   ? await DownloadAudioStreamAsync(manifest, command, progress, token)
-                   : await DownloadVideoStreamAsync(manifest, command, progress, token);
-        }
-
         public async Task<DownloadFileViewModel> DownloadFileAsync(DownloadCommand command, IProgress<double> progress, CancellationToken token = default)
         {
             var manifest = await client.GetManifestAsync(command.VideoId, token);
@@ -37,34 +28,6 @@ namespace YoutubeDownloader.Infrastructure.Services.Youtube
             return command.IsAudioOnly
                    ? await DownloadAudioFileAsync(manifest, command, progress, token)
                    : await DownloadVideoFileAsync(manifest, command, progress, token);
-        }
-
-        private async Task<DownloadStreamViewModel> DownloadVideoStreamAsync(StreamManifest manifest, DownloadCommand command, IProgress<double> progress, CancellationToken token = default)
-        {
-            var audioStream = GetAudioStream(manifest, s => s.Container.Name == command.ContainerName, command.Title);
-            var videoStream = GetVideoStream(manifest, command);
-
-            var filePath = FileSystemManager.CreateFile(audioStream.Container.Name);
-            
-            await client.DownloadVideoAsync(audioStream, videoStream, filePath, progress, token);
-            var download = DownloadStreamViewModel.Create(filePath, command.Title, audioStream.Container.Name);
-            
-            FileSystemManager.RemoveFile(filePath);
-
-            return download;
-        }
-
-        private async Task<DownloadStreamViewModel> DownloadAudioStreamAsync(StreamManifest manifest, DownloadCommand command, IProgress<double> progress, CancellationToken token = default)
-        {
-            var audioStream = GetAudioStream(manifest, s => s.AudioCodec == command.AudioCodec && s.Container.Name == command.ContainerName, command.Title);
-            var filePath = FileSystemManager.CreateFile(audioStream.Container.Name);
-            
-            await client.DownloaAudioAsync(audioStream, filePath, progress, token);
-            var download = DownloadStreamViewModel.Create(filePath, command.Title, audioStream.Container.Name);
-            
-            FileSystemManager.RemoveFile(filePath);
-            
-            return download;
         }
 
         private async Task<DownloadFileViewModel> DownloadAudioFileAsync(StreamManifest manifest, DownloadCommand command, IProgress<double> progress, CancellationToken token = default)
