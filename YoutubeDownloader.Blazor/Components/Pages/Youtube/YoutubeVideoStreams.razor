@@ -10,8 +10,8 @@
     <MudTable Items="streams"
               Hover="true"
               Dense="true"
-              Striped="true"
-              Elevation="0">
+              Elevation="0"
+              RowClassFunc="GetRowClass">
 
         <HeaderContent>
             <MudTh>Format</MudTh>
@@ -62,6 +62,7 @@
                                        Color="Color.Primary"
                                        Variant="Variant.Text"
                                        Size="Size.Small"
+                                       Disabled="IsDownloading && DownloadingStreamId != context.Id"
                                        OnClick="() => DownloadAsync(context)" />
                     }
 
@@ -88,8 +89,19 @@
     [Parameter]
     public int DownloadPercent { get; set; }
 
+    [Parameter]
+    public bool IsDownloading { get; set; }
+
     private async Task DownloadAsync(StreamViewModel stream)
     {
         await OnClickCallback.InvokeAsync(stream);
+    }
+
+    private string GetRowClass(StreamViewModel stream, int rowNumber)
+    {
+        if (DownloadingStreamId == stream.Id)
+            return "downloading-row";
+
+        return "";
     }
 }

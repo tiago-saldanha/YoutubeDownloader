@@ -31,6 +31,7 @@
 
             <MudButton Variant="Variant.Filled"
                        Color="Color.Primary"
+                       Disabled="IsDownloading"
                        OnClick="Search"
                        StartIcon="@Icons.Material.Filled.Search">
 
@@ -77,11 +78,13 @@
         <YoutubeVideoStreams streams="@ViewModel.VideoStreams"
                              DownloadingStreamId="@DownloadingStreamId"
                              DownloadPercent="@DownloadPercent"
+                             IsDownloading="@IsDownloading"
                              OnClickCallback="DownloadAsync" />
 
         <YoutubeAudioStreams streams="@ViewModel.AudioStreams"
                              DownloadingStreamId="@DownloadingStreamId"
                              DownloadPercent="@DownloadPercent"
+                             IsDownloading="@IsDownloading"
                              OnClickCallback="DownloadAsync" />
 
     </MudCard>
@@ -94,7 +97,7 @@
     public EventCallback<StreamViewModel> OnClickCallback { get; set; }
 
     private bool IsSearching;
-    private bool IsDownloading;
+    private bool IsDownloading => !string.IsNullOrEmpty(DownloadingStreamId);
     private int DownloadPercent;
     private string StatusMessage = "";
     private string? DownloadingStreamId;
@@ -105,9 +108,10 @@
     private async Task Search()
     {
         ViewModel.ClearStreams();
-
         IsSearching = true;
         StatusMessage = "Searching video...";
+        
+        await InvokeAsync(StateHasChanged);
 
         await ViewModel.SearchAsync(Service);
 
@@ -116,7 +120,6 @@
 
     private async Task DownloadAsync(StreamViewModel stream)
     {
-        IsDownloading = true;
         StatusMessage = "Starting download...";
         DownloadPercent = 0;
         DownloadingStreamId = stream.Id;
@@ -153,7 +156,6 @@
             progress,
             new CancellationToken());
 
-        IsDownloading = false;
         DownloadingStreamId = null;
 
         Navigation.NavigateTo($"/api/download/{download.Id}", true);

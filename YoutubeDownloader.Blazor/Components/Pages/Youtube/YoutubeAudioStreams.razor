@@ -9,12 +9,11 @@
     <MudTable Items="streams"
               Hover="true"
               Dense="true"
-              Striped="true"
-              Elevation="0">
+              Elevation="0"
+              RowClassFunc="GetRowClass">
 
         <HeaderContent>
             <MudTh>Format</MudTh>
-            <MudTh>Codec</MudTh>
             <MudTh>Size</MudTh>
             <MudTh Align="Align.Right"></MudTh>
         </HeaderContent>
@@ -27,10 +26,6 @@
                          Size="Size.Small">
                     @context.ContainerName
                 </MudChip>
-            </MudTd>
-
-            <MudTd>
-                @GetCodecChip(context.AudioCodec)
             </MudTd>
 
             <MudTd>
@@ -61,6 +56,7 @@
                                        Color="Color.Primary"
                                        Variant="Variant.Text"
                                        Size="Size.Small"
+                                       Disabled="IsDownloading && DownloadingStreamId != context.Id"
                                        OnClick="() => DownloadAsync(context)" />
                     }
 
@@ -87,21 +83,19 @@
     [Parameter]
     public int DownloadPercent { get; set; }
 
+    [Parameter]
+    public bool IsDownloading { get; set; }
+
     private async Task DownloadAsync(StreamViewModel stream)
     {
         await OnClickCallback.InvokeAsync(stream);
     }
 
-    private RenderFragment GetCodecChip(string codec) => builder =>
+    private string GetRowClass(StreamViewModel stream, int rowNumber)
     {
-        builder.OpenComponent<MudChip<string>>(0);
-        builder.AddAttribute(1, "Variant", Variant.Text);
-        builder.AddAttribute(2, "Color", Color.Primary);
-        builder.AddAttribute(3, "Size", Size.Small);
-        builder.AddAttribute(4, "ChildContent", (RenderFragment)((b) =>
-        {
-            b.AddContent(5, codec);
-        }));
-        builder.CloseComponent();
-    };
+        if (DownloadingStreamId == stream.Id)
+            return "downloading-row";
+
+        return "";
+    }
 }
