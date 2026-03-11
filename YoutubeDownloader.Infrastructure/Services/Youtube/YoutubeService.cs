@@ -5,6 +5,7 @@ using YoutubeDownloader.Domain.ViewModel;
 using YoutubeDownloader.Infrastructure.Helpers;
 using YoutubeDownloader.Infrastructure.Interfaces.Cache;
 using YoutubeDownloader.Infrastructure.Interfaces.Youtube;
+using YoutubeExplode.Common;
 using YoutubeExplode.Videos.Streams;
 
 namespace YoutubeDownloader.Infrastructure.Services.Youtube
@@ -15,8 +16,9 @@ namespace YoutubeDownloader.Infrastructure.Services.Youtube
         public async Task<StreamManifestViewModel> DownloadManifestAsync(DownloadManifestCommand command)
         {
             var video = await client.GetVideoAsync(command.Url);
+            var thumbnail = video.Thumbnails.GetWithHighestResolution().Url;
             var manifest = await client.GetManifestAsync(video.Id);
-            return StreamManifestViewModel.Create(manifest, video);
+            return StreamManifestViewModel.Create(manifest, video, thumbnail);
         }
 
         public async Task<DownloadStreamViewModel> DownloadStreamAsync(DownloadCommand command, IProgress<double> progress, CancellationToken token = default)

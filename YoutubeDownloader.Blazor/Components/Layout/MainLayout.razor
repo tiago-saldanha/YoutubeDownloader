@@ -1,30 +1,56 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+<MudLayout>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+    <MudAppBar Elevation="0" Dense="true" Class="px-6">
 
-        <article class="content px-4">
+        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+
+            <MudIcon Icon="@Icons.Material.Filled.SmartDisplay"
+                     Color="Color.Primary" />
+
+            <MudText Typo="Typo.h6">
+                Youtube Downloader
+            </MudText>
+
+        </MudStack>
+
+        <MudSpacer />
+
+        <MudStack Row="true" Spacing="2">
+
+            <MudButton Variant="Variant.Text"
+                       Color="Color.Inherit"
+                       Href="https://github.com/tiago-saldanha/YoutubeDownloader"
+                       Target="_blank">
+
+                <MudIcon Icon="fa-brands fa-github" Class="mr-2" />
+
+                Github
+
+            </MudButton>
+
+        </MudStack>
+
+    </MudAppBar>
+
+    <MudMainContent>
+
+        <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-6">
             @Body
-        </article>
-    </main>
-</div>
+        </MudContainer>
 
-<div id="blazor-error-ui">
-    An unhandled error has occurred.
-    <a href="" class="reload">Reload</a>
-    <a class="dismiss">🗙</a>
-</div>
+    </MudMainContent>
 
-<div id="globalLoading" class="loading-overlay">
-    <div class="loading-content">
-        <div class="loading-spinner"></div>
-        <div id="loadingText" class="loading-text"></div>
-    </div>
-</div>
+</MudLayout>
+
+@code {
+
+    [CascadingParameter] private bool _isDarkMode { get; set; }
+
+    void ToggleTheme()
+    {
+        _isDarkMode = !_isDarkMode;
+    }
+
+}

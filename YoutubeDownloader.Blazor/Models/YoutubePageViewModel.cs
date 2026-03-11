@@ -5,8 +5,9 @@ namespace YoutubeDownloader.Blazor.Models
 {
     public record YoutubePageViewModel
     {
-        public string Url { get; set; } = "";
-        public string Title { get; set; } = "";
+        public string Url { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
+        public string ThumbnailUrl { get; set; } = string.Empty;
         public List<StreamViewModel> VideoStreams { get; private set; } = [];
         public List<StreamViewModel> AudioStreams { get; private set; } = [];
 
@@ -23,6 +24,7 @@ namespace YoutubeDownloader.Blazor.Models
                 AudioStreams = [.. streams.Where(s => s.IsAudioOnly)];
 
                 Title = manifest.Title;
+                ThumbnailUrl = manifest.ThumbnailUrl;
                 Url = "";
             }
         }
@@ -31,6 +33,8 @@ namespace YoutubeDownloader.Blazor.Models
         {
             VideoStreams.Clear();
             AudioStreams.Clear();
+            Title = string.Empty;
+            ThumbnailUrl = string.Empty;
         }
     }
 }

@@ -13,6 +13,7 @@ namespace YoutubeDownloader.Blazor.Models
         public string VideoId { get; init; }
         public string Title { get; init; }
         public string DisplaySize => Size > 1240 ? $"{Size / 1024:0.##} GB" : $"{Size:0.##} MB";
+        public string Id { get; init; } = Guid.NewGuid().ToString();
 
         private StreamViewModel(
             string containerName, 
