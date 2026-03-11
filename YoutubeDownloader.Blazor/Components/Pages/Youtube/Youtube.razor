@@ -15,11 +15,7 @@
 <MudContainer MaxWidth="MaxWidth.Medium">
 
     <MudStack AlignItems="AlignItems.Center" Class="mt-6">
-        <MudText Typo="Typo.h5" GutterBottom="true">
-            YouTube Downloader
-        </MudText>
-
-        <MudText Typo="Typo.subtitle1" Color="Color.Secondary">
+        <MudText Typo="Typo.subtitle1">
             Download video and audio streams in your preferred format
         </MudText>
     </MudStack>
@@ -44,6 +40,23 @@
 
         </MudStack>
 
+        @if (!string.IsNullOrWhiteSpace(ViewModel.ThumbnailUrl))
+        {
+            <MudCard Class="mt-4">
+
+                <MudCardMedia Image="@ViewModel.ThumbnailUrl"
+                              Height="350" />
+
+                <MudCardContent>
+
+                    <MudText Typo="Typo.subtitle1" Class="mt-1">
+                        @ViewModel.Title
+                    </MudText>
+
+                </MudCardContent>
+
+            </MudCard>
+        }
         
         @if (IsSearching)
         {
@@ -58,14 +71,8 @@
 
             </MudStack>
         }
-        else if (!string.IsNullOrWhiteSpace(ViewModel.Title))
-        {
-            <MudText Typo="Typo.subtitle2"
-                     Color="Color.Secondary"
-                     Class="mt-3">
-                Title: @ViewModel.Title
-            </MudText>
-        }
+
+        <MudCard Class="mb-6">
 
         <YoutubeVideoStreams streams="@ViewModel.VideoStreams"
                              DownloadingStreamId="@DownloadingStreamId"
