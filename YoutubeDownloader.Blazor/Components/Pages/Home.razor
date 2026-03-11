@@ -7,87 +7,91 @@
 @inject NavigationManager Navigation
 
 @using YoutubeDownloader.Domain.Commands
-@using YoutubeDownloader.Blazor.Components.Pages.Youtube
 @using YoutubeDownloader.Blazor.Models
+@using YoutubeDownloader.Blazor.Components.Pages.Streams
 
 <PageTitle>Youtube Download</PageTitle>
 
-<MudContainer MaxWidth="MaxWidth.Medium">
+<MudContainer MaxWidth="MaxWidth.ExtraLarge">
 
-    <MudStack AlignItems="AlignItems.Center" Class="mt-6">
-        <MudText Typo="Typo.subtitle1">
-            Download video and audio streams in your preferred format
-        </MudText>
-    </MudStack>
-
-    <MudCard Elevation="3" Class="pa-4 mb-6">
-
-        <MudStack Row="true" Spacing="2">
-
-            <MudTextField T="string"
-                          Placeholder="Paste YouTube URL here..."
-                          @bind-Value="ViewModel.Url"
-                          FullWidth="true" />
-
-            <MudButton Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Disabled="IsDownloading"
-                       OnClick="Search"
-                       StartIcon="@Icons.Material.Filled.Search">
-
-                Search
-
-            </MudButton>
-
+    <div class="search-container @(HasSearched ? "search-top" : "search-center")">
+        <MudStack AlignItems="AlignItems.Center" Class="mt-6">
+            <MudText Typo="Typo.subtitle1">
+                Download video and audio streams in your preferred format
+            </MudText>
         </MudStack>
 
-        @if (!string.IsNullOrWhiteSpace(ViewModel.ThumbnailUrl))
-        {
-            <MudCard Class="mt-4">
+        <MudCard Elevation="3" Class="pa-4">
 
-                <MudCardMedia Image="@ViewModel.ThumbnailUrl"
-                              Height="468" />
+            <MudStack Row="true" Spacing="2">
 
-                <MudCardContent>
+                <MudTextField T="string"
+                              Placeholder="Paste YouTube URL here..."
+                              @bind-Value="ViewModel.Url"
+                              FullWidth="true" />
 
-                    <MudText Typo="Typo.subtitle1" Class="mt-1">
-                        @ViewModel.Title
-                    </MudText>
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Disabled="IsDownloading"
+                           OnClick="Search"
+                           StartIcon="@Icons.Material.Filled.Search">
 
-                </MudCardContent>
+                    Search
 
-            </MudCard>
-        }
-
-        @if (IsSearching)
-        {
-            <MudStack Class="mb-2">
-
-                <MudText Typo="Typo.caption">
-                    @StatusMessage
-                </MudText>
-
-                <MudProgressLinear Value="@DownloadPercent"
-                                   Indeterminate="@IsSearching" />
+                </MudButton>
 
             </MudStack>
-        }
 
-        <MudCard Class="mb-6" />
+            @if (!string.IsNullOrWhiteSpace(ViewModel.ThumbnailUrl))
+            {
+                <MudCard Class=@($"mt-4 thumbnail-card {(HasResults ? "thumb-visible" : "thumb-hidden")}")>
 
-        <YoutubeVideoStreams streams="@ViewModel.VideoStreams"
-                             DownloadingStreamId="@DownloadingStreamId"
-                             DownloadPercent="@DownloadPercent"
-                             IsDownloading="@IsDownloading"
-                             OnClickCallback="DownloadAsync" />
+                    <MudCardMedia Image="@ViewModel.ThumbnailUrl"
+                                  Height="468" />
 
-        <YoutubeAudioStreams streams="@ViewModel.AudioStreams"
-                             DownloadingStreamId="@DownloadingStreamId"
-                             DownloadPercent="@DownloadPercent"
-                             IsDownloading="@IsDownloading"
-                             OnClickCallback="DownloadAsync" />
+                    <MudCardContent>
 
-    </MudCard>
+                        <MudText Typo="Typo.subtitle1" Class="mt-1">
+                            @ViewModel.Title
+                        </MudText>
+
+                    </MudCardContent>
+
+                </MudCard>
+            }
+
+            @if (IsSearching)
+            {
+                <MudStack Class="mb-2">
+
+                    <MudText Typo="Typo.caption">
+                        @StatusMessage
+                    </MudText>
+
+                    <MudProgressLinear Value="@DownloadPercent"
+                                       Indeterminate="@IsSearching" />
+
+                </MudStack>
+            }
+
+            <MudCard Class="@ThumbnailClass">
+
+                <YoutubeVideoStreams streams="@ViewModel.VideoStreams"
+                                     DownloadingStreamId="@DownloadingStreamId"
+                                     DownloadPercent="@DownloadPercent"
+                                     IsDownloading="@IsDownloading"
+                                     OnClickCallback="DownloadAsync" />
+
+                <YoutubeAudioStreams streams="@ViewModel.AudioStreams"
+                                     DownloadingStreamId="@DownloadingStreamId"
+                                     DownloadPercent="@DownloadPercent"
+                                     IsDownloading="@IsDownloading"
+                                     OnClickCallback="DownloadAsync" />
+
+            </MudCard>
+
+        </MudCard>
+    </div>
 
 </MudContainer>
 
@@ -97,25 +101,33 @@
     public EventCallback<StreamViewModel> OnClickCallback { get; set; }
 
     private bool IsSearching;
-    private bool IsDownloading => !string.IsNullOrEmpty(DownloadingStreamId);
+    private bool HasSearched = false;
     private int DownloadPercent;
     private string StatusMessage = "";
     private string? DownloadingStreamId;
     private int _lastReportedPercent = -1;
+    private bool IsDownloading => !string.IsNullOrEmpty(DownloadingStreamId);
+    private bool HasResults => ViewModel.VideoStreams.Any() || ViewModel.AudioStreams.Any();
+    private string ThumbnailClass => $"mt-4 thumbnail-card {(HasResults ? "thumb-visible" : "thumb-hidden")}";
 
     private YoutubePageViewModel ViewModel = new();
 
     private async Task Search()
     {
+        HasSearched = false;
+        
         ViewModel.ClearStreams();
+
         IsSearching = true;
         StatusMessage = "Searching video...";
-        
+
         await InvokeAsync(StateHasChanged);
 
         await ViewModel.SearchAsync(Service);
 
         IsSearching = false;
+
+        HasSearched = true;
     }
 
     private async Task DownloadAsync(StreamViewModel stream)
