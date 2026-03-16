@@ -1,4 +1,10 @@
 ﻿@inherits LayoutComponentBase
+@using MudBlazor
+
+<MudThemeProvider />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
 
 <MudLayout>
 
@@ -43,14 +49,3 @@
     </MudMainContent>
 
 </MudLayout>
-
-@code {
-
-    [CascadingParameter] private bool _isDarkMode { get; set; }
-
-    void ToggleTheme()
-    {
-        _isDarkMode = !_isDarkMode;
-    }
-
-}

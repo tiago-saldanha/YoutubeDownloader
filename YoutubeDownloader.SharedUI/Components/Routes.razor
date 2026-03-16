@@ -1,0 +1,15 @@
+﻿@using Microsoft.AspNetCore.Components.Routing
+@using YoutubeDownloader.SharedUI.Components.Pages
+
+<Router AppAssembly="@typeof(Routes).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(YoutubeDownloader.SharedUI.Components.Layout.MainLayout)" />
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+    </Found>
+    <NotFound>
+        <PageTitle>Not found</PageTitle>
+        <LayoutView Layout="@typeof(YoutubeDownloader.SharedUI.Components.Layout.MainLayout)">
+            <p role="alert">Desculpe, não há nada neste endereço.</p>
+        </LayoutView>
+    </NotFound>
+</Router>

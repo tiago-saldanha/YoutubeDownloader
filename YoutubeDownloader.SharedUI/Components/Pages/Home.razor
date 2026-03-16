@@ -1,14 +1,11 @@
 ﻿@page "/"
 
-@rendermode InteractiveServer
-
 @inject IYoutubeAppService Service
-@inject DownloadApiClient DownloadClient
 @inject NavigationManager Navigation
 
 @using YoutubeDownloader.Domain.Commands
-@using YoutubeDownloader.Blazor.Models
-@using YoutubeDownloader.Blazor.Components.Pages.Streams
+@using YoutubeDownloader.SharedUI.Models
+@using YoutubeDownloader.SharedUI.Components.Pages.Streams
 
 <PageTitle>Youtube Download</PageTitle>
 

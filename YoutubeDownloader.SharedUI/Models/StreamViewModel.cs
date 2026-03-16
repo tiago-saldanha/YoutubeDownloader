@@ -1,6 +1,6 @@
 ﻿using YoutubeDownloader.Domain.ViewModel;
 
-namespace YoutubeDownloader.Blazor.Models
+namespace YoutubeDownloader.SharedUI.Models
 {
     public readonly record struct StreamViewModel
     {
