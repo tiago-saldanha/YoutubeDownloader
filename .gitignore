@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 
 /YoutubeDownload.Web/wwwroot/downloads
+/output
