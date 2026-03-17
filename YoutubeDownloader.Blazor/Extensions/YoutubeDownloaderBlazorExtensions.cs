@@ -1,4 +1,4 @@
-﻿using YoutubeDownloader.Blazor.Service;
+﻿using YoutubeDownloader.Blazor.Services;
 using YoutubeDownloader.Core.Interfaces;
 using YoutubeDownloader.Core.Services;
 using YoutubeDownloader.Domain.Interfaces;
@@ -11,24 +11,12 @@ using YoutubeDownloader.Infrastructure.Services.Cleanner;
 using YoutubeDownloader.Infrastructure.Services.Ffmpeg;
 using YoutubeDownloader.Infrastructure.Services.Youtube;
 using YoutubeDownloader.SharedUI.Interfaces;
-using YoutubeDownloader.SharedUI.Services;
 using YoutubeExplode;
 
 namespace YoutubeDownloader.Blazor.Extensions
 {
     public static class YoutubeDownloaderBlazorExtensions
     {
-        public static WebApplicationBuilder ConfigureHttpClient(this WebApplicationBuilder builder)
-        {
-            builder.Services.AddHttpClient<DownloadApiClient>(options =>
-            {
-                options.BaseAddress = new Uri(
-                    builder.Configuration["App:BaseUrl"]!
-                );
-            });
-            return builder;
-        }
-
         public static WebApplicationBuilder ConfigureWeb(this WebApplicationBuilder builder)
         {
             builder.Services.AddControllers();

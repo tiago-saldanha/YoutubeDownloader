@@ -8,7 +8,6 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder
-    .ConfigureHttpClient()
     .ConfigureWeb()
     .ConfigureCache()
     .ConfigureApplication()

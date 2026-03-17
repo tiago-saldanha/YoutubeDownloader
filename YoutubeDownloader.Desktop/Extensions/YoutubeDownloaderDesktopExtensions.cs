@@ -1,6 +1,8 @@
-﻿using YoutubeDownloader.Core.Interfaces;
-using YoutubeDownloader.Core.Services;
+﻿using Microsoft.Extensions.Configuration;
+using System.Reflection;
+using YoutubeDownloader.Core.Interfaces;
 using YoutubeDownloader.Desktop.Services;
+using YoutubeDownloader.Core.Services;
 using YoutubeDownloader.Domain.Interfaces;
 using YoutubeDownloader.Infrastructure.Configuration;
 using YoutubeDownloader.Infrastructure.Interfaces.Cache;
@@ -10,21 +12,28 @@ using YoutubeDownloader.Infrastructure.Services.Cache;
 using YoutubeDownloader.Infrastructure.Services.Ffmpeg;
 using YoutubeDownloader.Infrastructure.Services.Youtube;
 using YoutubeDownloader.SharedUI.Interfaces;
-using YoutubeDownloader.SharedUI.Services;
 using YoutubeExplode;
 
 namespace YoutubeDownloader.Desktop.Extensions
 {
     public static class YoutubeDownloaderDesktopExtensions
     {
-        public static MauiAppBuilder ConfigureHttpClient(this MauiAppBuilder builder)
+        public static MauiAppBuilder ConfigureAppSettings(this MauiAppBuilder builder)
         {
-            var baseUrl = builder.Configuration["App:BaseUrl"];
+            var assembly = Assembly.GetExecutingAssembly();
+            using var stream = assembly.GetManifestResourceStream("YoutubeDownloader.Desktop.appsettings.json");
 
-            builder.Services.AddHttpClient<DownloadApiClient>(options =>
+            if (stream != null)
             {
-                options.BaseAddress = new Uri(baseUrl!);
-            });
+                builder.Configuration.AddJsonStream(stream);
+            }
+
+            return builder;
+        }
+
+        public static MauiAppBuilder ConfigureMaui(this MauiAppBuilder builder)
+        {
+            builder.Services.AddSingleton<IDeviceService, MauiDeviceService>();
             return builder;
         }
 
@@ -32,7 +41,7 @@ namespace YoutubeDownloader.Desktop.Extensions
         {
             builder.Services.AddMemoryCache();
             builder.Services.AddSingleton<IStorageCacheService, StorageCacheService>();
-            builder.Services.AddSingleton<IDeviceService, MauiDeviceService>();
+            
             return builder;
         }
 
