@@ -61,6 +61,11 @@ Access via: `https://localhost:7299`
 
 ---
 
+### Example
+<img width="1222" height="895" alt="image" src="https://github.com/user-attachments/assets/df7b6d93-607f-491c-9fa6-737db742f30a" />
+
+---
+
 ### 🏗 Project Structure
 
 - Core/Domain: Interfaces, ViewModels, and business rules.
