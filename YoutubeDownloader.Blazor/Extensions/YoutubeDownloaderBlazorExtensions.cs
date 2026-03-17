@@ -21,6 +21,7 @@ namespace YoutubeDownloader.Blazor.Extensions
         {
             builder.Services.AddControllers();
             builder.Services.AddSingleton<IDeviceService, WebDeviceService>();
+            builder.Services.AddSingleton<IAppInfoService, WebAppInfoService>();
             return builder;
         }
 

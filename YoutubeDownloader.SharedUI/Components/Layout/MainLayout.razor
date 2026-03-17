@@ -1,51 +1,58 @@
 ﻿@inherits LayoutComponentBase
 @using MudBlazor
+@using YoutubeDownloader.SharedUI.Interfaces
+
+@inject IAppInfoService AppInfo
 
 <MudThemeProvider />
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
-<MudLayout>
-
-    <MudAppBar Elevation="0" Dense="true" Class="px-6">
-
+<MudLayout Style="background-color: white !important;">
+    <MudAppBar Elevation="1" Dense="true" Class="px-6">
         <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
-
-            <MudIcon Icon="@Icons.Material.Filled.SmartDisplay"
-                     Color="Color.Primary" />
-
-            <MudText Typo="Typo.h6">
-                Youtube Downloader
-            </MudText>
-
+            <MudIcon Icon="@Icons.Material.Filled.SmartDisplay" Color="Color.Inherit" />
+            <MudText Typo="Typo.h6">Youtube Downloader</MudText>
         </MudStack>
-
         <MudSpacer />
-
-        <MudStack Row="true" Spacing="2">
-
-            <MudButton Variant="Variant.Text"
-                       Color="Color.Inherit"
-                       Href="https://github.com/tiago-saldanha/YoutubeDownloader"
-                       Target="_blank">
-
-                <MudIcon Icon="fa-brands fa-github" Class="mr-2" />
-
-                Github
-
-            </MudButton>
-
-        </MudStack>
-
+        <MudButton Variant="Variant.Text"
+                   Color="Color.Inherit"
+                   Href="https://github.com/tiago-saldanha/YoutubeDownloader"
+                   Target="_blank"
+                   StartIcon="@Icons.Custom.Brands.GitHub">
+            Github
+        </MudButton>
     </MudAppBar>
 
-    <MudMainContent>
+    <MudMainContent Class="d-flex flex-column" Style="min-height: 100vh; background-color: white !important;">
 
-        <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-6">
+        <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-6 flex-grow-1" Style="background-color: white !important; flex: 1 0 auto;">
             @Body
         </MudContainer>
 
-    </MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.Medium" Class="py-6" Style="background-color: white !important; flex-shrink: 0;">
+            <MudText Typo="Typo.body2" Align="Align.Center" Style="color: #616161; opacity: 0.6;">
+                YoutubeDownloader v@(AppInfo?.Version ?? "1.0.0.1") — Desenvolvido por
+                <MudLink Href="https://github.com/tiago-saldanha"
+                         Target="_blank"
+                         Style="color: #616161; font-weight: 500;"
+                         Underline="Underline.Hover">
+                    Tiago Ávila Saldanha
+                </MudLink>
+            </MudText>
+        </MudContainer>
 
+    </MudMainContent>
 </MudLayout>
+
+<style>
+    .mud-layout, .mud-main-content, .mud-container, .mud-paper {
+        background-color: white !important;
+        background: white !important;
+    }
+
+    html, body {
+        background-color: white !important;
+    }
+</style>

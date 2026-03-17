@@ -34,6 +34,7 @@ namespace YoutubeDownloader.Desktop.Extensions
         public static MauiAppBuilder ConfigureMaui(this MauiAppBuilder builder)
         {
             builder.Services.AddSingleton<IDeviceService, MauiDeviceService>();
+            builder.Services.AddSingleton<IAppInfoService, MauiAppInfoService>();
             return builder;
         }
 
