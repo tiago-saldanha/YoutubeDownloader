@@ -169,13 +169,10 @@
 
         DownloadingStreamId = null;
 
-        // Lógica Híbrida:
         if (DeviceService.Desktop)
         {
             StatusMessage = $"Download concluído com sucesso!";
-
             await DeviceService.OpenFileAsync(download.FilePath);
-            
         }
         else
         {
