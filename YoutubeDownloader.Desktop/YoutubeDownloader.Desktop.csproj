@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
 	<PropertyGroup>
-		<TargetFrameworks>net9.0-windows10.0.19041.0</TargetFrameworks>
+		<TargetFramework>net9.0-windows10.0.19041.0</TargetFramework>
 
 		<OutputType>Exe</OutputType>
 		<RootNamespace>YoutubeDownloader.Desktop</RootNamespace>
@@ -12,7 +12,7 @@
 		<Nullable>enable</Nullable>
 
 		<ApplicationTitle>Youtube Downloader</ApplicationTitle>
-		<ApplicationId>com.tascloud.youtubedownloader</ApplicationId>
+		<ApplicationId>dev.tiagosaldanha.youtubedownloader</ApplicationId>
 
 		<ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
 		<ApplicationVersion>1</ApplicationVersion>
