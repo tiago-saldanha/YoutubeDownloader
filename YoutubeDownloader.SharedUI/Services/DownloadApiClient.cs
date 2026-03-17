@@ -1,6 +1,7 @@
-﻿using YoutubeDownloader.Domain.Commands;
+﻿using System.Net.Http.Json;
+using YoutubeDownloader.Domain.Commands;
 
-namespace YoutubeDownloader.Blazor.Http
+namespace YoutubeDownloader.SharedUI.Services
 {
     public class DownloadApiClient(HttpClient client)
     {

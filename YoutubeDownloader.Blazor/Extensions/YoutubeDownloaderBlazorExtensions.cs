@@ -1,4 +1,4 @@
-﻿using YoutubeDownloader.Blazor.Http;
+﻿using YoutubeDownloader.Blazor.Service;
 using YoutubeDownloader.Core.Interfaces;
 using YoutubeDownloader.Core.Services;
 using YoutubeDownloader.Domain.Interfaces;
@@ -10,11 +10,13 @@ using YoutubeDownloader.Infrastructure.Services.Cache;
 using YoutubeDownloader.Infrastructure.Services.Cleanner;
 using YoutubeDownloader.Infrastructure.Services.Ffmpeg;
 using YoutubeDownloader.Infrastructure.Services.Youtube;
+using YoutubeDownloader.SharedUI.Interfaces;
+using YoutubeDownloader.SharedUI.Services;
 using YoutubeExplode;
 
 namespace YoutubeDownloader.Blazor.Extensions
 {
-    public static class YoutubeDownloadBlazorExtensions
+    public static class YoutubeDownloaderBlazorExtensions
     {
         public static WebApplicationBuilder ConfigureHttpClient(this WebApplicationBuilder builder)
         {
@@ -30,6 +32,7 @@ namespace YoutubeDownloader.Blazor.Extensions
         public static WebApplicationBuilder ConfigureWeb(this WebApplicationBuilder builder)
         {
             builder.Services.AddControllers();
+            builder.Services.AddSingleton<IDeviceService, WebDeviceService>();
             return builder;
         }
 
@@ -50,7 +53,7 @@ namespace YoutubeDownloader.Blazor.Extensions
             return builder;
         }
 
-        public static WebApplicationBuilder ConfigureInfraStructure(this WebApplicationBuilder builder)
+        public static WebApplicationBuilder ConfigureInfrastructure(this WebApplicationBuilder builder)
         {
             builder.Services.AddHostedService<CleannerService>();
             builder.Services.Configure<FfmpegOptions>(builder.Configuration.GetSection("Ffmpeg"));

@@ -2,8 +2,10 @@
 
 @inject IYoutubeAppService Service
 @inject NavigationManager Navigation
+@inject IDeviceService DeviceService
 
 @using YoutubeDownloader.Domain.Commands
+@using YoutubeDownloader.SharedUI.Interfaces
 @using YoutubeDownloader.SharedUI.Models
 @using YoutubeDownloader.SharedUI.Components.Pages.Streams
 
@@ -112,7 +114,7 @@
     private async Task Search()
     {
         HasSearched = false;
-        
+
         ViewModel.ClearStreams();
 
         IsSearching = true;
@@ -167,6 +169,20 @@
 
         DownloadingStreamId = null;
 
-        Navigation.NavigateTo($"/api/download/{download.Id}", true);
+        // Lógica Híbrida:
+        if (DeviceService.Desktop)
+        {
+            StatusMessage = $"Download concluído com sucesso!";
+
+            await DeviceService.OpenFileAsync(download.FilePath);
+            
+        }
+        else
+        {
+            Navigation.NavigateTo($"/api/download/{download.Id}", true);
+            StatusMessage = "Download pronto! O navegador iniciará a transferência.";
+        }
+
+        await InvokeAsync(StateHasChanged);
     }
 }

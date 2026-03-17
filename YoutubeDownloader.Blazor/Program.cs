@@ -12,7 +12,7 @@ builder
     .ConfigureWeb()
     .ConfigureCache()
     .ConfigureApplication()
-    .ConfigureInfraStructure();
+    .ConfigureInfrastructure();
 
 builder.Services.AddMudServices();
 
