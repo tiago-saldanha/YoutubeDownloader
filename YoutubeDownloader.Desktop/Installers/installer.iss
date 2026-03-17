@@ -1,7 +1,7 @@
 ﻿#define MyAppName "Youtube Downloader"
 #define MyAppVersion "1.0.0"
 #define MyAppExeName "YoutubeDownloader.Desktop.exe"
-#define PublishDir "C:\Users\Tiago\source\repos\YoutubeDownloader\YoutubeDownloader.Desktop\bin\Release\net9.0-windows10.0.19041.0\win-x64\publish\"
+#define PublishDir "..\bin\Release\net9.0-windows10.0.19041.0\win-x64\publish\"
 
 [Setup]
 AppName={#MyAppName}
