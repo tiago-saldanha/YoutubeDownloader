@@ -13,6 +13,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\YoutubeDownloader.Core\YoutubeDownloader.Core.csproj" />
+	  <ProjectReference Include="..\YoutubeDownloader.SharedUI\YoutubeDownloader.SharedUI.csproj" />
 	</ItemGroup>
 
 </Project>

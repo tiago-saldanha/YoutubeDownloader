@@ -1,0 +1,188 @@
+﻿@page "/"
+
+@inject IYoutubeAppService Service
+@inject NavigationManager Navigation
+@inject IDeviceService DeviceService
+
+@using YoutubeDownloader.Domain.Commands
+@using YoutubeDownloader.SharedUI.Interfaces
+@using YoutubeDownloader.SharedUI.Models
+@using YoutubeDownloader.SharedUI.Components.Pages.Streams
+
+<PageTitle>Youtube Download</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge">
+
+    <div class="search-container @(HasSearched ? "search-top" : "search-center")">
+        <MudStack AlignItems="AlignItems.Center" Class="mt-6">
+            <MudText Typo="Typo.subtitle1">
+                Download video and audio streams in your preferred format
+            </MudText>
+        </MudStack>
+
+        <MudCard Elevation="3" Class="pa-4">
+
+            <MudStack Row="true" Spacing="2">
+
+                <MudTextField T="string"
+                              Placeholder="Paste YouTube URL here..."
+                              @bind-Value="ViewModel.Url"
+                              FullWidth="true" />
+
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Disabled="IsDownloading"
+                           OnClick="Search"
+                           StartIcon="@Icons.Material.Filled.Search">
+
+                    Search
+
+                </MudButton>
+
+            </MudStack>
+
+            @if (!string.IsNullOrWhiteSpace(ViewModel.ThumbnailUrl))
+            {
+                <MudCard Class=@($"mt-4 thumbnail-card {(HasResults ? "thumb-visible" : "thumb-hidden")}")>
+
+                    <MudCardMedia Image="@ViewModel.ThumbnailUrl"
+                                  Height="468" />
+
+                    <MudCardContent>
+
+                        <MudText Typo="Typo.subtitle1" Class="mt-1">
+                            @ViewModel.Title
+                        </MudText>
+
+                    </MudCardContent>
+
+                </MudCard>
+            }
+
+            @if (IsSearching)
+            {
+                <MudStack Class="mb-2">
+
+                    <MudText Typo="Typo.caption">
+                        @StatusMessage
+                    </MudText>
+
+                    <MudProgressLinear Value="@DownloadPercent"
+                                       Indeterminate="@IsSearching" />
+
+                </MudStack>
+            }
+
+            <MudCard Class="@ThumbnailClass">
+
+                <YoutubeVideoStreams streams="@ViewModel.VideoStreams"
+                                     DownloadingStreamId="@DownloadingStreamId"
+                                     DownloadPercent="@DownloadPercent"
+                                     IsDownloading="@IsDownloading"
+                                     OnClickCallback="DownloadAsync" />
+
+                <YoutubeAudioStreams streams="@ViewModel.AudioStreams"
+                                     DownloadingStreamId="@DownloadingStreamId"
+                                     DownloadPercent="@DownloadPercent"
+                                     IsDownloading="@IsDownloading"
+                                     OnClickCallback="DownloadAsync" />
+
+            </MudCard>
+
+        </MudCard>
+    </div>
+
+</MudContainer>
+
+@code {
+
+    [Parameter]
+    public EventCallback<StreamViewModel> OnClickCallback { get; set; }
+
+    private bool IsSearching;
+    private bool HasSearched = false;
+    private int DownloadPercent;
+    private string StatusMessage = "";
+    private string? DownloadingStreamId;
+    private int _lastReportedPercent = -1;
+    private bool IsDownloading => !string.IsNullOrEmpty(DownloadingStreamId);
+    private bool HasResults => ViewModel.VideoStreams.Any() || ViewModel.AudioStreams.Any();
+    private string ThumbnailClass => $"mt-4 thumbnail-card {(HasResults ? "thumb-visible" : "thumb-hidden")}";
+
+    private YoutubePageViewModel ViewModel = new();
+
+    private async Task Search()
+    {
+        HasSearched = false;
+
+        ViewModel.ClearStreams();
+
+        IsSearching = true;
+        StatusMessage = "Searching video...";
+
+        await InvokeAsync(StateHasChanged);
+
+        await ViewModel.SearchAsync(Service);
+
+        IsSearching = false;
+
+        HasSearched = true;
+    }
+
+    private async Task DownloadAsync(StreamViewModel stream)
+    {
+        StatusMessage = "Starting download...";
+        DownloadPercent = 0;
+        DownloadingStreamId = stream.Id;
+
+        await InvokeAsync(StateHasChanged);
+
+        var command = new DownloadCommand(
+            stream.VideoId,
+            stream.Title,
+            stream.ContainerName,
+            stream.VideoCodec,
+            stream.Resolution,
+            stream.AudioCodec,
+            stream.IsAudioOnly
+        );
+
+        var progress = new Progress<double>(p =>
+        {
+            var percent = (int)Math.Floor(p * 100);
+
+            if (percent != _lastReportedPercent)
+            {
+                _lastReportedPercent = percent;
+
+                DownloadPercent = percent;
+                StatusMessage = $"Downloading {stream.ContainerName} {percent}%";
+
+                InvokeAsync(StateHasChanged);
+            }
+        });
+
+        var download = await Service.DownloadFileAsync(
+            command,
+            progress,
+            new CancellationToken());
+
+        DownloadingStreamId = null;
+
+        // Lógica Híbrida:
+        if (DeviceService.Desktop)
+        {
+            StatusMessage = $"Download concluído com sucesso!";
+
+            await DeviceService.OpenFileAsync(download.FilePath);
+            
+        }
+        else
+        {
+            Navigation.NavigateTo($"/api/download/{download.Id}", true);
+            StatusMessage = "Download pronto! O navegador iniciará a transferência.";
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+}

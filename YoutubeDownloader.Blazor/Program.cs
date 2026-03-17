@@ -8,11 +8,10 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder
-    .ConfigureHttpClient()
     .ConfigureWeb()
     .ConfigureCache()
     .ConfigureApplication()
-    .ConfigureInfraStructure();
+    .ConfigureInfrastructure();
 
 builder.Services.AddMudServices();
 
@@ -30,6 +29,7 @@ app.UseStaticFiles();
 app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+    .AddInteractiveServerRenderMode()
+    .AddAdditionalAssemblies(typeof(YoutubeDownloader.SharedUI.Components.Pages.Home).Assembly);
 
 app.Run();

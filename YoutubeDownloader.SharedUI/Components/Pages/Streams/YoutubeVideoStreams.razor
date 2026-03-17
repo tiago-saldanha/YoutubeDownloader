@@ -1,0 +1,107 @@
+﻿@using YoutubeDownloader.Domain.Commands
+@using YoutubeDownloader.SharedUI.Models
+
+@if (streams.Count > 0)
+{
+    <MudText Typo="Typo.h6" Class="mt-6 pl-4">
+        Video Streams
+    </MudText>
+
+    <MudTable Items="streams"
+              Hover="true"
+              Dense="true"
+              Elevation="0"
+              RowClassFunc="GetRowClass">
+
+        <HeaderContent>
+            <MudTh>Format</MudTh>
+            <MudTh>Resolution</MudTh>
+            <MudTh>Size</MudTh>
+            <MudTh Align="Align.Right"></MudTh>
+        </HeaderContent>
+
+        <RowTemplate>
+
+            <MudTd>
+                <MudChip T="string"
+                         Variant="Variant.Outlined"
+                         Size="Size.Small">
+                    @context.ContainerName
+                </MudChip>
+            </MudTd>
+
+            <MudTd>
+                @context.Resolution
+            </MudTd>
+
+            <MudTd>
+                @context.DisplaySize
+            </MudTd>
+
+            <MudTd Align="Align.Right">
+
+                <MudStack Row="true" Justify="Justify.FlexEnd">
+
+                    @if (DownloadingStreamId == context.Id)
+                    {
+                        <MudStack Style="width:140px">
+
+                            <MudProgressLinear Value="@DownloadPercent"
+                                               Color="Color.Primary"
+                                               Rounded="true" />
+
+                            <MudText Typo="Typo.caption" Align="Align.Right">
+                                @DownloadPercent%
+                            </MudText>
+
+                        </MudStack>
+                    }
+                    else
+                    {
+                        <MudIconButton Icon="@Icons.Material.Filled.Download"
+                                       Color="Color.Primary"
+                                       Variant="Variant.Text"
+                                       Size="Size.Small"
+                                       Disabled="IsDownloading && DownloadingStreamId != context.Id"
+                                       OnClick="() => DownloadAsync(context)" />
+                    }
+
+                </MudStack>
+
+            </MudTd>
+
+        </RowTemplate>
+
+    </MudTable>
+}
+
+@code {
+
+    [Parameter]
+    public List<StreamViewModel> streams { get; set; } = [];
+
+    [Parameter]
+    public EventCallback<StreamViewModel> OnClickCallback { get; set; }
+
+    [Parameter]
+    public string? DownloadingStreamId { get; set; }
+
+    [Parameter]
+    public int DownloadPercent { get; set; }
+
+    [Parameter]
+    public bool IsDownloading { get; set; }
+
+    private async Task DownloadAsync(StreamViewModel stream)
+    {
+        await OnClickCallback.InvokeAsync(stream);
+    }
+
+    private string GetRowClass(StreamViewModel stream, int rowNumber)
+    {
+        if (DownloadingStreamId == stream.Id)
+            return "downloading-row";
+
+        return "";
+    }
+}

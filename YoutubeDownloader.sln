@@ -16,6 +16,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YoutubeDownloader.Core", "Y
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YoutubeDownloader.Blazor", "YoutubeDownloader.Blazor\YoutubeDownloader.Blazor.csproj", "{13A36A52-5963-2C7A-C98B-E6119E2BD21F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YoutubeDownloader.Desktop", "YoutubeDownloader.Desktop\YoutubeDownloader.Desktop.csproj", "{6C1D3817-F45D-41F2-8378-3FD3BC5652C5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YoutubeDownloader.SharedUI", "YoutubeDownloader.SharedUI\YoutubeDownloader.SharedUI.csproj", "{372400FD-2238-EE93-0DEC-6E19BBEC92F9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,6 +42,15 @@ Global
 		{13A36A52-5963-2C7A-C98B-E6119E2BD21F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{13A36A52-5963-2C7A-C98B-E6119E2BD21F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{13A36A52-5963-2C7A-C98B-E6119E2BD21F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C1D3817-F45D-41F2-8378-3FD3BC5652C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C1D3817-F45D-41F2-8378-3FD3BC5652C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C1D3817-F45D-41F2-8378-3FD3BC5652C5}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{6C1D3817-F45D-41F2-8378-3FD3BC5652C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C1D3817-F45D-41F2-8378-3FD3BC5652C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{372400FD-2238-EE93-0DEC-6E19BBEC92F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{372400FD-2238-EE93-0DEC-6E19BBEC92F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{372400FD-2238-EE93-0DEC-6E19BBEC92F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{372400FD-2238-EE93-0DEC-6E19BBEC92F9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
