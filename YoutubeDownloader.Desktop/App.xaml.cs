@@ -9,7 +9,18 @@
 
         protected override Window CreateWindow(IActivationState? activationState)
         {
-            return new Window(new MainPage()) { Title = "YoutubeDownloader.Desktop" };
+            var window = new Window(new MainPage())
+            {
+                Title = "Youtube Downloader",
+
+                Width = 1152,
+                Height = 864,
+
+                MinimumWidth = 800,
+                MinimumHeight = 600
+            };
+
+            return window;
         }
     }
 }
