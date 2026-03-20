@@ -25,16 +25,8 @@ namespace YoutubeDownloader.Core.Services
 
         public async Task<DownloadFileViewModel> DownloadFileAsync(DownloadCommand command, IProgress<double> progress, CancellationToken token = default)
         {
-            try
-            {
-                logger.LogInformation("Starting video download [{Title}] (ID: {VideoId}).", command.Title, command.VideoId);
-                return await youtubeService.DownloadFileAsync(command, progress, token);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Error while downloading video [{Title}] (ID: {VideoId}).", command.Title, command.VideoId);
-                throw new DownloadStreamAppException(command.VideoId, command.Title, ex);
-            }
+            logger.LogInformation("Starting video download [{Title}] (ID: {VideoId}).", command.Title, command.VideoId);
+            return await youtubeService.DownloadFileAsync(command, progress, token);
         }
     }
 }

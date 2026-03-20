@@ -29,6 +29,8 @@ namespace YoutubeDownloader.SharedUI.Models
             }
         }
 
+        public bool HasResults => VideoStreams.Count != 0 || AudioStreams.Count != 0;
+
         public void ClearStreams()
         {
             VideoStreams.Clear();

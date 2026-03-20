@@ -3,6 +3,7 @@
 @inject IYoutubeAppService YoutubeAppService
 @inject NavigationManager Navigation
 @inject IDeviceService DeviceService
+@implements IDisposable
 
 @using YoutubeDownloader.Domain.Commands
 @using YoutubeDownloader.SharedUI.Components.Shared
@@ -23,44 +24,20 @@
 
         <MudCard Elevation="3" Class="pa-4">
 
-            <MudStack Row="true" Spacing="2">
+            <Search 
+                @bind-Url="@ViewModel.Url" 
+                IsDownloading="@_isDownloading" 
+                OnSearch="Search" />
 
-                <MudTextField T="string"
-                              Placeholder="Paste YouTube URL here..."
-                              @bind-Value="ViewModel.Url"
-                              FullWidth="true" />
+            <Thumbnail 
+                ThumbnailUrl="@ViewModel.ThumbnailUrl" 
+                HasResults="@ViewModel.HasResults" 
+                Title="@ViewModel.Title" />
 
-                <MudButton Variant="Variant.Filled"
-                           Color="Color.Primary"
-                           Disabled="_isDownloading"
-                           OnClick="Search"
-                           StartIcon="@Icons.Material.Filled.Search">
-
-                    Search
-
-                </MudButton>
-
-            </MudStack>
-
-            @if (!string.IsNullOrWhiteSpace(ViewModel.ThumbnailUrl))
-            {
-                <MudCard Class=@($"mt-4 thumbnail-card {(_hasResults ? "thumb-visible" : "thumb-hidden")}")>
-
-                    <MudCardMedia Image="@ViewModel.ThumbnailUrl"
-                                  Height="468" />
-
-                    <MudCardContent>
-
-                        <MudText Typo="Typo.subtitle1" Class="mt-1">
-                            @ViewModel.Title
-                        </MudText>
-
-                    </MudCardContent>
-
-                </MudCard>
-            }
-
-            <LoadingProgressLinear IsSearching="@_isSearching" StatusMessage="@_statusMessage" DownloadPercent="@_downloadPercent" />
+            <LoadingProgressLinear 
+                IsSearching="@_isSearching" 
+                StatusMessage="@_statusMessage" 
+                DownloadPercent="@_downloadPercent" />
 
             <MudCard Class="@_thumbnailClass">
 
@@ -68,13 +45,15 @@
                                      DownloadingStreamId="@_downloadingStreamId"
                                      DownloadPercent="@_downloadPercent"
                                      IsDownloading="@_isDownloading"
-                                     OnClickCallback="DownloadAsync" />
+                                     OnClickCallback="DownloadAsync"
+                                     OnCancel="CancelDownload" />
 
                 <YoutubeAudioStreams streams="@ViewModel.AudioStreams"
                                      DownloadingStreamId="@_downloadingStreamId"
                                      DownloadPercent="@_downloadPercent"
                                      IsDownloading="@_isDownloading"
-                                     OnClickCallback="DownloadAsync" />
+                                     OnClickCallback="DownloadAsync"
+                                     OnCancel="CancelDownload" />
 
             </MudCard>
 
@@ -85,9 +64,8 @@
 
 @code {
 
-    [Parameter]
-    public EventCallback<StreamViewModel> OnClickCallback { get; set; }
-
+    private CancellationTokenSource? _cancelationTokenSource;
+    private YoutubePageViewModel ViewModel = new();
     private bool _isSearching;
     private bool _hasSearched = false;
     private int _downloadPercent;
@@ -95,10 +73,7 @@
     private string? _downloadingStreamId;
     private int _lastReportedPercent = -1;
     private bool _isDownloading => !string.IsNullOrEmpty(_downloadingStreamId);
-    private bool _hasResults => ViewModel.VideoStreams.Any() || ViewModel.AudioStreams.Any();
-    private string _thumbnailClass => $"mt-4 thumbnail-card {(_hasResults ? "thumb-visible" : "thumb-hidden")}";
-
-    private YoutubePageViewModel ViewModel = new();
+    private string _thumbnailClass => $"mt-4 thumbnail-card {(ViewModel.HasResults ? "thumb-visible" : "thumb-hidden")}";
 
     private async Task Search()
     {
@@ -116,55 +91,89 @@
 
     private async Task DownloadAsync(StreamViewModel stream)
     {
+        _cancelationTokenSource = new CancellationTokenSource();
+
         _statusMessage = "Starting download...";
         _downloadPercent = 0;
         _downloadingStreamId = stream.Id;
 
         await InvokeAsync(StateHasChanged);
 
-        var command = new DownloadCommand(
-            stream.VideoId,
-            stream.Title,
-            stream.ContainerName,
-            stream.VideoCodec,
-            stream.Resolution,
-            stream.AudioCodec,
-            stream.IsAudioOnly
-        );
-
-        var progress = new Progress<double>(p =>
+        try
         {
-            var percent = (int)Math.Floor(p * 100);
 
-            if (percent != _lastReportedPercent)
+            var command = new DownloadCommand(
+                    stream.VideoId,
+                    stream.Title,
+                    stream.ContainerName,
+                    stream.VideoCodec,
+                    stream.Resolution,
+                    stream.AudioCodec,
+                    stream.IsAudioOnly
+                );
+
+            var progress = new Progress<double>(p =>
             {
-                _lastReportedPercent = percent;
+                var percent = (int)Math.Floor(p * 100);
 
-                _downloadPercent = percent;
-                _statusMessage = $"Downloading {stream.ContainerName} {percent}%";
+                if (percent != _lastReportedPercent)
+                {
+                    _lastReportedPercent = percent;
 
-                InvokeAsync(StateHasChanged);
+                    _downloadPercent = percent;
+                    _statusMessage = $"Downloading {stream.ContainerName} {percent}%";
+
+                    InvokeAsync(StateHasChanged);
+                }
+            });
+
+            var download = await YoutubeAppService.DownloadFileAsync(
+                command,
+                progress,
+                _cancelationTokenSource.Token);
+
+            _downloadingStreamId = null;
+
+            if (DeviceService.Desktop)
+            {
+                _statusMessage = $"Download concluído com sucesso!";
+                await DeviceService.OpenFileAsync(download.FilePath);
             }
-        });
+            else
+            {
+                Navigation.NavigateTo($"/api/download/{download.Id}", true);
+                _statusMessage = "Download pronto! O navegador iniciará a transferência.";
+            }
 
-        var download = await YoutubeAppService.DownloadFileAsync(
-            command,
-            progress,
-            new CancellationToken());
-
-        _downloadingStreamId = null;
-
-        if (DeviceService.Desktop)
-        {
-            _statusMessage = $"Download concluído com sucesso!";
-            await DeviceService.OpenFileAsync(download.FilePath);
+            await InvokeAsync(StateHasChanged);
         }
-        else
+        catch (OperationCanceledException)
         {
-            Navigation.NavigateTo($"/api/download/{download.Id}", true);
-            _statusMessage = "Download pronto! O navegador iniciará a transferência.";
+            _statusMessage = "Download cancelado pelo usuário.";
         }
+        catch (Exception ex)
+        {
+            _statusMessage = $"Erro: {ex.Message}";
+        }
+        finally
+        {
+            _downloadingStreamId = null;
+            _cancelationTokenSource?.Dispose();
+            _cancelationTokenSource = null;
 
-        await InvokeAsync(StateHasChanged);
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private void CancelDownload()
+    {
+        _cancelationTokenSource?.Cancel();
+        _statusMessage = "Cancelando Download...";
+    }
+
+    public void Dispose()
+    {
+        _cancelationTokenSource?.Cancel();
+        _cancelationTokenSource?.Dispose();
     }
 }

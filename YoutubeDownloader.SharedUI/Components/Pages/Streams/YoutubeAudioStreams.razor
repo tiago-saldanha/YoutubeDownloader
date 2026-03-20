@@ -38,15 +38,24 @@
 
                     @if (DownloadingStreamId == context.Id)
                     {
-                        <MudStack Style="width:140px">
+                        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
 
-                            <MudProgressLinear Value="@DownloadPercent"
-                                               Color="Color.Primary"
-                                               Rounded="true" />
+                            <MudStack Style="width:140px">
 
-                            <MudText Typo="Typo.caption" Align="Align.Right">
-                                @DownloadPercent%
-                            </MudText>
+                                <MudProgressLinear Value="@DownloadPercent"
+                                                   Color="Color.Primary"
+                                                   Rounded="true" />
+
+                                <MudText Typo="Typo.caption" Align="Align.Right">
+                                    @DownloadPercent%
+                                </MudText>
+
+                            </MudStack>
+
+                            <MudIconButton Icon="@Icons.Material.Filled.Cancel"
+                                           Color="Color.Error"
+                                           Size="Size.Small"
+                                           OnClick="CancelAsync" />
 
                         </MudStack>
                     }
@@ -71,31 +80,28 @@
 
 @code {
 
-    [Parameter]
-    public List<StreamViewModel> streams { get; set; } = [];
+    [Parameter] public List<StreamViewModel> streams { get; set; } = [];
 
-    [Parameter]
-    public EventCallback<StreamViewModel> OnClickCallback { get; set; }
+    [Parameter] public string? DownloadingStreamId { get; set; }
 
-    [Parameter]
-    public string? DownloadingStreamId { get; set; }
+    [Parameter] public int DownloadPercent { get; set; }
 
-    [Parameter]
-    public int DownloadPercent { get; set; }
+    [Parameter] public bool IsDownloading { get; set; }
 
-    [Parameter]
-    public bool IsDownloading { get; set; }
+    [Parameter] public EventCallback<StreamViewModel> OnClickCallback { get; set; }
+
+    [Parameter] public EventCallback OnCancel { get; set; }
 
     private async Task DownloadAsync(StreamViewModel stream)
     {
         await OnClickCallback.InvokeAsync(stream);
     }
 
-    private string GetRowClass(StreamViewModel stream, int rowNumber)
+    private async Task CancelAsync()
     {
-        if (DownloadingStreamId == stream.Id)
-            return "downloading-row";
-
-        return "";
+        await OnCancel.InvokeAsync();
     }
+
+    private string GetRowClass(StreamViewModel stream, int rowNumber)
+        => DownloadingStreamId == stream.Id ? "downloading-row" : "";
 }

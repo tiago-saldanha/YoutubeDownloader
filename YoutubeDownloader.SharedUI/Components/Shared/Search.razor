@@ -1,0 +1,34 @@
+﻿<MudStack Row="true" Spacing="2">
+
+    <MudTextField T="string"
+                  Placeholder="Paste YouTube URL here..."
+                  Value="Url"
+                  ValueChanged="@(v => UrlChanged.InvokeAsync(v))"
+                  FullWidth="true" />
+
+    <MudButton Variant="Variant.Filled"
+               Color="Color.Primary"
+               Disabled="IsDownloading"
+               OnClick="HandleSearch"
+               StartIcon="@Icons.Material.Filled.Search">
+
+        Search
+
+    </MudButton>
+
+</MudStack>
+
+@code {
+    [Parameter] public bool IsDownloading { get; set; }
+    
+    [Parameter] public string Url { get; set; } = string.Empty;
+    
+    [Parameter] public EventCallback<string> UrlChanged { get; set; }
+    
+    [Parameter] public EventCallback<string> OnSearch { get; set; }
+
+    private async Task HandleSearch()
+    {
+        await OnSearch.InvokeAsync(Url);
+    }
+}
