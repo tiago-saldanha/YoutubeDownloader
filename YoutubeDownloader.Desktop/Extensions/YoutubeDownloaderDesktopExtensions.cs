@@ -1,8 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
+using MudBlazor;
+using MudBlazor.Services;
 using System.Reflection;
 using YoutubeDownloader.Core.Interfaces;
-using YoutubeDownloader.Desktop.Services;
 using YoutubeDownloader.Core.Services;
+using YoutubeDownloader.Desktop.Services;
 using YoutubeDownloader.Domain.Interfaces;
 using YoutubeDownloader.Infrastructure.Configuration;
 using YoutubeDownloader.Infrastructure.Interfaces.Cache;
@@ -35,6 +37,14 @@ namespace YoutubeDownloader.Desktop.Extensions
         {
             builder.Services.AddSingleton<IDeviceService, MauiDeviceService>();
             builder.Services.AddSingleton<IAppInfoService, MauiAppInfoService>();
+            builder.Services.AddMudServices(config =>
+            {
+                config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomRight;
+                config.SnackbarConfiguration.PreventDuplicates = true;
+                config.SnackbarConfiguration.NewestOnTop = true;
+                config.SnackbarConfiguration.ShowCloseIcon = true;
+                config.SnackbarConfiguration.VisibleStateDuration = 4000;
+            });
             return builder;
         }
 
