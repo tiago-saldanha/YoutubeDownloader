@@ -1,0 +1,23 @@
+﻿@if (IsSearching)
+{
+    <MudStack Class="mb-2">
+
+        <MudText Typo="Typo.caption">
+            @StatusMessage
+        </MudText>
+
+        <MudProgressLinear Value="@DownloadPercent" Indeterminate="@IsSearching" />
+
+    </MudStack>
+}
+
+@code {
+    [Parameter]
+    public bool IsSearching { get; set; }
+
+    [Parameter]
+    public string StatusMessage { get; set; } = string.Empty;
+
+    [Parameter]
+    public int DownloadPercent { get; set; }
+}
