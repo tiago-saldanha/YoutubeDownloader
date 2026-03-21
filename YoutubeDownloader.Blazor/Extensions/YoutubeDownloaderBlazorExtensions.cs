@@ -1,5 +1,6 @@
 ﻿using MudBlazor;
 using MudBlazor.Services;
+using System.Threading.Channels;
 using YoutubeDownloader.Blazor.Services;
 using YoutubeDownloader.Core.Interfaces;
 using YoutubeDownloader.Core.Services;
@@ -9,8 +10,8 @@ using YoutubeDownloader.Infrastructure.Interfaces.Cache;
 using YoutubeDownloader.Infrastructure.Interfaces.Ffpmeg;
 using YoutubeDownloader.Infrastructure.Interfaces.Youtube;
 using YoutubeDownloader.Infrastructure.Services.Cache;
-using YoutubeDownloader.Infrastructure.Services.Cleanner;
 using YoutubeDownloader.Infrastructure.Services.Ffmpeg;
+using YoutubeDownloader.Infrastructure.Services.Workers;
 using YoutubeDownloader.Infrastructure.Services.Youtube;
 using YoutubeDownloader.SharedUI.Interfaces;
 using YoutubeExplode;
@@ -24,6 +25,7 @@ namespace YoutubeDownloader.Blazor.Extensions
             builder.Services.AddControllers();
             builder.Services.AddSingleton<IDeviceService, WebDeviceService>();
             builder.Services.AddSingleton<IAppInfoService, WebAppInfoService>();
+            builder.Services.AddSingleton<Channel<string>>(_ => Channel.CreateUnbounded<string>());
             builder.Services.AddMudServices(config =>
             {
                 config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomRight;
@@ -54,7 +56,7 @@ namespace YoutubeDownloader.Blazor.Extensions
 
         public static WebApplicationBuilder ConfigureInfrastructure(this WebApplicationBuilder builder)
         {
-            builder.Services.AddHostedService<CleannerService>();
+            builder.Services.AddHostedService<FileCleanupWorker>();
             builder.Services.Configure<FfmpegOptions>(builder.Configuration.GetSection("Ffmpeg"));
             return builder;
         }

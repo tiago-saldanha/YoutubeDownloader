@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using System.Collections.Concurrent;
 using YoutubeDownloader.Infrastructure.Interfaces.Ffpmeg;
 using YoutubeDownloader.Infrastructure.Interfaces.Youtube;
 using YoutubeExplode;
@@ -8,8 +9,13 @@ using YoutubeExplode.Videos.Streams;
 
 namespace YoutubeDownloader.Infrastructure.Services.Youtube
 {
-    public class YoutubeDownloadClient(YoutubeClient client, IFfmpegService ffmpegService, ILogger<YoutubeDownloadClient> logger) : IYoutubeDownloadClient
+    public class YoutubeDownloadClient(
+        YoutubeClient client, 
+        IFfmpegService ffmpegService, 
+        ILogger<YoutubeDownloadClient> logger) : IYoutubeDownloadClient
     {
+        private readonly ConcurrentDictionary<string, Task<StreamManifest>> _manifestCache = new();
+
         public async Task<Video> GetVideoAsync(string url, CancellationToken token = default)
         {
             logger.LogInformation("Starting manifest download for video [{Url}].", url);
@@ -17,11 +23,7 @@ namespace YoutubeDownloader.Infrastructure.Services.Youtube
         }
 
         public async Task<StreamManifest> GetManifestAsync(string videoId, CancellationToken token = default)
-        {
-            var manifest = await client.Videos.Streams.GetManifestAsync(videoId, token);
-            logger.LogInformation("Manifest successfully downloaded for video [{videoId}].", videoId);
-            return manifest;
-        }
+            => await _manifestCache.GetOrAdd(videoId, async (id) => await FetchManifestInternal(id, token));
 
         public async Task DownloaAudioAsync(IStreamInfo streamInfo, string filePath, IProgress<double> progress, CancellationToken token = default)
         {
@@ -50,6 +52,13 @@ namespace YoutubeDownloader.Infrastructure.Services.Youtube
 
                 throw;
             }
+        }
+
+        private async Task<StreamManifest> FetchManifestInternal(string videoId, CancellationToken token = default)
+        {
+            var manifest = await client.Videos.Streams.GetManifestAsync(videoId, token);
+            logger.LogInformation("Manifest successfully downloaded for video [{videoId}].", videoId);
+            return manifest;
         }
     }
 }

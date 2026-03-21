@@ -15,6 +15,8 @@ namespace YoutubeDownloader.Blazor.Controllers
 
             if (output is DownloadFileViewModel command)
             {
+                HttpContext.Items["cleanup-file"] = command.FilePath;
+
                 cache.Remove(id);
                 var stream = new FileStream(
                     command.FilePath,

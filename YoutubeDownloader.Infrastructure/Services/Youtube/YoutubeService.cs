@@ -10,8 +10,10 @@ using YoutubeExplode.Videos.Streams;
 
 namespace YoutubeDownloader.Infrastructure.Services.Youtube
 {
-    public class YoutubeService(IYoutubeDownloadClient client, IStorageCacheService cache, ILogger<YoutubeService> logger)
-        : IYoutubeService
+    public class YoutubeService(
+        IYoutubeDownloadClient client, 
+        IStorageCacheService cache, 
+        ILogger<YoutubeService> logger) : IYoutubeService
     {
         public async Task<StreamManifestViewModel> DownloadManifestAsync(DownloadManifestCommand command)
         {

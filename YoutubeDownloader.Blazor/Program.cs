@@ -1,6 +1,7 @@
 using MudBlazor.Services;
 using YoutubeDownloader.Blazor.Components;
 using YoutubeDownloader.Blazor.Extensions;
+using YoutubeDownloader.Blazor.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,8 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     app.UseHsts();
 }
+
+app.UseMiddleware<FileCleanupMiddleware>();
 
 app.MapControllers();
 app.UseHttpsRedirection();

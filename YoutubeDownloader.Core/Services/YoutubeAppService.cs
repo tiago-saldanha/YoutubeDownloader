@@ -7,8 +7,9 @@ using YoutubeDownloader.Domain.ViewModel;
 
 namespace YoutubeDownloader.Core.Services
 {
-    public class YoutubeAppService(IYoutubeService youtubeService, ILogger<YoutubeAppService> logger) 
-        : IYoutubeAppService
+    public class YoutubeAppService(
+        IYoutubeService youtubeService, 
+        ILogger<YoutubeAppService> logger) : IYoutubeAppService
     {
         public async Task<StreamManifestViewModel> DownloadManifestAsync(DownloadManifestCommand command)
         {
