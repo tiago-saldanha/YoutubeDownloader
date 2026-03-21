@@ -16,4 +16,8 @@
 	  <ProjectReference Include="..\YoutubeDownloader.SharedUI\YoutubeDownloader.SharedUI.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="wwwroot\" />
+	</ItemGroup>
+
 </Project>

@@ -15,7 +15,7 @@ namespace YoutubeDownloader.SharedUI.Components.Pages
         [Inject] public ISnackbar Snackbar { get; set; } = default!;
 
         private CancellationTokenSource? _cancelationTokenSource;
-        private YoutubePageViewModel ViewModel = new();
+        private YoutubePageViewModel _viewModel = new();
 
         private bool _isSearching;
         public bool _hasSearched;
@@ -28,7 +28,7 @@ namespace YoutubeDownloader.SharedUI.Components.Pages
             !string.IsNullOrEmpty(_downloadingStreamId);
 
         private string _thumbnailClass =>
-            $"mt-4 thumbnail-card {(ViewModel.HasResults ? "thumb-visible" : "thumb-hidden")}";
+            $"mt-4 thumbnail-card {(_viewModel.HasResults ? "thumb-visible" : "thumb-hidden")}";
 
         private async Task Search()
         {
@@ -37,9 +37,9 @@ namespace YoutubeDownloader.SharedUI.Components.Pages
 
             Snackbar.Add("Searching for video...", Severity.Info);
 
-            ViewModel.ClearStreams();
+            _viewModel.ClearStreams();
             await InvokeAsync(StateHasChanged);
-            await ViewModel.SearchAsync(YoutubeAppService);
+            await _viewModel.SearchAsync(YoutubeAppService);
 
             _isSearching = false;
             _hasSearched = true;

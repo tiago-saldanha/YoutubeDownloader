@@ -6,7 +6,6 @@ namespace YoutubeDownloader.Infrastructure.Services.Cache
 {
     public class StorageCacheService(IMemoryCache cache) : IStorageCacheService
     {
-
         public void Store(DownloadFileViewModel command)
             => cache.Set(command.Id, command, TimeSpan.FromMinutes(5));
 
