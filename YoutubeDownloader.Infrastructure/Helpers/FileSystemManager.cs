@@ -10,7 +10,7 @@
             FileSystemManager.RemoveFile(filePath);
             return filePath;
         }
-        
+
         public static void RemoveFile(string filePath)
         {
             if (File.Exists(filePath))
@@ -27,6 +27,25 @@
                 Directory.CreateDirectory(outputDirectory);
             }
             return outputDirectory;
+        }
+
+        public static async Task TryDeleteAsync(string filePath)
+        {
+            for (var i = 0; i < 3; i++)
+            {
+                try
+                {
+                    if (File.Exists(filePath))
+                    {
+                        File.Delete(filePath);
+                        break;
+                    }
+                }
+                catch
+                {
+                    await Task.Delay(500);
+                }
+            }
         }
     }
 }

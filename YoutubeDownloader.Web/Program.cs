@@ -1,7 +1,7 @@
 using MudBlazor.Services;
-using YoutubeDownloader.Blazor.Components;
-using YoutubeDownloader.Blazor.Extensions;
-using YoutubeDownloader.Blazor.Middlewares;
+using YoutubeDownloader.Web.Components;
+using YoutubeDownloader.Web.Extensions;
+using YoutubeDownloader.Web.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 

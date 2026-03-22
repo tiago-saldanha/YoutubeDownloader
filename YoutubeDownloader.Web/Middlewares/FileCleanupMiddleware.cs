@@ -1,6 +1,6 @@
 ﻿using System.Threading.Channels;
 
-namespace YoutubeDownloader.Blazor.Middlewares
+namespace YoutubeDownloader.Web.Middlewares
 {
     public class FileCleanupMiddleware(
         RequestDelegate next, 

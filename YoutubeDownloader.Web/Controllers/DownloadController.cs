@@ -2,7 +2,7 @@
 using YoutubeDownloader.Infrastructure.Interfaces.Cache;
 using YoutubeDownloader.Domain.ViewModel;
 
-namespace YoutubeDownloader.Blazor.Controllers
+namespace YoutubeDownloader.Web.Controllers
 {
     [ApiController]
     [Route("api/download")]

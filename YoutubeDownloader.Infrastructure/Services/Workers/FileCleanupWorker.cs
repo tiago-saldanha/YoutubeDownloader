@@ -27,14 +27,11 @@ namespace YoutubeDownloader.Infrastructure.Services.Workers
             {
                 try
                 {
-                    if (File.Exists(filePath))
-                    {
-                        await TryDelete(filePath);
+                    await FileSystemManager.TryDeleteAsync(filePath);
 
-                        logger.LogInformation(
-                            "Deleted file via channel: {FilePath}",
-                            filePath);
-                    }
+                    logger.LogInformation(
+                        "Deleted file via channel: {FilePath}",
+                        filePath);
                 }
                 catch (IOException ex)
                 {
@@ -88,25 +85,6 @@ namespace YoutubeDownloader.Infrastructure.Services.Workers
                 }
 
                 await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
-            }
-        }
-
-        private async Task TryDelete(string filePath)
-        {
-            for (var i = 0; i < 3; i++)
-            {
-                try
-                {
-                    if (File.Exists(filePath))
-                    {
-                        File.Delete(filePath);
-                        break;
-                    }
-                }
-                catch
-                {
-                    await Task.Delay(500);
-                }
             }
         }
     }

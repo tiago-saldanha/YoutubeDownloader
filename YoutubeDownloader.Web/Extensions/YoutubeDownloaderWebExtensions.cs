@@ -1,7 +1,7 @@
 ﻿using MudBlazor;
 using MudBlazor.Services;
 using System.Threading.Channels;
-using YoutubeDownloader.Blazor.Services;
+using YoutubeDownloader.Web.Services;
 using YoutubeDownloader.Core.Interfaces;
 using YoutubeDownloader.Core.Services;
 using YoutubeDownloader.Domain.Interfaces;
@@ -14,11 +14,10 @@ using YoutubeDownloader.Infrastructure.Services.Ffmpeg;
 using YoutubeDownloader.Infrastructure.Services.Workers;
 using YoutubeDownloader.Infrastructure.Services.Youtube;
 using YoutubeDownloader.SharedUI.Interfaces;
-using YoutubeExplode;
 
-namespace YoutubeDownloader.Blazor.Extensions
+namespace YoutubeDownloader.Web.Extensions
 {
-    public static class YoutubeDownloaderBlazorExtensions
+    public static class YoutubeDownloaderWebExtensions
     {
         public static WebApplicationBuilder ConfigureWeb(this WebApplicationBuilder builder)
         {
@@ -46,8 +45,7 @@ namespace YoutubeDownloader.Blazor.Extensions
 
         public static WebApplicationBuilder ConfigureApplication(this WebApplicationBuilder builder)
         {
-            builder.Services.AddSingleton<YoutubeClient>();
-            builder.Services.AddScoped<IYoutubeDownloadClient, YoutubeDownloadClient>();
+            builder.Services.AddSingleton<IYoutubeDownloadClient, YoutubeDownloadClient>();
             builder.Services.AddScoped<IYoutubeAppService, YoutubeAppService>();
             builder.Services.AddScoped<IYoutubeService, YoutubeService>();
             builder.Services.AddSingleton<IFfmpegService, FfmpegService>();

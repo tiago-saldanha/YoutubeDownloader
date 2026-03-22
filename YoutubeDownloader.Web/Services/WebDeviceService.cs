@@ -1,6 +1,6 @@
 ﻿using YoutubeDownloader.SharedUI.Interfaces;
 
-namespace YoutubeDownloader.Blazor.Services
+namespace YoutubeDownloader.Web.Services
 {
     public class WebDeviceService : IDeviceService
     {
