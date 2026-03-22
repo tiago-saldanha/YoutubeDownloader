@@ -4,6 +4,6 @@ namespace YoutubeDownloader.Web.Services
 {
     public class WebAppInfoService : IAppInfoService
     {
-        public string Version => "1.0.0-web";
+        public string Version => "1.0.1-web";
     }
 }

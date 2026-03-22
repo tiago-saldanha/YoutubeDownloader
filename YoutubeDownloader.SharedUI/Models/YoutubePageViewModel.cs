@@ -11,10 +11,10 @@ namespace YoutubeDownloader.SharedUI.Models
         public List<StreamViewModel> VideoStreams { get; private set; } = [];
         public List<StreamViewModel> AudioStreams { get; private set; } = [];
 
-        public async Task SearchAsync(IYoutubeAppService service)
+        public async Task SearchAsync(IYoutubeAppService service, CancellationToken token = default)
         {
             var command = new DownloadManifestCommand(Url);
-            var manifest = await service.DownloadManifestAsync(command);
+            var manifest = await service.DownloadManifestAsync(command, token);
 
             if (manifest.Streams.Any())
             {

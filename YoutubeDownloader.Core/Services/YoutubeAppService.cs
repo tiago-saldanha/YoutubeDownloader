@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using YoutubeDownloader.Core.Exceptions;
 using YoutubeDownloader.Core.Interfaces;
 using YoutubeDownloader.Domain.Commands;
 using YoutubeDownloader.Domain.Interfaces;
@@ -11,22 +10,24 @@ namespace YoutubeDownloader.Core.Services
         IYoutubeService youtubeService, 
         ILogger<YoutubeAppService> logger) : IYoutubeAppService
     {
-        public async Task<StreamManifestViewModel> DownloadManifestAsync(DownloadManifestCommand command)
+        public async Task<StreamManifestViewModel> DownloadManifestAsync(
+            DownloadManifestCommand command, 
+            CancellationToken token)
         {
-            try
-            {
-                return await youtubeService.DownloadManifestAsync(command);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Error while downloading manifest for video [{Url}].", command.Url);
-                throw new DownloadManifestAppException(command.Url, ex);
-            }
+            logger.LogInformation("Starting manifest download for video [{Url}].", command.Url);
+            return await youtubeService.DownloadManifestAsync(command, token);
+            
         }
 
-        public async Task<DownloadFileViewModel> DownloadFileAsync(DownloadCommand command, IProgress<double> progress, CancellationToken token = default)
+        public async Task<DownloadFileViewModel> DownloadFileAsync(
+            DownloadCommand command, 
+            IProgress<double> progress, 
+            CancellationToken token)
         {
-            logger.LogInformation("Starting video download [{Title}] (ID: {VideoId}).", command.Title, command.VideoId);
+            logger.LogInformation(
+                "Starting video download for [{Title}] (ID: {VideoId}).",
+                command.Title,
+                command.VideoId);
             return await youtubeService.DownloadFileAsync(command, progress, token);
         }
     }

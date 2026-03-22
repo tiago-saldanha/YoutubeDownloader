@@ -10,9 +10,15 @@ namespace YoutubeDownloader.Domain.ViewModel
         public string ThumbnailUrl { get; init; }
         public IEnumerable<StreamInfoViewModel> Streams { get; private set; } = [];
         
-        public static StreamManifestViewModel Create(StreamManifest manifest, Video video, string thumbnailUrl) => new(manifest, video, thumbnailUrl);
+        public static StreamManifestViewModel Create(
+            StreamManifest manifest, 
+            Video video, 
+            string thumbnailUrl) => new(manifest, video, thumbnailUrl);
         
-        private StreamManifestViewModel(StreamManifest manifest, Video video, string thumbnailUrl)
+        private StreamManifestViewModel(
+            StreamManifest manifest, 
+            Video video, 
+            string thumbnailUrl)
         {
             VideoId = video.Id;
             Title = video.Title;

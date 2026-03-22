@@ -1,6 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
-using System.Collections.Concurrent;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using System.Net;
+using System.Web;
+using YoutubeDownloader.Infrastructure.Helpers;
 using YoutubeDownloader.Infrastructure.Interfaces.Ffpmeg;
 using YoutubeDownloader.Infrastructure.Interfaces.Youtube;
 using YoutubeExplode;
@@ -14,60 +16,64 @@ namespace YoutubeDownloader.Infrastructure.Services.Youtube
     {
         private readonly Lazy<Task<YoutubeClient>> _clientLazy;
         private readonly IFfmpegService _ffmpegService;
+        private readonly IMemoryCache _cache;
         private readonly ILogger<YoutubeDownloadClient> _logger;
-        private readonly ConcurrentDictionary<string, Task<StreamManifest>> _manifestCache = new();
 
         public YoutubeDownloadClient(
             IFfmpegService ffmpegService,
+            IMemoryCache cache,
             ILogger<YoutubeDownloadClient> logger)
         {
             _ffmpegService = ffmpegService;
+            _cache = cache;
             _logger = logger;
             _clientLazy = new Lazy<Task<YoutubeClient>>(CreateClientAsync);
         }
 
-        private async Task<YoutubeClient> CreateClientAsync()
+        public async Task<Video> GetVideoAsync(
+            string url,
+            CancellationToken token)
         {
-            var cookieContainer = new CookieContainer();
+            var videoId = GetVideoId(url);
+            var key = $"video:{videoId}";
 
-            var handler = new HttpClientHandler()
-            {
-                CookieContainer = cookieContainer,
-                UseCookies = true
-            };
-
-            using var httpClient = new HttpClient(handler);
-            httpClient.DefaultRequestHeaders.Add("User-Agent",
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
-                "(KHTML, like Gecko) Chrome/92.0.4515.107 Safari/537.36");
-
-            var requestUri = new Uri("https://www.youtube.com");
-            await httpClient.GetAsync(requestUri);
-
-            var cookies = cookieContainer.GetCookies(requestUri).ToList().AsReadOnly();
-
-            return new YoutubeClient(cookies);
-        }
-
-        private async Task<YoutubeClient> GetClientAsync()
-            => await _clientLazy.Value;
-
-        public async Task<Video> GetVideoAsync(string url, CancellationToken token = default)
-        {
-            var client = await GetClientAsync();
-            _logger.LogInformation("Starting video fetch for [{Url}].", url);
-            return await client.Videos.GetAsync(url, token);
-        }
-
-        public async Task<StreamManifest> GetManifestAsync(string videoId, CancellationToken token = default)
-        {
             try
             {
-                return await _manifestCache.GetOrAdd(videoId, _ => FetchManifestInternal(videoId, token));
+                return await _cache.GetOrCreateAsync(key, async entry =>
+                {
+                    entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(60);
+
+                    _logger.LogInformation("Cache MISS (Video) [{url}]", url);
+
+                    return await FetchVideoInternalAsync(url, token);
+                });
             }
             catch
             {
-                _manifestCache.TryRemove(videoId, out _);
+                _cache.Remove(url);
+                throw;
+            }
+        }
+
+        public async Task<StreamManifest> GetManifestAsync(
+            string videoId, 
+            CancellationToken token)
+        {
+            var key = $"manifest:{videoId}";
+            try
+            {
+                return await _cache.GetOrCreateAsync(key, async entry =>
+                {
+                    entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10);
+
+                    _logger.LogInformation("Cache MISS for video [{videoId}]. Fetching manifest...", videoId);
+
+                    return await FetchManifestInternalAsync(videoId, token);
+                });
+            }
+            catch
+            {
+                _cache.Remove(videoId);
                 throw;
             }
         }
@@ -76,7 +82,7 @@ namespace YoutubeDownloader.Infrastructure.Services.Youtube
             IStreamInfo streamInfo,
             string filePath,
             IProgress<double> progress,
-            CancellationToken token = default)
+            CancellationToken token)
         {
             var client = await GetClientAsync();
             await client.Videos.Streams.DownloadAsync(streamInfo, filePath, progress, token);
@@ -88,7 +94,7 @@ namespace YoutubeDownloader.Infrastructure.Services.Youtube
             IStreamInfo videoStreamInfo,
             string filePath,
             IProgress<double> progress,
-            CancellationToken token = default)
+            CancellationToken token)
         {
             try
             {
@@ -123,7 +129,18 @@ namespace YoutubeDownloader.Infrastructure.Services.Youtube
             }
         }
 
-        private async Task<StreamManifest> FetchManifestInternal(string videoId, CancellationToken token = default)
+        public async Task<Video> FetchVideoInternalAsync(
+            string url,
+            CancellationToken token)
+        {
+            var client = await GetClientAsync();
+            _logger.LogInformation("Starting video fetch for [{Url}].", url);
+            return await client.Videos.GetAsync(url, token);
+        }
+
+        private async Task<StreamManifest> FetchManifestInternalAsync(
+            string videoId,
+            CancellationToken token)
         {
             var client = await GetClientAsync();
             var manifest = await client.Videos.Streams.GetManifestAsync(videoId, token);
@@ -132,5 +149,45 @@ namespace YoutubeDownloader.Infrastructure.Services.Youtube
 
             return manifest;
         }
+
+        private static string GetVideoId(string url)
+        {
+            if (string.IsNullOrWhiteSpace(url))
+                throw new ArgumentException("URL cannot be null or empty.", nameof(url));
+
+            var uri = new Uri(url);
+
+            if (uri.Host.Contains("youtu.be"))
+            {
+                return uri.AbsolutePath.Trim('/');
+            }
+
+            var query = HttpUtility.ParseQueryString(uri.Query);
+            var videoId = query["v"];
+
+            if (!string.IsNullOrEmpty(videoId))
+                return videoId;
+
+            throw new InvalidOperationException("Invalid YouTube URL format.");
+        }
+
+        private async Task<YoutubeClient> CreateClientAsync()
+        {
+            var container = new CookieContainer();
+            var handler = new HttpClientHandler { CookieContainer = container, UseCookies = true };
+
+            var httpClient = new HttpClient(handler);
+            httpClient.DefaultRequestHeaders.Add("User-Agent", YoutubeDownloaderInfrastructure.UserAgent);
+
+            var requestUri = new Uri(YoutubeDownloaderInfrastructure.YoutubeUrl);
+            await httpClient.GetAsync(requestUri);
+
+            var cookies = container.GetCookies(requestUri).ToList().AsReadOnly();
+
+            return new YoutubeClient(httpClient, cookies);
+        }
+
+        private async Task<YoutubeClient> GetClientAsync()
+            => await _clientLazy.Value;
     }
 }

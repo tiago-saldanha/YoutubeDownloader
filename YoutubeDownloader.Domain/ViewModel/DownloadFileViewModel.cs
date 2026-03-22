@@ -9,14 +9,20 @@ namespace YoutubeDownloader.Domain.ViewModel
         public string FileName { get; init; }
         public string ContentType { get; } = "application/octet-stream";
 
-        public DownloadFileViewModel(string id, string filePath, string fileName)
+        public DownloadFileViewModel(
+            string id, 
+            string filePath, 
+            string fileName)
         {
             Id = id;
             FilePath = filePath;
             FileName = fileName;
         }
 
-        public static DownloadFileViewModel Create(string filePath, string title, string extension)
+        public static DownloadFileViewModel Create(
+            string filePath, 
+            string title, 
+            string extension)
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(filePath, nameof(filePath));
 

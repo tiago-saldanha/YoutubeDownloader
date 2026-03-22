@@ -46,7 +46,7 @@ namespace YoutubeDownloader.Web.Extensions
 
         public static WebApplicationBuilder ConfigureApplication(this WebApplicationBuilder builder)
         {
-            builder.Services.AddSingleton<YoutubeClient>();
+            //builder.Services.AddSingleton<YoutubeClient>();
             builder.Services.AddSingleton<IYoutubeDownloadClient, YoutubeDownloadClient>();
             builder.Services.AddScoped<IYoutubeAppService, YoutubeAppService>();
             builder.Services.AddScoped<IYoutubeService, YoutubeService>();
