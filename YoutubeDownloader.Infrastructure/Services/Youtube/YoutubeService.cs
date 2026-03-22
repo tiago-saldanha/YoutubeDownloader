@@ -15,7 +15,9 @@ namespace YoutubeDownloader.Infrastructure.Services.Youtube
         IStorageCacheService cache, 
         ILogger<YoutubeService> logger) : IYoutubeService
     {
-        public async Task<StreamManifestViewModel> DownloadManifestAsync(DownloadManifestCommand command, CancellationToken token)
+        public async Task<StreamManifestViewModel> DownloadManifestAsync(
+            DownloadManifestCommand command, 
+            CancellationToken token)
         {
             var video = await client.GetVideoAsync(command.Url, token);
             var thumbnail = video.Thumbnails.GetWithHighestResolution().Url;
@@ -71,14 +73,22 @@ namespace YoutubeDownloader.Infrastructure.Services.Youtube
             StreamManifest manifest, 
             DownloadCommand command)
         {
-            logger.LogInformation("Selecting video stream. Resolution: {Resolution}, Container: {Container}.", command.Resolution, command.ContainerName);
+            logger.LogInformation(
+                "Selecting video stream. Resolution: {Resolution}, Container: {Container}.", 
+                command.Resolution, 
+                command.ContainerName);
+
             var videoStream = manifest
                 .GetVideoOnlyStreams()
                 .Where(s => s.Container.ToString() == command.ContainerName && s.VideoQuality.Label.Contains(command.Resolution))
                 .OrderByDescending(s => s.Size)
                 .First();
 
-            logger.LogInformation("Video stream selected. Container: {Container}, Quality: {Quality}.", videoStream.Container.Name, videoStream.VideoQuality.Label);
+            logger.LogInformation(
+                "Video stream selected. Container: {Container}, Quality: {Quality}.", 
+                videoStream.Container.Name, 
+                videoStream.VideoQuality.Label);
+
             return videoStream;
         }
             
@@ -88,6 +98,7 @@ namespace YoutubeDownloader.Infrastructure.Services.Youtube
             string title)
         {
             logger.LogInformation("Selecting audio stream for video '{title}'.", title);
+            
             var audioStream = manifest
                 .GetAudioOnlyStreams()
                 .Where(predicate)

@@ -14,7 +14,6 @@ using YoutubeDownloader.Infrastructure.Services.Cache;
 using YoutubeDownloader.Infrastructure.Services.Ffmpeg;
 using YoutubeDownloader.Infrastructure.Services.Youtube;
 using YoutubeDownloader.SharedUI.Interfaces;
-using YoutubeExplode;
 
 namespace YoutubeDownloader.Desktop.Extensions
 {
@@ -58,7 +57,6 @@ namespace YoutubeDownloader.Desktop.Extensions
 
         public static MauiAppBuilder ConfigureApplication(this MauiAppBuilder builder)
         {
-            //builder.Services.AddSingleton<YoutubeClient>();
             builder.Services.AddSingleton<IYoutubeDownloadClient, YoutubeDownloadClient>();
             builder.Services.AddSingleton<IYoutubeAppService, YoutubeAppService>();
             builder.Services.AddSingleton<IYoutubeService, YoutubeService>();

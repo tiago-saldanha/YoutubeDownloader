@@ -14,11 +14,10 @@ using YoutubeDownloader.Infrastructure.Services.Ffmpeg;
 using YoutubeDownloader.Infrastructure.Services.Workers;
 using YoutubeDownloader.Infrastructure.Services.Youtube;
 using YoutubeDownloader.SharedUI.Interfaces;
-using YoutubeExplode;
 
 namespace YoutubeDownloader.Web.Extensions
 {
-    public static class YoutubeDownloaderBlazorExtensions
+    public static class YoutubeDownloaderWebExtensions
     {
         public static WebApplicationBuilder ConfigureWeb(this WebApplicationBuilder builder)
         {
@@ -46,7 +45,6 @@ namespace YoutubeDownloader.Web.Extensions
 
         public static WebApplicationBuilder ConfigureApplication(this WebApplicationBuilder builder)
         {
-            //builder.Services.AddSingleton<YoutubeClient>();
             builder.Services.AddSingleton<IYoutubeDownloadClient, YoutubeDownloadClient>();
             builder.Services.AddScoped<IYoutubeAppService, YoutubeAppService>();
             builder.Services.AddScoped<IYoutubeService, YoutubeService>();
