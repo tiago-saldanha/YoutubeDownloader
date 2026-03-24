@@ -28,6 +28,7 @@ namespace YoutubeDownloader.Web.Extensions
             builder.Services.AddMudServices(config =>
             {
                 config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomRight;
+
                 config.SnackbarConfiguration.PreventDuplicates = true;
                 config.SnackbarConfiguration.NewestOnTop = true;
                 config.SnackbarConfiguration.ShowCloseIcon = true;
