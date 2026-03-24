@@ -14,9 +14,9 @@
 		<ApplicationTitle>Youtube Downloader</ApplicationTitle>
 		<ApplicationId>dev.tiagosaldanha.youtubedownloader</ApplicationId>
 
-		<ApplicationDisplayVersion>1.0.1</ApplicationDisplayVersion>
-		<ApplicationVersion>1</ApplicationVersion>
-		<Version>1.0.1</Version>
+		<ApplicationDisplayVersion>1.0.2</ApplicationDisplayVersion>
+		<ApplicationVersion>0</ApplicationVersion>
+		<Version>1.0.2</Version>
 
 		<WindowsPackageType>None</WindowsPackageType>
 		<RuntimeIdentifiers>win-x64</RuntimeIdentifiers>

@@ -1,55 +1,172 @@
 ﻿@page "/"
-
-@using YoutubeDownloader.Domain.Commands
 @using YoutubeDownloader.SharedUI.Components.Shared
-@using YoutubeDownloader.SharedUI.Interfaces
-@using YoutubeDownloader.SharedUI.Models
-@using YoutubeDownloader.SharedUI.Components.Pages.Streams
 
 <PageTitle>Youtube Downloader</PageTitle>
 
-<MudContainer MaxWidth="MaxWidth.Large">
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-2">
 
     <div class="search-container @(_hasSearched ? "search-top" : "search-center")">
-        <MudStack AlignItems="AlignItems.Center" Class="mb-2">
-            <MudText Typo="Typo.subtitle1">
-                Download video and audio streams in your preferred format
+
+        <MudPaper Class="pa-4 mb-2">
+
+            <MudStack Row="true" Spacing="2">
+                <MudTextField @bind-Value="_url"
+                              Placeholder="Paste YouTube URL..."
+                              FullWidth="true"
+                              AutoFocus="true"
+                              OnKeyDown="HandleKeyDown" />
+
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           OnClick="Search"
+                           Disabled="_isSearching">
+                    Search
+                </MudButton>
+            </MudStack>
+
+        </MudPaper>
+
+        <LoadingProgressLinear IsSearching="@_isSearching"
+                               StatusMessage="Searching for video..."
+                               DownloadPercent="0" />
+
+    </div>
+
+    @if (!_hasData && !_isSearching)
+    {
+        <MudStack AlignItems="AlignItems.Center"
+                  Justify="Justify.Center"
+                  Style="height:40vh">
+
+            <MudText Typo="Typo.h5">
+                Download YouTube videos easily
             </MudText>
+
+            <MudText Typo="Typo.body2" Class="mb-4">
+                Choose format, quality, and download in seconds
+            </MudText>
+
         </MudStack>
+    }
 
-        <MudCard Elevation="3" Class="pa-4">
+    @if (_hasData)
+    {
+        <div class="results">
 
-            <Search @bind-Url="@_viewModel.Url"
-                    IsDownloading="@_isDownloading"
-                    OnSearch="Search" />
+            <MudCard Class="mb-2">
+                <div style="position:relative">
+                    <MudImage Src="@_viewModel.ThumbnailUrl"
+                              Alt="thumbnail"
+                              Style="width:100%; height:auto;" />
 
-            <Thumbnail ThumbnailUrl="@_viewModel.ThumbnailUrl"
-                       HasResults="@_viewModel.HasResults"
-                       Title="@_viewModel.Title" />
+                    <div style="
+                            position:absolute;
+                            bottom:0;
+                            width:100%;
+                            padding:16px;
+                            background:linear-gradient(transparent, rgba(0,0,0,0.8));
+                            color:white;">
 
-            <LoadingProgressLinear IsSearching="@_isSearching"
-                                   StatusMessage="@_statusMessage"
-                                   DownloadPercent="@_downloadPercent" />
+                        <MudText Typo="Typo.h6">
+                            @_viewModel.Title
+                        </MudText>
 
-            <MudCard Class="@_thumbnailClass">
-
-                <YoutubeVideoStreams streams="@_viewModel.VideoStreams"
-                                     DownloadingStreamId="@_downloadingStreamId"
-                                     DownloadPercent="@_downloadPercent"
-                                     IsDownloading="@_isDownloading"
-                                     OnClickCallback="DownloadAsync"
-                                     OnCancel="CancelDownload" />
-
-                <YoutubeAudioStreams streams="@_viewModel.AudioStreams"
-                                     DownloadingStreamId="@_downloadingStreamId"
-                                     DownloadPercent="@_downloadPercent"
-                                     IsDownloading="@_isDownloading"
-                                     OnClickCallback="DownloadAsync"
-                                     OnCancel="CancelDownload" />
-
+                    </div>
+                </div>
             </MudCard>
 
-        </MudCard>
-    </div>
+            <MudPaper Class="pa-4 mb-2">
+                <MudText Typo="Typo.subtitle1" Class="mb-2">
+                    Format
+                </MudText>
+
+                <MudToggleGroup T="string"
+                                Value="_selectedFormat"
+                                ValueChanged="OnFormatChanged"
+                                Exclusive="true">
+
+                    <MudToggleItem Value="@_mp4">🎬 MP4</MudToggleItem>
+                    <MudToggleItem Value="@_mp3">🎵 MP3</MudToggleItem>
+
+                </MudToggleGroup>
+            </MudPaper>
+
+            @if (_selectedFormat == _mp4)
+            {
+                <MudPaper Class="pa-4 mb-2">
+                    <MudText Typo="Typo.subtitle1" Class="mb-2">
+                        Quality
+                    </MudText>
+
+                    <MudToggleGroup T="string"
+                                    Value="_selectedQuality"
+                                    ValueChanged="OnQualityChanged"
+                                    Exclusive="true"
+                                Class="d-flex">
+
+                    <MudToggleItem Class="flex-grow-1 text-center" Value="@_best">
+                            ⭐ Best
+                        </MudToggleItem>
+
+                        @foreach (var item in _videoQuality)
+                        {
+                        <MudToggleItem Class="flex-grow-1 text-center" Value="@item">
+                            @item
+                            </MudToggleItem>
+                        }
+
+                    </MudToggleGroup>
+                </MudPaper>
+            }
+
+            <MudPaper Class="pa-2">
+
+                <MudStack Spacing="1">
+
+                    <MudStack Row="true"
+                              Justify="Justify.SpaceBetween"
+                              AlignItems="AlignItems.Center">
+
+                        <MudStack>
+                            <MudText Typo="Typo.caption">
+                                📦 @_estimatedSize
+                            </MudText>
+
+                            <MudText Typo="Typo.caption">
+                                ⚡ Fast and optimized download
+                            </MudText>
+                        </MudStack>
+
+                        @if (_isDownloading)
+                        {
+                            <MudButton Variant="Variant.Outlined"
+                                       Color="Color.Error"
+                                       Size="Size.Large"
+                                       OnClick="CancelDownload">
+                                Cancel
+                            </MudButton>
+                        }
+                        else
+                        {
+                            <MudButton Variant="Variant.Filled"
+                                       Color="Color.Success"
+                                       Size="Size.Large"
+                                       OnClick="Download">
+                                Download
+                            </MudButton>
+                        }
+
+                    </MudStack>
+
+                    <LoadingProgressLinear IsSearching="@_isDownloading"
+                                           StatusMessage="@_statusMessage"
+                                           DownloadPercent="@_downloadPercent" />
+
+                </MudStack>
+
+            </MudPaper>
+
+        </div>
+    }
 
 </MudContainer>

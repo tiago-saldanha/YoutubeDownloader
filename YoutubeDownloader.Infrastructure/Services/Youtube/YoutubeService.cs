@@ -11,12 +11,12 @@ using YoutubeExplode.Videos.Streams;
 namespace YoutubeDownloader.Infrastructure.Services.Youtube
 {
     public class YoutubeService(
-        IYoutubeDownloadClient client, 
-        IStorageCacheService cache, 
+        IYoutubeDownloadClient client,
+        IStorageCacheService cache,
         ILogger<YoutubeService> logger) : IYoutubeService
     {
         public async Task<StreamManifestViewModel> DownloadManifestAsync(
-            DownloadManifestCommand command, 
+            DownloadManifestCommand command,
             CancellationToken token)
         {
             var video = await client.GetVideoAsync(command.Url, token);
@@ -26,8 +26,8 @@ namespace YoutubeDownloader.Infrastructure.Services.Youtube
         }
 
         public async Task<DownloadFileViewModel> DownloadFileAsync(
-            DownloadCommand command, 
-            IProgress<double> progress, 
+            DownloadCommand command,
+            IProgress<double> progress,
             CancellationToken token)
         {
             return command.IsAudioOnly
@@ -36,15 +36,15 @@ namespace YoutubeDownloader.Infrastructure.Services.Youtube
         }
 
         private async Task<DownloadFileViewModel> DownloadAudioFileAsync(
-            DownloadCommand command, 
-            IProgress<double> progress, 
+            DownloadCommand command,
+            IProgress<double> progress,
             CancellationToken token)
         {
             var manifest = await client.GetManifestAsync(command.VideoId, token);
             var audioStream = GetAudioStream(manifest, s => s.AudioCodec == command.AudioCodec && s.Container.Name == command.ContainerName, command.Title);
             var filePath = FileSystemManager.CreateFile(audioStream.Container.Name);
 
-            await client.DownloaAudioAsync(audioStream, filePath, progress, token);
+            await client.DownloadAudioAsync(audioStream, filePath, progress, token);
             var download = DownloadFileViewModel.Create(filePath, command.Title, audioStream.Container.Name);
             cache.Store(download);
 
@@ -52,8 +52,8 @@ namespace YoutubeDownloader.Infrastructure.Services.Youtube
         }
 
         private async Task<DownloadFileViewModel> DownloadVideoFileAsync(
-            DownloadCommand command, 
-            IProgress<double> progress, 
+            DownloadCommand command,
+            IProgress<double> progress,
             CancellationToken token)
         {
             var manifest = await client.GetManifestAsync(command.VideoId, token);
@@ -70,35 +70,50 @@ namespace YoutubeDownloader.Infrastructure.Services.Youtube
         }
 
         private VideoOnlyStreamInfo GetVideoStream(
-            StreamManifest manifest, 
+            StreamManifest manifest,
             DownloadCommand command)
         {
             logger.LogInformation(
-                "Selecting video stream. Resolution: {Resolution}, Container: {Container}.", 
-                command.Resolution, 
+                "Selecting video stream. Resolution: {Resolution}, Container: {Container}.",
+                command.Resolution,
                 command.ContainerName);
 
-            var videoStream = manifest
+            var candidates = manifest
                 .GetVideoOnlyStreams()
-                .Where(s => s.Container.ToString() == command.ContainerName && s.VideoQuality.Label.Contains(command.Resolution))
+                .Where(s => s.Container.Name == command.ContainerName)
+                .Where(s => s.VideoQuality.Label.Contains(command.Resolution));
+
+            // 🥇 prioridade: H264
+            var videoStream = candidates
+                .Where(s => s.VideoCodec.StartsWith("avc1"))
                 .OrderByDescending(s => s.Size)
-                .First();
+                .FirstOrDefault();
+
+            if (videoStream == null)
+            {
+                logger.LogInformation("H264 not found, using fallback codec.");
+
+                videoStream = candidates
+                    .OrderByDescending(s => s.Size)
+                    .First();
+            }
 
             logger.LogInformation(
-                "Video stream selected. Container: {Container}, Quality: {Quality}.", 
-                videoStream.Container.Name, 
-                videoStream.VideoQuality.Label);
+                "Video stream selected. Container: {Container}, Quality: {Quality}, Codec: {Codec}.",
+                videoStream.Container.Name,
+                videoStream.VideoQuality.Label,
+                videoStream.VideoCodec);
 
             return videoStream;
         }
-            
+
         private IStreamInfo GetAudioStream(
-            StreamManifest manifest, 
-            Func<AudioOnlyStreamInfo, bool> predicate, 
+            StreamManifest manifest,
+            Func<AudioOnlyStreamInfo, bool> predicate,
             string title)
         {
             logger.LogInformation("Selecting audio stream for video '{title}'.", title);
-            
+
             var audioStream = manifest
                 .GetAudioOnlyStreams()
                 .Where(predicate)
