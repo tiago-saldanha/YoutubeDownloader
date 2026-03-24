@@ -78,7 +78,7 @@ namespace YoutubeDownloader.Infrastructure.Services.Youtube
             }
         }
 
-        public async Task DownloaAudioAsync(
+        public async Task DownloadAudioAsync(
             IStreamInfo streamInfo,
             string filePath,
             IProgress<double> progress,
@@ -109,6 +109,7 @@ namespace YoutubeDownloader.Infrastructure.Services.Youtube
 
                 var conversionRequest = new ConversionRequestBuilder(filePath)
                     .SetFFmpegPath(_ffmpegService.Path)
+                    .SetPreset(ConversionPreset.UltraFast)
                     .Build();
 
                 await client.Videos.DownloadAsync(streams, conversionRequest, progress, token);
@@ -129,7 +130,7 @@ namespace YoutubeDownloader.Infrastructure.Services.Youtube
             }
         }
 
-        public async Task<Video> FetchVideoInternalAsync(
+        private async Task<Video> FetchVideoInternalAsync(
             string url,
             CancellationToken token)
         {

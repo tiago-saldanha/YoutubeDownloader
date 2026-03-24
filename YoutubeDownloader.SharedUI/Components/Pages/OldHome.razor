@@ -1,0 +1,55 @@
+﻿@page "/OldHome"
+
+@using YoutubeDownloader.Domain.Commands
+@using YoutubeDownloader.SharedUI.Components.Shared
+@using YoutubeDownloader.SharedUI.Interfaces
+@using YoutubeDownloader.SharedUI.Models
+@using YoutubeDownloader.SharedUI.Components.Pages.Streams
+
+<PageTitle>Youtube Downloader</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large">
+
+    <div class="search-container @(_hasSearched ? "search-top" : "search-center")">
+        <MudStack AlignItems="AlignItems.Center" Class="mb-2">
+            <MudText Typo="Typo.subtitle1">
+                Download video and audio streams in your preferred format
+            </MudText>
+        </MudStack>
+
+        <MudCard Elevation="3" Class="pa-4">
+
+            <Search @bind-Url="@_viewModel.Url"
+                    IsDownloading="@_isDownloading"
+                    OnSearch="Search" />
+
+            <Thumbnail ThumbnailUrl="@_viewModel.ThumbnailUrl"
+                       HasResults="@_viewModel.HasResults"
+                       Title="@_viewModel.Title" />
+
+            <LoadingProgressLinear IsSearching="@_isSearching"
+                                   StatusMessage="@_statusMessage"
+                                   DownloadPercent="@_downloadPercent" />
+
+            <MudCard Class="@_thumbnailClass">
+
+                <YoutubeVideoStreams streams="@_viewModel.VideoStreams"
+                                     DownloadingStreamId="@_downloadingStreamId"
+                                     DownloadPercent="@_downloadPercent"
+                                     IsDownloading="@_isDownloading"
+                                     OnClickCallback="DownloadAsync"
+                                     OnCancel="CancelDownload" />
+
+                <YoutubeAudioStreams streams="@_viewModel.AudioStreams"
+                                     DownloadingStreamId="@_downloadingStreamId"
+                                     DownloadPercent="@_downloadPercent"
+                                     IsDownloading="@_isDownloading"
+                                     OnClickCallback="DownloadAsync"
+                                     OnCancel="CancelDownload" />
+
+            </MudCard>
+
+        </MudCard>
+    </div>
+
+</MudContainer>

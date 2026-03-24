@@ -7,7 +7,7 @@ using YoutubeDownloader.SharedUI.Models;
 
 namespace YoutubeDownloader.SharedUI.Components.Pages
 {
-    public partial class Home : ComponentBase, IDisposable
+    public partial class OldHome : ComponentBase, IDisposable
     {
         [Inject] public IYoutubeAppService YoutubeAppService { get; set; } = default!;
         [Inject] public NavigationManager Navigation { get; set; } = default!;
@@ -15,80 +15,49 @@ namespace YoutubeDownloader.SharedUI.Components.Pages
         [Inject] public ISnackbar Snackbar { get; set; } = default!;
 
         private CancellationTokenSource? _cancelationTokenSource;
-
         private YoutubePageViewModel _viewModel = new();
 
-        private string _url = "";
         private bool _isSearching;
         public bool _hasSearched;
-        private bool _hasData;
-
-        private readonly string _mp4 = "mp4";
-        private readonly string _mp3 = "mp3";
-        private readonly string _best = "best";
-
-        private readonly List<string> _videoQuality = [ "1080", "720", "480" ];
-
-        private string _selectedFormat = "mp4";
-        private string _selectedQuality = "best";
-
         private int _downloadPercent;
-        private int _lastReportedPercent = -1;
         private string _statusMessage = "";
+        private string? _downloadingStreamId;
+        private int _lastReportedPercent = -1;
 
-        private bool _isDownloading;
+        private bool _isDownloading =>
+            !string.IsNullOrEmpty(_downloadingStreamId);
 
-        private string _estimatedSize = "~-- MB";
+        private string _thumbnailClass =>
+            $"mt-4 thumbnail-card {(_viewModel.HasResults ? "thumb-visible" : "thumb-hidden")}";
 
         private async Task Search()
         {
-            if (string.IsNullOrWhiteSpace(_url))
-            {
-                Snackbar.Add("Paste a valid URL", Severity.Warning);
-                return;
-            }
-
             _hasSearched = false;
             _isSearching = true;
-            _hasData = false;
 
             Snackbar.Add("Searching for video...", Severity.Info);
 
-            _viewModel.Url = _url;
             _viewModel.ClearStreams();
-
             await InvokeAsync(StateHasChanged);
-
             await _viewModel.SearchAsync(YoutubeAppService);
 
-            _hasSearched = true;
             _isSearching = false;
-            _hasData = _viewModel.HasResults;
-
-            CalculateEstimatedSize();
-
-            await InvokeAsync(StateHasChanged);
+            _hasSearched = true;
         }
 
-        private async Task Download()
+        private async Task DownloadAsync(StreamViewModel stream)
         {
-            if (!_viewModel.HasResults)
-                return;
-
             _cancelationTokenSource = new CancellationTokenSource();
 
-            _isDownloading = true;
-            _downloadPercent = 0;
-            _lastReportedPercent = -1;
-
             Snackbar.Add("Starting download...", Severity.Info);
+
+            _downloadPercent = 0;
+            _downloadingStreamId = stream.Id;
 
             await InvokeAsync(StateHasChanged);
 
             try
             {
-                var stream = SelectBestStream();
-
                 var command = new DownloadCommand(
                     stream.VideoId,
                     stream.Title,
@@ -107,7 +76,7 @@ namespace YoutubeDownloader.SharedUI.Components.Pages
                     {
                         _lastReportedPercent = percent;
                         _downloadPercent = percent;
-                        _statusMessage = $"Downloading {_selectedFormat} {percent}%";
+                        _statusMessage = $"Downloading {stream.ContainerName} {percent}%";
 
                         InvokeAsync(StateHasChanged);
                     }
@@ -118,22 +87,22 @@ namespace YoutubeDownloader.SharedUI.Components.Pages
                     progress,
                     _cancelationTokenSource.Token);
 
-                _isDownloading = false;
+                _downloadingStreamId = null;
 
                 if (DeviceService.Desktop)
                 {
-                    Snackbar.Add("Download completed!", Severity.Success);
+                    Snackbar.Add("Download completed successfully!", Severity.Success);
                     await DeviceService.OpenFileAsync(download.FilePath);
                 }
                 else
                 {
                     Navigation.NavigateTo($"/api/download/{download.Id}", true);
-                    Snackbar.Add("Download ready!", Severity.Success);
+                    Snackbar.Add("Download ready! Your browser will start the transfer.", Severity.Success);
                 }
             }
             catch (OperationCanceledException)
             {
-                Snackbar.Add("Download canceled.", Severity.Warning);
+                Snackbar.Add("Download canceled.", Severity.Error);
             }
             catch (Exception ex)
             {
@@ -141,69 +110,12 @@ namespace YoutubeDownloader.SharedUI.Components.Pages
             }
             finally
             {
-                _isDownloading = false;
+                _downloadingStreamId = null;
                 _cancelationTokenSource?.Dispose();
                 _cancelationTokenSource = null;
 
                 await InvokeAsync(StateHasChanged);
             }
-        }
-
-        private StreamViewModel SelectBestStream()
-        {
-            if (_selectedFormat == _mp3)
-            {
-                return _viewModel.AudioStreams
-                    .OrderByDescending(s => s.Size)
-                    .First();
-            }
-
-            var candidates = _viewModel.VideoStreams
-                .Where(s => s.ContainerName == _mp4);
-
-            if (_selectedQuality != _best)
-            {
-                candidates = candidates
-                    .Where(s => s.Resolution.Contains(_selectedQuality));
-            }
-
-            var best = candidates
-                .Where(s => s.VideoCodec.StartsWith("avc1"))
-                .OrderByDescending(s => s.Size)
-                .FirstOrDefault();
-
-            if (best == null)
-            {
-                best = candidates
-                    .OrderByDescending(s => s.Size)
-                    .First();
-            }
-
-            return best;
-        }
-
-        private void CalculateEstimatedSize()
-        {
-            if (!_viewModel.HasResults)
-                return;
-
-            var stream = SelectBestStream();
-
-            var sizeMb = stream.Size;
-
-            _estimatedSize = $"~{sizeMb:F1} MB";
-        }
-
-        private void OnFormatChanged(string format)
-        {
-            _selectedFormat = format;
-            CalculateEstimatedSize();
-        }
-
-        private void OnQualityChanged(string quality)
-        {
-            _selectedQuality = quality;
-            CalculateEstimatedSize();
         }
 
         private void CancelDownload()
