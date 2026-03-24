@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
 using YoutubeDownloader.Core.Interfaces;
 using YoutubeDownloader.Domain.Commands;
@@ -146,6 +147,14 @@ namespace YoutubeDownloader.SharedUI.Components.Pages
                 _cancelationTokenSource = null;
 
                 await InvokeAsync(StateHasChanged);
+            }
+        }
+
+        private async Task HandleKeyDown(KeyboardEventArgs e)
+        {
+            if (e.Key == "Enter" && !_isSearching)
+            {
+                await Search();
             }
         }
 

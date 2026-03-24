@@ -1,28 +1,31 @@
-:root, html, body {
-    background-color: white !important;
+:root,
+html,
+body {
+    background-color: #ffffff;
     margin: 0;
     padding: 0;
     font-family: 'Roboto', sans-serif;
     overflow-x: hidden;
+    height: 100%;
+}
+
+#app {
+    background-color: #ffffff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .mud-layout,
 .mud-main-content,
 .mud-container,
 .mud-paper {
-    background-color: white !important;
-    background: white !important;
-}
-
-#app {
-    background-color: white !important;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+    background-color: #ffffff;
 }
 
 .downloading-row {
     background-color: rgba(25, 118, 210, 0.08);
+    transition: background-color 0.3s ease;
 }
 
 @keyframes spin {
@@ -32,7 +35,8 @@
 }
 
 .search-container {
-    transition: transform 0.7s ease, margin 0.7s ease;
+    transition: transform 0.5s ease, margin 0.5s ease;
+    will-change: transform;
 }
 
 .search-center {
@@ -40,16 +44,21 @@
 }
 
 .search-top {
-    transform: translateY(-30);
+    transform: translateY(-30px);
+}
+
+.results {
+    animation: fadeInUp 0.4s ease;
 }
 
 .results-container {
-    transition: all 0.6s ease;
+    transition: all 0.4s ease;
 }
 
 .results-hidden {
     opacity: 0;
-    transform: translateY(40px);
+    transform: translateY(30px);
+    pointer-events: none;
 }
 
 .results-visible {
@@ -58,15 +67,59 @@
 }
 
 .thumbnail-card {
-    transition: all 0.5s ease;
+    transition: all 0.4s ease;
 }
 
 .thumb-hidden {
     opacity: 0;
-    transform: scale(0.97);
+    transform: scale(0.96);
 }
 
 .thumb-visible {
     opacity: 1;
     transform: scale(1);
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.mud-button {
+    transition: all 0.2s ease;
+}
+
+    .mud-button:hover {
+        transform: translateY(-1px);
+    }
+
+.mud-toggle-group {
+    scrollbar-width: thin;
+}
+
+    .mud-toggle-group::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .mud-toggle-group::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 4px;
+    }
+
+@media (max-width: 600px) {
+
+    .search-center {
+        transform: translateY(40px);
+    }
+
+    .search-top {
+        transform: translateY(-10px);
+    }
 }
