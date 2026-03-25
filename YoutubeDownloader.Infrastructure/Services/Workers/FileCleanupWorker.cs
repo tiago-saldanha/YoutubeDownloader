@@ -21,9 +21,9 @@ namespace YoutubeDownloader.Infrastructure.Services.Workers
             logger.LogInformation("CleanerService stopped.");
         }
 
-        private async Task ProcessChannelAsync(CancellationToken token)
+        private async Task ProcessChannelAsync(CancellationToken cancellationToken)
         {
-            await foreach (var filePath in channel.Reader.ReadAllAsync(token))
+            await foreach (var filePath in channel.Reader.ReadAllAsync(cancellationToken))
             {
                 try
                 {

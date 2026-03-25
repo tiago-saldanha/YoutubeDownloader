@@ -39,10 +39,32 @@ namespace YoutubeDownloader.SharedUI.Components.Pages
 
             _viewModel.ClearStreams();
             await InvokeAsync(StateHasChanged);
-            await _viewModel.SearchAsync(YoutubeAppService);
+            
+            _cancelationTokenSource = new CancellationTokenSource();
+            
+            try
+            {
+                await _viewModel.SearchAsync(YoutubeAppService, _cancelationTokenSource.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                Snackbar.Add("Searching canceled.", Severity.Error);
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+            }
+            finally
+            {
+                _downloadingStreamId = null;
+                _cancelationTokenSource?.Dispose();
+                _cancelationTokenSource = null;
 
-            _isSearching = false;
-            _hasSearched = true;
+                _isSearching = false;
+                _hasSearched = true;
+
+                await InvokeAsync(StateHasChanged);
+            }
         }
 
         private async Task DownloadAsync(StreamViewModel stream)

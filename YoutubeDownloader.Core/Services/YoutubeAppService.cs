@@ -12,23 +12,23 @@ namespace YoutubeDownloader.Core.Services
     {
         public async Task<StreamManifestViewModel> DownloadManifestAsync(
             DownloadManifestCommand command, 
-            CancellationToken token)
+            CancellationToken cancellationToken)
         {
             logger.LogInformation("Starting manifest download for video [{Url}].", command.Url);
-            return await youtubeService.DownloadManifestAsync(command, token);
+            return await youtubeService.DownloadManifestAsync(command, cancellationToken);
             
         }
 
         public async Task<DownloadFileViewModel> DownloadFileAsync(
             DownloadCommand command, 
             IProgress<double> progress, 
-            CancellationToken token)
+            CancellationToken cancellationToken)
         {
             logger.LogInformation(
                 "Starting video download for [{Title}] (ID: {VideoId}).",
                 command.Title,
                 command.VideoId);
-            return await youtubeService.DownloadFileAsync(command, progress, token);
+            return await youtubeService.DownloadFileAsync(command, progress, cancellationToken);
         }
     }
 }

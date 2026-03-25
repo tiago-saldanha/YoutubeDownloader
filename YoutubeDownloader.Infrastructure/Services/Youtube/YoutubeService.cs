@@ -17,34 +17,34 @@ namespace YoutubeDownloader.Infrastructure.Services.Youtube
     {
         public async Task<StreamManifestViewModel> DownloadManifestAsync(
             DownloadManifestCommand command,
-            CancellationToken token)
+            CancellationToken cancellationToken)
         {
-            var video = await client.GetVideoAsync(command.Url, token);
+            var video = await client.GetVideoAsync(command.Url, cancellationToken);
             var thumbnail = video.Thumbnails.GetWithHighestResolution().Url;
-            var manifest = await client.GetManifestAsync(video.Id, token);
+            var manifest = await client.GetManifestAsync(video.Id, cancellationToken);
             return StreamManifestViewModel.Create(manifest, video, thumbnail);
         }
 
         public async Task<DownloadFileViewModel> DownloadFileAsync(
             DownloadCommand command,
             IProgress<double> progress,
-            CancellationToken token)
+            CancellationToken cancellationToken)
         {
             return command.IsAudioOnly
-                   ? await DownloadAudioFileAsync(command, progress, token)
-                   : await DownloadVideoFileAsync(command, progress, token);
+                   ? await DownloadAudioFileAsync(command, progress, cancellationToken)
+                   : await DownloadVideoFileAsync(command, progress, cancellationToken);
         }
 
         private async Task<DownloadFileViewModel> DownloadAudioFileAsync(
             DownloadCommand command,
             IProgress<double> progress,
-            CancellationToken token)
+            CancellationToken cancellationToken)
         {
-            var manifest = await client.GetManifestAsync(command.VideoId, token);
+            var manifest = await client.GetManifestAsync(command.VideoId, cancellationToken);
             var audioStream = GetAudioStream(manifest, s => s.AudioCodec == command.AudioCodec && s.Container.Name == command.ContainerName, command.Title);
             var filePath = FileSystemManager.CreateFile(audioStream.Container.Name);
 
-            await client.DownloadAudioAsync(audioStream, filePath, progress, token);
+            await client.DownloadAudioAsync(audioStream, filePath, progress, cancellationToken);
             var download = DownloadFileViewModel.Create(filePath, command.Title, audioStream.Container.Name);
             cache.Store(download);
 
@@ -54,15 +54,15 @@ namespace YoutubeDownloader.Infrastructure.Services.Youtube
         private async Task<DownloadFileViewModel> DownloadVideoFileAsync(
             DownloadCommand command,
             IProgress<double> progress,
-            CancellationToken token)
+            CancellationToken cancellationToken)
         {
-            var manifest = await client.GetManifestAsync(command.VideoId, token);
+            var manifest = await client.GetManifestAsync(command.VideoId, cancellationToken);
             var audioStream = GetAudioStream(manifest, s => s.Container.Name == command.ContainerName, command.Title);
             var videoStream = GetVideoStream(manifest, command);
 
             var filePath = FileSystemManager.CreateFile(audioStream.Container.Name);
 
-            await client.DownloadVideoAsync(audioStream, videoStream, filePath, progress, token);
+            await client.DownloadVideoAsync(audioStream, videoStream, filePath, progress, cancellationToken);
             var download = DownloadFileViewModel.Create(filePath, command.Title, audioStream.Container.Name);
             cache.Store(download);
 
@@ -83,7 +83,7 @@ namespace YoutubeDownloader.Infrastructure.Services.Youtube
                 .Where(s => s.Container.Name == command.ContainerName)
                 .Where(s => s.VideoQuality.Label.Contains(command.Resolution));
 
-            // 🥇 prioridade: H264
+            // Priority: H264
             var videoStream = candidates
                 .Where(s => s.VideoCodec.StartsWith("avc1"))
                 .OrderByDescending(s => s.Size)

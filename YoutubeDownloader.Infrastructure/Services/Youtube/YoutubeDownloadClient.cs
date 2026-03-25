@@ -32,11 +32,9 @@ namespace YoutubeDownloader.Infrastructure.Services.Youtube
 
         public async Task<Video> GetVideoAsync(
             string url,
-            CancellationToken token)
+            CancellationToken cancellationToken)
         {
-            var videoId = GetVideoId(url);
-            var key = $"video:{videoId}";
-
+            var key = $"video:{GetVideoId(url)}";
             try
             {
                 return await _cache.GetOrCreateAsync(key, async entry =>
@@ -45,7 +43,7 @@ namespace YoutubeDownloader.Infrastructure.Services.Youtube
 
                     _logger.LogInformation("Cache MISS (Video) [{url}]", url);
 
-                    return await FetchVideoInternalAsync(url, token);
+                    return await FetchVideoInternalAsync(url, cancellationToken);
                 });
             }
             catch
@@ -56,8 +54,8 @@ namespace YoutubeDownloader.Infrastructure.Services.Youtube
         }
 
         public async Task<StreamManifest> GetManifestAsync(
-            string videoId, 
-            CancellationToken token)
+            string videoId,
+            CancellationToken cancellationToken)
         {
             var key = $"manifest:{videoId}";
             try
@@ -68,7 +66,7 @@ namespace YoutubeDownloader.Infrastructure.Services.Youtube
 
                     _logger.LogInformation("Cache MISS for video [{videoId}]. Fetching manifest...", videoId);
 
-                    return await FetchManifestInternalAsync(videoId, token);
+                    return await FetchManifestInternalAsync(videoId, cancellationToken);
                 });
             }
             catch
@@ -82,10 +80,10 @@ namespace YoutubeDownloader.Infrastructure.Services.Youtube
             IStreamInfo streamInfo,
             string filePath,
             IProgress<double> progress,
-            CancellationToken token)
+            CancellationToken cancellationToken)
         {
             var client = await GetClientAsync();
-            await client.Videos.Streams.DownloadAsync(streamInfo, filePath, progress, token);
+            await client.Videos.Streams.DownloadAsync(streamInfo, filePath, progress, cancellationToken);
             _logger.LogInformation("Audio download completed successfully. File saved at {FilePath}.", filePath);
         }
 
@@ -94,7 +92,7 @@ namespace YoutubeDownloader.Infrastructure.Services.Youtube
             IStreamInfo videoStreamInfo,
             string filePath,
             IProgress<double> progress,
-            CancellationToken token)
+            CancellationToken cancellationToken)
         {
             try
             {
@@ -112,7 +110,7 @@ namespace YoutubeDownloader.Infrastructure.Services.Youtube
                     .SetPreset(ConversionPreset.UltraFast)
                     .Build();
 
-                await client.Videos.DownloadAsync(streams, conversionRequest, progress, token);
+                await client.Videos.DownloadAsync(streams, conversionRequest, progress, cancellationToken);
 
                 _logger.LogInformation(
                     "Video download completed successfully. File saved at {FilePath}.",
@@ -132,19 +130,19 @@ namespace YoutubeDownloader.Infrastructure.Services.Youtube
 
         private async Task<Video> FetchVideoInternalAsync(
             string url,
-            CancellationToken token)
+            CancellationToken cancellationToken)
         {
             var client = await GetClientAsync();
             _logger.LogInformation("Starting video fetch for [{Url}].", url);
-            return await client.Videos.GetAsync(url, token);
+            return await client.Videos.GetAsync(url, cancellationToken);
         }
 
         private async Task<StreamManifest> FetchManifestInternalAsync(
             string videoId,
-            CancellationToken token)
+            CancellationToken cancellationToken)
         {
             var client = await GetClientAsync();
-            var manifest = await client.Videos.Streams.GetManifestAsync(videoId, token);
+            var manifest = await client.Videos.Streams.GetManifestAsync(videoId, cancellationToken);
 
             _logger.LogInformation("Manifest successfully downloaded for video [{videoId}].", videoId);
 
@@ -174,8 +172,11 @@ namespace YoutubeDownloader.Infrastructure.Services.Youtube
 
         private async Task<YoutubeClient> CreateClientAsync()
         {
-            var container = new CookieContainer();
-            var handler = new HttpClientHandler { CookieContainer = container, UseCookies = true };
+            var handler = new HttpClientHandler 
+            { 
+                CookieContainer = new CookieContainer(), 
+                UseCookies = true 
+            };
 
             var httpClient = new HttpClient(handler);
             httpClient.DefaultRequestHeaders.Add("User-Agent", YoutubeDownloaderInfrastructure.UserAgent);
@@ -183,7 +184,7 @@ namespace YoutubeDownloader.Infrastructure.Services.Youtube
             var requestUri = new Uri(YoutubeDownloaderInfrastructure.YoutubeUrl);
             await httpClient.GetAsync(requestUri);
 
-            var cookies = container.GetCookies(requestUri).ToList().AsReadOnly();
+            var cookies = handler.CookieContainer.GetCookies(requestUri).ToList().AsReadOnly();
 
             return new YoutubeClient(httpClient, cookies);
         }
