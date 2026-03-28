@@ -1,0 +1,51 @@
+﻿<div class="search-container @(_hasSearched ? "search-top" : "search-center")">
+
+    <MudPaper Class="pa-4 mb-2">
+
+        <MudStack Row="true" Spacing="2">
+            <MudTextField @bind-Value="@_url"
+                          Placeholder="Paste YouTube URL..."
+                          FullWidth="true"
+                          AutoFocus="true"
+                          Immediate="true"
+                          OnKeyDown="HandleKeyDown" />
+
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       OnClick="SearchAsync"
+                       Disabled="@_isSearching">
+                Search
+            </MudButton>
+        </MudStack>
+
+    </MudPaper>
+
+    <LoadingProgressLinear IsSearching="@_isSearching"
+                           StatusMessage="Searching for video..."
+                           DownloadPercent="0" />
+
+</div>
+
+@code {
+    [Parameter] public EventCallback<string> OnSearch { get; set; }
+    private bool _hasSearched;
+    private bool _isSearching;
+
+    private string? _url;
+
+    private async Task SearchAsync()
+    {
+        _isSearching = true;
+        _hasSearched = false;
+        
+        await OnSearch.InvokeAsync(_url);
+        
+        _isSearching = false;
+        _hasSearched = true;
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !_isSearching) await SearchAsync();
+    }
+}

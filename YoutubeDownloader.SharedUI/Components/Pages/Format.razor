@@ -1,0 +1,24 @@
+﻿<MudPaper Class="pa-4 mb-2">
+    <MudText Typo="Typo.subtitle1" Class="mb-2">Format</MudText>
+
+    <MudToggleGroup T="string"
+                    Value="SelectedFormat"
+                    ValueChanged="HandleInternalChange"
+                    SelectionMode="SelectionMode.SingleSelection"
+                    CheckMark="true">
+        <MudToggleItem Value="@_mp4">🎬 MP4</MudToggleItem>
+        <MudToggleItem Value="@_mp3">🎵 MP3</MudToggleItem>
+    </MudToggleGroup>
+</MudPaper>
+
+@code {
+    [Parameter] public string SelectedFormat { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> OnFormatChanged { get; set; }
+    private string _mp4 = "mp4";
+    private string _mp3 = "mp3";
+
+    private async Task HandleInternalChange(string value)
+    {
+        await OnFormatChanged.InvokeAsync(value);
+    }
+}

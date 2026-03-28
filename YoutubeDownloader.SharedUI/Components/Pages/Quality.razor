@@ -1,0 +1,36 @@
+﻿<MudPaper Class="pa-4 mb-2">
+    <MudText Typo="Typo.subtitle1" Class="mb-2">
+        Quality
+    </MudText>
+
+    <MudToggleGroup T="string"
+                    Value="SelectedQuality"
+                    ValueChanged="HandleInternalChange"
+                    exclusive="true"
+                    Class="d-flex">
+
+        <MudToggleItem Class="flex-grow-1 text-center" Value="@_best">
+            ⭐ Best
+        </MudToggleItem>
+
+        @foreach (var item in _videoQuality)
+        {
+            <MudToggleItem Class="flex-grow-1 text-center" Value="@item">
+                @item
+            </MudToggleItem>
+        }
+
+    </MudToggleGroup>
+</MudPaper>
+
+@code {
+    [Parameter] public string SelectedQuality { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> OnQualityChanged { get; set; }
+    private readonly List<string> _videoQuality = ["1080", "720", "480"];
+    private string _best = "best";
+
+    public async Task HandleInternalChange(string value)
+    {
+        await OnQualityChanged.InvokeAsync(value);
+    }
+}

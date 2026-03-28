@@ -1,0 +1,71 @@
+﻿<MudPaper Class="pa-2">
+
+    <MudStack Spacing="1">
+
+        <MudStack Row="true"
+                  Justify="Justify.SpaceBetween"
+                  AlignItems="AlignItems.Center">
+
+            <MudStack>
+                <MudText Typo="Typo.caption">
+                    📦 @EstimatedSize
+                </MudText>
+
+                <MudText Typo="Typo.caption">
+                    ⚡ Fast and optimized download
+                </MudText>
+            </MudStack>
+
+            @if (_isDownloading)
+            {
+                <MudButton Variant="Variant.Outlined"
+                           Color="Color.Error"
+                           Size="Size.Large"
+                           OnClick="CancelAsync">
+                    Cancel
+                </MudButton>
+            }
+            else
+            {
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Success"
+                           Size="Size.Large"
+                           OnClick="DownloadAsync">
+                    Download
+                </MudButton>
+            }
+
+        </MudStack>
+
+        <LoadingProgressLinear IsSearching="@_isDownloading"
+                               StatusMessage="@StatusMessage"
+                               DownloadPercent="@DownloadPercent" />
+
+    </MudStack>
+
+</MudPaper>
+
+@code {
+    [Parameter] public string EstimatedSize { get; set; } = string.Empty;
+    [Parameter] public string StatusMessage { get; set; } = string.Empty;
+    [Parameter] public int DownloadPercent { get; set; }
+    [Parameter] public EventCallback OnClickDownload { get; set; }
+    [Parameter] public EventCallback OnClickCancel { get; set; }
+    private bool _isDownloading;
+
+    public async Task DownloadAsync()
+    {
+        _isDownloading = true;
+        
+        await OnClickDownload.InvokeAsync();
+        
+        _isDownloading = false;
+    }
+
+    public async Task CancelAsync()
+    {
+        _isDownloading = false;
+
+        await OnClickCancel.InvokeAsync();
+    }
+}

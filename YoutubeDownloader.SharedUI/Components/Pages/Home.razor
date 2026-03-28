@@ -1,170 +1,28 @@
 ﻿@page "/"
-@using YoutubeDownloader.SharedUI.Components.Shared
+@using YoutubeDownloader.SharedUI.Components
 
 <PageTitle>Youtube Downloader</PageTitle>
 
 <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-2">
 
-    <div class="search-container @(_hasSearched ? "search-top" : "search-center")">
+    <Search OnSearch="Search" />
 
-        <MudPaper Class="pa-4 mb-2">
-
-            <MudStack Row="true" Spacing="2">
-                <MudTextField @bind-Value="_url"
-                              Placeholder="Paste YouTube URL..."
-                              FullWidth="true"
-                              AutoFocus="true"
-                              OnKeyDown="HandleKeyDown" />
-
-                <MudButton Variant="Variant.Filled"
-                           Color="Color.Primary"
-                           OnClick="Search"
-                           Disabled="_isSearching">
-                    Search
-                </MudButton>
-            </MudStack>
-
-        </MudPaper>
-
-        <LoadingProgressLinear IsSearching="@_isSearching"
-                               StatusMessage="Searching for video..."
-                               DownloadPercent="0" />
-
-    </div>
-
-    @if (!_hasData && !_isSearching)
-    {
-        <MudStack AlignItems="AlignItems.Center"
-                  Justify="Justify.Center"
-                  Style="height:40vh">
-
-            <MudText Typo="Typo.h5">
-                Download YouTube videos easily
-            </MudText>
-
-            <MudText Typo="Typo.body2" Class="mb-4">
-                Choose format, quality, and download in seconds
-            </MudText>
-
-        </MudStack>
-    }
+    <Information HasData="@_hasData" />
 
     @if (_hasData)
     {
         <div class="results">
 
-            <MudCard Class="mb-2">
-                <div style="position:relative">
-                    <MudImage Src="@_viewModel.ThumbnailUrl"
-                              Alt="thumbnail"
-                              Style="width:100%; height:auto;" />
+            <Thumbnail Url="@_viewModel.ThumbnailUrl" Title="@_viewModel.Title" />
 
-                    <div style="
-                            position:absolute;
-                            bottom:0;
-                            width:100%;
-                            padding:16px;
-                            background:linear-gradient(transparent, rgba(0,0,0,0.8));
-                            color:white;">
+            <Format SelectedFormat="@_selectedFormat" OnFormatChanged="OnFormatChanged" />
 
-                        <MudText Typo="Typo.h6">
-                            @_viewModel.Title
-                        </MudText>
+            <Quality SelectedQuality="@_selectedQuality" OnQualityChanged="OnQualityChanged" />
 
-                    </div>
-                </div>
-            </MudCard>
-
-            <MudPaper Class="pa-4 mb-2">
-                <MudText Typo="Typo.subtitle1" Class="mb-2">
-                    Format
-                </MudText>
-
-                <MudToggleGroup T="string"
-                                Value="_selectedFormat"
-                                ValueChanged="OnFormatChanged"
-                                Exclusive="true">
-
-                    <MudToggleItem Value="@_mp4">🎬 MP4</MudToggleItem>
-                    <MudToggleItem Value="@_mp3">🎵 MP3</MudToggleItem>
-
-                </MudToggleGroup>
-            </MudPaper>
-
-            @if (_selectedFormat == _mp4)
-            {
-                <MudPaper Class="pa-4 mb-2">
-                    <MudText Typo="Typo.subtitle1" Class="mb-2">
-                        Quality
-                    </MudText>
-
-                    <MudToggleGroup T="string"
-                                    Value="_selectedQuality"
-                                    ValueChanged="OnQualityChanged"
-                                    Exclusive="true"
-                                Class="d-flex">
-
-                    <MudToggleItem Class="flex-grow-1 text-center" Value="@_best">
-                            ⭐ Best
-                        </MudToggleItem>
-
-                        @foreach (var item in _videoQuality)
-                        {
-                        <MudToggleItem Class="flex-grow-1 text-center" Value="@item">
-                            @item
-                            </MudToggleItem>
-                        }
-
-                    </MudToggleGroup>
-                </MudPaper>
-            }
-
-            <MudPaper Class="pa-2">
-
-                <MudStack Spacing="1">
-
-                    <MudStack Row="true"
-                              Justify="Justify.SpaceBetween"
-                              AlignItems="AlignItems.Center">
-
-                        <MudStack>
-                            <MudText Typo="Typo.caption">
-                                📦 @_estimatedSize
-                            </MudText>
-
-                            <MudText Typo="Typo.caption">
-                                ⚡ Fast and optimized download
-                            </MudText>
-                        </MudStack>
-
-                        @if (_isDownloading)
-                        {
-                            <MudButton Variant="Variant.Outlined"
-                                       Color="Color.Error"
-                                       Size="Size.Large"
-                                       OnClick="CancelDownload">
-                                Cancel
-                            </MudButton>
-                        }
-                        else
-                        {
-                            <MudButton Variant="Variant.Filled"
-                                       Color="Color.Success"
-                                       Size="Size.Large"
-                                       OnClick="Download">
-                                Download
-                            </MudButton>
-                        }
-
-                    </MudStack>
-
-                    <LoadingProgressLinear IsSearching="@_isDownloading"
-                                           StatusMessage="@_statusMessage"
-                                           DownloadPercent="@_downloadPercent" />
-
-                </MudStack>
-
-            </MudPaper>
+            <Actions EstimatedSize="@_estimatedSize"
+                     StatusMessage="@_statusMessage"
+                     OnClickDownload="Download"
+                     OnClickCancel="Cancel" />
 
         </div>
     }

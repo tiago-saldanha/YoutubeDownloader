@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
 using YoutubeDownloader.Core.Interfaces;
-using YoutubeDownloader.Domain.Commands;
 using YoutubeDownloader.SharedUI.Interfaces;
 using YoutubeDownloader.SharedUI.Models;
 
@@ -16,49 +14,33 @@ namespace YoutubeDownloader.SharedUI.Components.Pages
         [Inject] public ISnackbar Snackbar { get; set; } = default!;
 
         private CancellationTokenSource? _cancelationTokenSource;
+        private readonly YoutubePageViewModel _viewModel = new();
 
-        private YoutubePageViewModel _viewModel = new();
-
-        private string _url = "";
-        private bool _isSearching;
-        public bool _hasSearched;
         private bool _hasData;
-
-        private readonly string _mp4 = "mp4";
-        private readonly string _mp3 = "mp3";
-        private readonly string _best = "best";
-
-        private readonly List<string> _videoQuality = ["1080", "720", "480"];
-
         private string _selectedFormat = "mp4";
         private string _selectedQuality = "best";
 
         private int _downloadPercent;
         private int _lastReportedPercent = -1;
-        private string _statusMessage = "";
-
-        private bool _isDownloading;
+        private string _statusMessage = string.Empty;
 
         private string _estimatedSize = "~-- MB";
 
-        private async Task Search()
+        private async Task Search(string url)
         {
-            if (string.IsNullOrWhiteSpace(_url))
+            if (string.IsNullOrWhiteSpace(url))
             {
                 Snackbar.Add("Paste a valid URL", Severity.Warning);
                 return;
             }
 
-            await PrepareSearchAsync();
+            await PrepareSearchAsync(url);
             _cancelationTokenSource = new CancellationTokenSource();
 
             try
             {
-                await _viewModel.SearchAsync(
-                    YoutubeAppService, 
-                    _cancelationTokenSource.Token);
+                await _viewModel.SearchAsync(YoutubeAppService, _cancelationTokenSource.Token);
 
-                _hasSearched = true;
                 _hasData = _viewModel.HasResults;
 
                 if (_hasData)
@@ -72,7 +54,7 @@ namespace YoutubeDownloader.SharedUI.Components.Pages
             }
             catch (OperationCanceledException)
             {
-                Snackbar.Add("Searching canceled.", Severity.Warning);
+                Snackbar.Add("Searching canceled.", Severity.Error);
             }
             catch (Exception ex)
             {
@@ -84,15 +66,11 @@ namespace YoutubeDownloader.SharedUI.Components.Pages
             }
         }
 
-        private async Task PrepareSearchAsync()
+        private async Task PrepareSearchAsync(string url)
         {
-            _hasSearched = false;
-            _isSearching = true;
             _hasData = false;
-            _isDownloading = false;
-            _statusMessage = "Searching...";
 
-            _viewModel.Url = _url;
+            _viewModel.Url = url;
             _viewModel.ClearStreams();
 
             await InvokeAsync(StateHasChanged);
@@ -113,12 +91,10 @@ namespace YoutubeDownloader.SharedUI.Components.Pages
 
             try
             {
-                var download = await YoutubeAppService.DownloadFileAsync(
-                    GetDownloadCommand(),
-                    GetProgress(),
-                    _cancelationTokenSource.Token);
+                var command = _viewModel.GetDownloadCommand(_selectedFormat, _selectedQuality);
 
-                _isDownloading = false;
+                var download = await YoutubeAppService.DownloadFileAsync(
+                    command, GetProgress(), _cancelationTokenSource.Token);
 
                 if (DeviceService.Desktop)
                 {
@@ -133,7 +109,7 @@ namespace YoutubeDownloader.SharedUI.Components.Pages
             }
             catch (OperationCanceledException)
             {
-                Snackbar.Add("Download canceled.", Severity.Warning);
+                Snackbar.Add("Download canceled.", Severity.Error);
             }
             catch (Exception ex)
             {
@@ -147,10 +123,6 @@ namespace YoutubeDownloader.SharedUI.Components.Pages
 
         private async Task PrepareDownloadAsync()
         {
-            _isDownloading = true;
-            _downloadPercent = 0;
-            _lastReportedPercent = -1;
-
             Snackbar.Add("Starting download...", Severity.Info);
 
             await InvokeAsync(StateHasChanged);
@@ -158,53 +130,10 @@ namespace YoutubeDownloader.SharedUI.Components.Pages
 
         private async Task CleanupAsync()
         {
-            _isSearching = false;
-            _isDownloading = false;
             _cancelationTokenSource?.Dispose();
             _cancelationTokenSource = null;
 
             await InvokeAsync(StateHasChanged);
-        }
-
-        private async Task HandleKeyDown(KeyboardEventArgs e)
-        {
-            if (e.Key == "Enter" && !_isSearching)
-            {
-                await Search();
-            }
-        }
-
-        private StreamViewModel SelectBestStream()
-        {
-            if (_selectedFormat == _mp3)
-            {
-                return _viewModel.AudioStreams
-                    .OrderByDescending(s => s.Size)
-                    .First();
-            }
-
-            var candidates = _viewModel.VideoStreams
-                .Where(s => s.ContainerName == _mp4);
-
-            if (_selectedQuality != _best)
-            {
-                candidates = candidates
-                    .Where(s => s.Resolution.Contains(_selectedQuality));
-            }
-
-            var best = candidates
-                .Where(s => s.VideoCodec.StartsWith("avc1"))
-                .OrderByDescending(s => s.Size)
-                .FirstOrDefault();
-
-            if (best == null)
-            {
-                best = candidates
-                    .OrderByDescending(s => s.Size)
-                    .First();
-            }
-
-            return best;
         }
 
         private void CalculateEstimatedSize()
@@ -212,7 +141,7 @@ namespace YoutubeDownloader.SharedUI.Components.Pages
             if (!_viewModel.HasResults)
                 return;
 
-            var stream = SelectBestStream();
+            var stream = _viewModel.SelectBestStream(_selectedFormat, _selectedQuality);
 
             _estimatedSize = $"~{stream.Size:F1} MB";
         }
@@ -229,23 +158,11 @@ namespace YoutubeDownloader.SharedUI.Components.Pages
             CalculateEstimatedSize();
         }
 
-        private DownloadCommand GetDownloadCommand()
-        {
-            var stream = SelectBestStream();
-
-            return new DownloadCommand(
-                stream.VideoId,
-                stream.Title,
-                stream.ContainerName,
-                stream.VideoCodec,
-                stream.Resolution,
-                stream.AudioCodec,
-                stream.IsAudioOnly
-            );
-        }
-
         private Progress<double> GetProgress()
         {
+            _downloadPercent = 0;
+            _lastReportedPercent = -1;
+
             return new Progress<double>(p =>
             {
                 var percent = (int)Math.Floor(p * 100);
@@ -261,7 +178,7 @@ namespace YoutubeDownloader.SharedUI.Components.Pages
             });
         }
 
-        private void CancelDownload()
+        private void Cancel()
         {
             _cancelationTokenSource?.Cancel();
         }
