@@ -6,23 +6,20 @@
 <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-2">
 
     <Search OnSearch="Search" />
-    
-    @if (!_hasData)
+
+    @if (_hasData)
     {
-        <Information />
-    }
-    else
-    {    
         <div class="results">
 
-            <Thumbnail Url="@_viewModel.ThumbnailUrl" Title="@_viewModel.Title" />
+            <Thumbnail Url="@_viewModel.ThumbnailUrl"
+                       Title="@_viewModel.Title" />
 
-            <Format SelectedFormat="@_selectedFormat" OnFormatChanged="OnFormatChanged" />
+            <Format SelectedFormat="@_selectedFormat"
+                    OnFormatChanged="OnFormatChanged" />
 
-            @if (_selectedFormat != "mp3")
-            {
-                <Quality SelectedQuality="@_selectedQuality" OnQualityChanged="OnQualityChanged" />
-            }
+            <Quality SelectedQuality="@_selectedQuality"
+                     SelectedFormat="@_selectedFormat"
+                     OnQualityChanged="OnQualityChanged" />
 
             <Actions EstimatedSize="@_estimatedSize"
                      StatusMessage="@_statusMessage"
@@ -30,6 +27,10 @@
                      OnClickCancel="Cancel" />
 
         </div>
+    }
+    else
+    {
+        <Information />
     }
 
 </MudContainer>

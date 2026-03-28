@@ -17,7 +17,7 @@ namespace YoutubeDownloader.SharedUI.Components.Pages
         private readonly YoutubePageViewModel _viewModel = new();
 
         private bool _hasData;
-        private string _selectedFormat = "webm";
+        private string _selectedFormat = "mp4";
         private string _selectedQuality = "best";
 
         private int _downloadPercent;

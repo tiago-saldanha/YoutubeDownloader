@@ -6,8 +6,8 @@
                     ValueChanged="HandleInternalChange"
                     SelectionMode="SelectionMode.SingleSelection"
                     CheckMark="true">
-        <MudToggleItem Value="@_webm">🎬 WEBM</MudToggleItem>
         <MudToggleItem Value="@_mp4">🎬 MP4</MudToggleItem>
+        <MudToggleItem Value="@_webm">🎬 WEBM</MudToggleItem>
         <MudToggleItem Value="@_mp3">🎵 MP3</MudToggleItem>
     </MudToggleGroup>
 </MudPaper>
@@ -15,9 +15,9 @@
 @code {
     [Parameter] public string SelectedFormat { get; set; } = string.Empty;
     [Parameter] public EventCallback<string> OnFormatChanged { get; set; }
-    private string _webm = "webm";
-    private string _mp4 = "mp4";
-    private string _mp3 = "mp3";
+    private readonly string _webm = "webm";
+    private readonly string _mp4 = "mp4";
+    private readonly string _mp3 = "mp3";
 
     private async Task HandleInternalChange(string value)
     {
