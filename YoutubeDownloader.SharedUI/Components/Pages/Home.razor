@@ -6,11 +6,13 @@
 <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-2">
 
     <Search OnSearch="Search" />
-
-    <Information HasData="@_hasData" />
-
-    @if (_hasData)
+    
+    @if (!_hasData)
     {
+        <Information />
+    }
+    else
+    {    
         <div class="results">
 
             <Thumbnail Url="@_viewModel.ThumbnailUrl" Title="@_viewModel.Title" />

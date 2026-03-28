@@ -1,25 +1,22 @@
-﻿@if (!HasData)
-{
-    <MudStack AlignItems="AlignItems.Center"
-              Justify="Justify.Center"
-              Class="mt-16"
-              Style="height:30vh">
+﻿<MudStack AlignItems="AlignItems.Center"
+          Justify="Justify.Center"
+          Class="mt-16"
+          Style="height:30vh">
 
-        <MudText Typo="Typo.h4"
-                 Color="Color.Primary"
-                 Style="font-weight: 700;">
-            Download YouTube videos easily
-        </MudText>
+    <MudText Typo="Typo.h4"
+             Color="Color.Primary"
+             Style="font-weight: 700;">
+        Download YouTube videos easily
+    </MudText>
 
-        <MudText Typo="Typo.h6"
-                 Class="mud-text-secondary"
-                 Style="font-weight: 400;">
-            Choose format, quality, and download in seconds
-        </MudText>
+    <MudText Typo="Typo.h6"
+             Class="mud-text-secondary"
+             Style="font-weight: 400;">
+        Choose format, quality, and download in seconds
+    </MudText>
 
-    </MudStack>
-}
+</MudStack>
 
 @code {
-    [Parameter] public bool HasData { get; set; }
+    
 }
