@@ -14,9 +14,9 @@
 		<ApplicationTitle>Youtube Downloader</ApplicationTitle>
 		<ApplicationId>dev.tiagosaldanha.youtubedownloader</ApplicationId>
 
-		<ApplicationDisplayVersion>1.0.2</ApplicationDisplayVersion>
-		<ApplicationVersion>0</ApplicationVersion>
-		<Version>1.0.2</Version>
+		<ApplicationDisplayVersion>1.0.3</ApplicationDisplayVersion>
+		<ApplicationVersion>3</ApplicationVersion>
+		<Version>1.0.3</Version>
 
 		<WindowsPackageType>None</WindowsPackageType>
 		<RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
@@ -24,6 +24,16 @@
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <ApplicationDisplayVersion>1.0.4</ApplicationDisplayVersion>
+	  <ApplicationVersion>0</ApplicationVersion>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	  <ApplicationDisplayVersion>1.0.4</ApplicationDisplayVersion>
+	  <ApplicationVersion>0</ApplicationVersion>
 	</PropertyGroup>
 
 	<ItemGroup>

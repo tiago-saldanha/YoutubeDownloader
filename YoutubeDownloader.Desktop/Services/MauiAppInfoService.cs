@@ -4,6 +4,13 @@ namespace YoutubeDownloader.Desktop.Services
 {
     public class MauiAppInfoService : IAppInfoService
     {
-        public string Version => AppInfo.Current.VersionString;
+        public string Version
+        {
+            get
+            {
+                var version = AppInfo.Current.VersionString;
+                return version;
+            }
+        }
     }
 }
