@@ -13,10 +13,11 @@ namespace YoutubeDownloader.SharedUI.Models
 
         private readonly string _mp4 = "mp4";
         private readonly string _mp3 = "mp3";
+        private readonly string _webm = "webm";
         private readonly string _best = "best";
 
         public async Task SearchAsync(
-            IYoutubeAppService service, 
+            IYoutubeAppService service,
             CancellationToken cancellationToken)
         {
             var command = new DownloadManifestCommand(Url);
@@ -55,7 +56,7 @@ namespace YoutubeDownloader.SharedUI.Models
             }
 
             var candidates = VideoStreams
-                .Where(s => s.ContainerName == _mp4);
+                .Where(s => s.ContainerName == format);
 
             if (quality != _best)
             {
@@ -63,10 +64,21 @@ namespace YoutubeDownloader.SharedUI.Models
                     .Where(s => s.Resolution.Contains(quality));
             }
 
-            var best = candidates
-                .Where(s => s.VideoCodec.StartsWith("avc1"))
-                .OrderByDescending(s => s.Size)
-                .FirstOrDefault();
+            StreamViewModel best;
+
+            if (format == _mp4)
+            {
+                best = candidates
+                    .Where(s => s.VideoCodec.StartsWith("avc1"))
+                    .OrderByDescending(s => s.Size)
+                    .FirstOrDefault();
+            }
+            else
+            {
+                best = candidates
+                    .OrderByDescending(s => s.Size)
+                    .FirstOrDefault();
+            }
 
             return best;
         }

@@ -16,7 +16,6 @@ namespace YoutubeDownloader.Core.Services
         {
             logger.LogInformation("Starting manifest download for video [{Url}].", command.Url);
             return await youtubeService.DownloadManifestAsync(command, cancellationToken);
-            
         }
 
         public async Task<DownloadFileViewModel> DownloadFileAsync(
