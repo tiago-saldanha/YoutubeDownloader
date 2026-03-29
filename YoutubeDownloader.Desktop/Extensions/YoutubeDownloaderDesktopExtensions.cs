@@ -23,12 +23,10 @@ namespace YoutubeDownloader.Desktop.Extensions
         {
             var assembly = Assembly.GetExecutingAssembly();
             using var stream = assembly.GetManifestResourceStream("YoutubeDownloader.Desktop.appsettings.json");
-
             if (stream != null)
             {
                 builder.Configuration.AddJsonStream(stream);
             }
-
             return builder;
         }
 
@@ -52,7 +50,6 @@ namespace YoutubeDownloader.Desktop.Extensions
         {
             builder.Services.AddMemoryCache();
             builder.Services.AddSingleton<IStorageCacheService, StorageCacheService>();
-            
             return builder;
         }
 

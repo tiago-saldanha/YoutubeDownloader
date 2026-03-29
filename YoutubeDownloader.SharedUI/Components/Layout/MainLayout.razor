@@ -27,11 +27,11 @@
 
     <MudMainContent Class="d-flex flex-column" Style="min-height: 100vh; background-color: white !important;">
 
-        <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-6 flex-grow-1" Style="background-color: white !important; flex: 1 0 auto;">
+        <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-2 flex-grow-1" Style="background-color: white !important; flex: 1 0 auto;">
             @Body
         </MudContainer>
 
-        <MudContainer MaxWidth="MaxWidth.Medium" Class="py-6" Style="background-color: white !important; flex-shrink: 0;">
+        <MudContainer MaxWidth="MaxWidth.Medium" Class="py-4 mt-1" Style="background-color: white !important; flex-shrink: 0;">
             <MudText Typo="Typo.body2" Align="Align.Center" Style="color: #616161; opacity: 0.6;">
                 YoutubeDownloader v@(AppInfo.Version) — Desenvolvido por
                 <MudLink Href="https://github.com/tiago-saldanha"
@@ -45,14 +45,3 @@
 
     </MudMainContent>
 </MudLayout>
-
-<style>
-    .mud-layout, .mud-main-content, .mud-container, .mud-paper {
-        background-color: white !important;
-        background: white !important;
-    }
-
-    html, body {
-        background-color: white !important;
-    }
-</style>
