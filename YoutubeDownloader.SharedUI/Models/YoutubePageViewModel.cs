@@ -13,7 +13,6 @@ namespace YoutubeDownloader.SharedUI.Models
 
         private readonly string _mp4 = "mp4";
         private readonly string _mp3 = "mp3";
-        private readonly string _webm = "webm";
         private readonly string _best = "best";
 
         public async Task SearchAsync(
