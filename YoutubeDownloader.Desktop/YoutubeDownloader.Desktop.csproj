@@ -14,9 +14,9 @@
 		<ApplicationTitle>Youtube Downloader</ApplicationTitle>
 		<ApplicationId>dev.tiagosaldanha.youtubedownloader</ApplicationId>
 
-		<ApplicationDisplayVersion>1.0.3</ApplicationDisplayVersion>
-		<ApplicationVersion>3</ApplicationVersion>
-		<Version>1.0.3</Version>
+		<ApplicationDisplayVersion>1.0.5</ApplicationDisplayVersion>
+		<ApplicationVersion>5</ApplicationVersion>
+		<Version>1.0.5</Version>
 
 		<WindowsPackageType>None</WindowsPackageType>
 		<RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
@@ -27,7 +27,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-	  <ApplicationDisplayVersion>1.0.4</ApplicationDisplayVersion>
+	  <ApplicationDisplayVersion>1.0.5</ApplicationDisplayVersion>
 	  <ApplicationVersion>0</ApplicationVersion>
 	</PropertyGroup>
 
