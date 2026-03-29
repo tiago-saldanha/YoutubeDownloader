@@ -32,7 +32,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-	  <ApplicationDisplayVersion>1.0.4</ApplicationDisplayVersion>
+	  <ApplicationDisplayVersion>1.0.5</ApplicationDisplayVersion>
 	  <ApplicationVersion>0</ApplicationVersion>
 	</PropertyGroup>
 
